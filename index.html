@@ -115,15 +115,15 @@ footer{text-align:center;color:#737985;padding:30px;border-top:1px solid #29243d
   </div>
   <h2>Popular Tools</h2>
   <div class="tools" id="toolsGrid">
-    <div class="tool" data-name="QR Code Generator" data-category="Utilities" onclick="openTool('tools/qr.html','qr')"><div class="icon">▣</div><h3>QR Code Generator</h3><p>Create QR codes from links and text.</p></div>
-    <div class="tool" data-name="Image Resizer" data-category="Images" onclick="openTool('tools/image-resizer.html','image-resizer')"><div class="icon">▧</div><h3>Image Resizer</h3><p>Resize images quickly in your browser.</p></div>
-    <div class="tool" data-name="JSON Formatter" data-category="Developer" onclick="openTool('tools/json-formatter.html','json-formatter')"><div class="icon">{ }</div><h3>JSON Formatter</h3><p>Format and clean JSON instantly.</p></div>
-    <div class="tool" data-name="Color Palette" data-category="Design" onclick="openTool('tools/color-palette.html','color-palette')"><div class="icon">◉</div><h3>Color Palette</h3><p>Generate beautiful color combinations.</p></div>
-    <div class="tool" data-name="Username Generator" data-category="Utilities" onclick="openTool('tools/username-generator.html','username-generator')"><div class="icon">@</div><h3>Username Generator</h3><p>Create unique username ideas.</p></div>
-    <div class="tool" data-name="Password Generator" data-category="Utilities" onclick="openTool('tools/password-generator.html','password-generator')"><div class="icon">◆</div><h3>Password Generator</h3><p>Generate random passwords.</p></div>
-    <div class="tool" data-name="Text Case Converter" data-category="Text" onclick="openTool('tools/text-case-converter.html','text-case-converter')"><div class="icon">Aa</div><h3>Text Case Converter</h3><p>Convert text between different cases.</p></div>
-    <div class="tool" data-name="Word Counter" data-category="Text" onclick="openTool('tools/word-counter.html','word-counter')"><div class="icon">≡</div><h3>Word Counter</h3><p>Count words and characters.</p></div>
-    <div class="tool" data-name="PFP Maker" data-category="Images" onclick="openTool('tools/pfp-maker.html','pfp-maker')"><div class="icon">✦</div><h3>PFP Maker</h3><p>Create custom profile pictures.</p></div>
+    <div class="tool" data-name="QR Code Generator" data-category="Utilities" onclick="openTool('tools/qr.html')"><div class="icon">▣</div><h3>QR Code Generator</h3><p>Create QR codes from links and text.</p></div>
+    <div class="tool" data-name="Image Resizer" data-category="Images" onclick="openTool('tools/image-resizer.html')"><div class="icon">▧</div><h3>Image Resizer</h3><p>Resize images quickly in your browser.</p></div>
+    <div class="tool" data-name="JSON Formatter" data-category="Developer" onclick="openTool('tools/json-formatter.html')"><div class="icon">{ }</div><h3>JSON Formatter</h3><p>Format and clean JSON instantly.</p></div>
+    <div class="tool" data-name="Color Palette" data-category="Design" onclick="openTool('tools/color-palette.html')"><div class="icon">◉</div><h3>Color Palette</h3><p>Generate beautiful color combinations.</p></div>
+    <div class="tool" data-name="Username Generator" data-category="Utilities" onclick="openTool('tools/username-generator.html')"><div class="icon">@</div><h3>Username Generator</h3><p>Create unique username ideas.</p></div>
+    <div class="tool" data-name="Password Generator" data-category="Utilities" onclick="openTool('tools/password-generator.html')"><div class="icon">◆</div><h3>Password Generator</h3><p>Generate random passwords.</p></div>
+    <div class="tool" data-name="Text Case Converter" data-category="Text" onclick="openTool('tools/text-case-converter.html')"><div class="icon">Aa</div><h3>Text Case Converter</h3><p>Convert text between different cases.</p></div>
+    <div class="tool" data-name="Word Counter" data-category="Text" onclick="openTool('tools/word-counter.html')"><div class="icon">≡</div><h3>Word Counter</h3><p>Count words and characters.</p></div>
+    <div class="tool" data-name="PFP Maker" data-category="Images" onclick="openTool('tools/pfp-maker.html')"><div class="icon">✦</div><h3>PFP Maker</h3><p>Create custom profile pictures.</p></div>
   </div>
   <div class="no-results" id="noResults">No tools found.</div>
 </section>
@@ -176,6 +176,7 @@ footer{text-align:center;color:#737985;padding:30px;border-top:1px solid #29243d
     <div class="message" id="authMessage"></div>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -192,33 +193,43 @@ function switchTab(tab){
   document.getElementById("search").style.display=tools?"":"none";
   if(!tools&&window.currentUser&&window.loadWallet)window.loadWallet(window.currentUser);
 }
+
 function showToast(message){
   const el=document.getElementById("toast");
-  el.textContent=message;el.style.display="block";
+  el.textContent=message;
+  el.style.display="block";
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>el.style.display="none",4200);
 }
+
 function searchTools(){
   const search=document.getElementById("search").value.toLowerCase();
   let count=0;
   document.querySelectorAll(".tool").forEach(tool=>{
-    const matches=tool.dataset.name.toLowerCase().includes(search)&&(currentCategory==="All"||tool.dataset.category===currentCategory);
+    const matches=tool.dataset.name.toLowerCase().includes(search)&&
+      (currentCategory==="All"||tool.dataset.category===currentCategory);
     tool.style.display=matches?"":"none";
     if(matches)count++;
   });
   document.getElementById("noResults").style.display=count===0?"block":"none";
 }
+
 function filterCategory(category,button){
   currentCategory=category;
   document.querySelectorAll(".category").forEach(item=>item.classList.remove("active"));
   button.classList.add("active");
   searchTools();
 }
+
 function openAuth(){
   document.getElementById("authModal").classList.add("show");
   clearMessage();
 }
-function closeAuth(){document.getElementById("authModal").classList.remove("show")}
+
+function closeAuth(){
+  document.getElementById("authModal").classList.remove("show");
+}
+
 function setMode(mode){
   window.authMode=mode;
   const register=mode==="register";
@@ -230,12 +241,17 @@ function setMode(mode){
   document.getElementById("emailButton").textContent=register?"Create account":"Login";
   clearMessage();
 }
+
 function showMessage(message,success=false){
   const el=document.getElementById("authMessage");
   el.textContent=message;
   el.className=success?"message success":"message";
 }
-function clearMessage(){showMessage("")}
+
+function clearMessage(){
+  showMessage("");
+}
+
 function friendlyError(error){
   let message=error?.message||String(error||"Something went wrong.");
   if(message.includes("Invalid login credentials"))return "Incorrect email or password.";
@@ -245,11 +261,13 @@ function friendlyError(error){
   if(message.toLowerCase().includes("failed to fetch"))return "Could not reach Supabase. Check your connection.";
   return message;
 }
+
 function setBusy(busy){
   document.getElementById("emailButton").disabled=busy;
   document.getElementById("googleButton").disabled=busy;
   document.getElementById("emailButton").textContent=busy?"Please wait...":(window.authMode==="register"?"Create account":"Login");
 }
+
 window.openAuth=openAuth;
 window.closeAuth=closeAuth;
 window.setMode=setMode;
@@ -260,59 +278,116 @@ window.switchTab=switchTab;
 
 <script type="module">
 import {supabase} from "./supabase.js";
+import {toolboxRequest} from "./toolbox-api.js";
 
 const $=id=>document.getElementById(id);
 let walletRequestId=0;
 
-async function toolboxRequest(user,body){
-  if(!user)throw new Error("Please sign in first.");
-  const {data:{session},error:sessionError}=await supabase.auth.getSession();
-  if(sessionError)throw sessionError;
-  if(!session?.access_token)throw new Error("Your session expired. Please sign in again.");
-  const {data,error}=await supabase.functions.invoke("toolboxhub",{
-    body,
-    headers:{Authorization:`Bearer ${session.access_token}`}
-  });
-  if(error)throw new Error(data?.details||data?.error||error.message||"Request failed.");
-  if(data?.error)throw new Error(data.details||data.error);
-  return data;
+async function loadWallet(user){
+  if(!user)return;
+
+  const requestId=++walletRequestId;
+  $("walletMessage").textContent="Connecting to your wallet...";
+  $("walletBalance").textContent="Loading...";
+
+  try{
+    const data=await toolboxRequest(user,{action:"balance"});
+
+    if(requestId!==walletRequestId)return;
+
+    const coins=Number(data?.coins??0);
+    if(!Number.isFinite(coins))throw new Error("Invalid wallet balance.");
+
+    $("walletBalance").textContent=coins+" coins";
+    $("navCoins").textContent="🪙 "+coins+" coins";
+    $("storeCoins").textContent="🪙 "+coins+" coins";
+    $("walletMessage").textContent="Wallet connected successfully.";
+
+  }catch(error){
+    if(requestId!==walletRequestId)return;
+    console.error("Wallet error:",error);
+    $("walletBalance").textContent="Unavailable";
+    $("walletMessage").textContent=friendlyError(error);
+  }
 }
+
+window.loadWallet=loadWallet;
+
+/* Opening tools never gives coins. */
+window.openTool=function(path){
+  const allowed=[
+    "tools/qr.html",
+    "tools/image-resizer.html",
+    "tools/json-formatter.html",
+    "tools/color-palette.html",
+    "tools/username-generator.html",
+    "tools/password-generator.html",
+    "tools/text-case-converter.html",
+    "tools/word-counter.html",
+    "tools/pfp-maker.html"
+  ];
+
+  if(!allowed.includes(path))return;
+
+  if(!window.currentUser){
+    sessionStorage.setItem("toolboxhub_return_to",path);
+    openAuth();
+    showMessage("Please log in to use this tool.");
+    return;
+  }
+
+  location.href=path;
+};
 
 window.emailAuth=async function(){
   const email=$("email").value.trim();
   const password=$("password").value;
   const name=$("displayName").value.trim();
+
   if(!email||!password)return showMessage("Enter your email and password.");
   if(password.length<6)return showMessage("Password must be at least 6 characters.");
   if(window.authMode==="register"&&!name)return showMessage("Please enter your name.");
+
   setBusy(true);
   showMessage("");
+
   try{
     if(window.authMode==="register"){
       const {data,error}=await supabase.auth.signUp({
         email,password,options:{data:{display_name:name}}
       });
+
       if(error)throw error;
-      if(!data.session)showMessage("Account created! Check your email to confirm your account.",true);
-      else{closeAuth();showToast("Account created successfully!");}
+
+      if(!data.session){
+        showMessage("Account created! Check your email to confirm your account.",true);
+      }else{
+        closeAuth();
+        showToast("Account created successfully!");
+      }
     }else{
       const {error}=await supabase.auth.signInWithPassword({email,password});
       if(error)throw error;
       closeAuth();
       showToast("Logged in successfully!");
     }
-  }catch(error){showMessage(friendlyError(error))}
-  finally{setBusy(false)}
+  }catch(error){
+    showMessage(friendlyError(error));
+  }finally{
+    setBusy(false);
+  }
 };
 
 window.googleLogin=async function(){
   setBusy(true);
   showMessage("");
+
   try{
     const {error}=await supabase.auth.signInWithOAuth({
       provider:"google",
       options:{redirectTo:window.location.origin+window.location.pathname}
     });
+
     if(error)throw error;
   }catch(error){
     showMessage(friendlyError(error));
@@ -325,92 +400,39 @@ window.logout=async function(){
   if(error)alert(friendlyError(error));
 };
 
-async function loadWallet(user){
-  if(!user)return;
-  const requestId=++walletRequestId;
-  $("walletMessage").textContent="Connecting to your wallet...";
-  $("walletBalance").textContent="Loading...";
-  try{
-    const data=await toolboxRequest(user,{action:"balance"});
-    if(requestId!==walletRequestId)return;
-    const coins=Number(data?.coins??data?.balance??data?.totalCoins);
-    if(!Number.isFinite(coins))throw new Error("Wallet response has no valid coin balance.");
-    $("walletBalance").textContent=coins+" coins";
-    $("navCoins").textContent="🪙 "+coins+" coins";
-    $("storeCoins").textContent="🪙 "+coins+" coins";
-    $("walletMessage").textContent="Wallet connected successfully.";
-  }catch(error){
-    if(requestId!==walletRequestId)return;
-    console.error("Wallet error:",error);
-    $("walletBalance").textContent="Unavailable";
-    $("walletMessage").textContent=friendlyError(error);
-  }
-}
-window.loadWallet=loadWallet;
-
-async function claimToolReward(user,toolId){
-  try{
-    const result=await toolboxRequest(user,{action:"claim",toolId});
-    const reward=Number(result?.reward??12);
-    const total=Number(result?.totalCoins);
-    if(Number.isFinite(total)){
-      $("walletBalance").textContent=total+" coins";
-      $("navCoins").textContent="🪙 "+total+" coins";
-      $("storeCoins").textContent="🪙 "+total+" coins";
-    }else await loadWallet(user);
-    showToast("🎉 You earned "+reward+" coins!");
-  }catch(error){
-    const msg=friendlyError(error);
-    if(msg.toLowerCase().includes("already claimed")){
-      showToast("Already claimed this tool's reward today.");
-    }else{
-      console.error("Reward claim failed:",error);
-      showToast("Reward failed: "+msg);
-      await loadWallet(user);
-    }
-  }
-}
-
-window.openTool=async function(path,toolId){
-  const user=window.currentUser;
-  if(!user){
-    sessionStorage.setItem("toolboxhub_return_to",path);
-    sessionStorage.setItem("toolboxhub_return_tool",toolId);
-    openAuth();
-    showMessage("Please log in to use this tool.");
-    return;
-  }
-  const allowed=[
-    "tools/qr.html","tools/image-resizer.html","tools/json-formatter.html",
-    "tools/color-palette.html","tools/username-generator.html",
-    "tools/password-generator.html","tools/text-case-converter.html",
-    "tools/word-counter.html","tools/pfp-maker.html"
-  ];
-  if(!allowed.includes(path))return;
-  await claimToolReward(user,toolId);
-  location.href=path;
-};
-
 window.buyPremium=async function(productId,button){
   const user=window.currentUser;
+
   if(!user){
     openAuth();
     showMessage("Please log in before purchasing premium.");
     return;
   }
+
   button.disabled=true;
   const oldText=button.textContent;
   button.textContent="Purchasing...";
+
   try{
-    const result=await toolboxRequest(user,{action:"purchase",productId});
-    if(!result?.success)throw new Error(result?.error||"Purchase was not completed.");
+    const result=await toolboxRequest(user,{
+      action:"purchase",
+      productId
+    });
+
+    if(!result?.success)throw new Error("Purchase was not completed.");
+
     const remaining=Number(result.remainingCoins);
+
     if(Number.isFinite(remaining)){
       $("walletBalance").textContent=remaining+" coins";
       $("navCoins").textContent="🪙 "+remaining+" coins";
       $("storeCoins").textContent="🪙 "+remaining+" coins";
-    }else await loadWallet(user);
+    }else{
+      await loadWallet(user);
+    }
+
     showToast("Premium unlocked! It lasts five days.");
+
   }catch(error){
     showToast(friendlyError(error));
     await loadWallet(user);
@@ -423,28 +445,35 @@ window.buyPremium=async function(productId,button){
 supabase.auth.onAuthStateChange((_event,session)=>{
   const user=session?.user||null;
   window.currentUser=user;
+
   $("accountArea").style.display=user?"flex":"none";
   $("loginButton").style.display=user?"none":"block";
 
   if(user){
-    $("userEmail").textContent=user.user_metadata?.display_name||user.email||"Account";
+    $("userEmail").textContent=
+      user.user_metadata?.display_name||user.email||"Account";
+
     Promise.resolve().then(()=>loadWallet(user));
 
     const returnTo=sessionStorage.getItem("toolboxhub_return_to");
-    const returnTool=sessionStorage.getItem("toolboxhub_return_tool");
+
     if(returnTo){
       sessionStorage.removeItem("toolboxhub_return_to");
-      sessionStorage.removeItem("toolboxhub_return_tool");
+
       const allowed=[
-        "tools/qr.html","tools/image-resizer.html","tools/json-formatter.html",
-        "tools/color-palette.html","tools/username-generator.html",
-        "tools/password-generator.html","tools/text-case-converter.html",
-        "tools/word-counter.html","tools/pfp-maker.html"
+        "tools/qr.html",
+        "tools/image-resizer.html",
+        "tools/json-formatter.html",
+        "tools/color-palette.html",
+        "tools/username-generator.html",
+        "tools/password-generator.html",
+        "tools/text-case-converter.html",
+        "tools/word-counter.html",
+        "tools/pfp-maker.html"
       ];
+
       if(allowed.includes(returnTo)){
-        if(returnTool){
-          claimToolReward(user,returnTool).finally(()=>location.href=returnTo);
-        }else location.href=returnTo;
+        location.href=returnTo;
       }
     }
   }else{
