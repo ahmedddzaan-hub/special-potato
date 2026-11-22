@@ -37,11 +37,24 @@ nav{min-height:70px;padding:12px 7%;display:flex;align-items:center;justify-cont
 .tool h3{margin-bottom:8px}
 .tool p{color:#9ca3af;line-height:1.5;font-size:14px}
 .no-results{display:none;text-align:center;color:#9ca3af;padding:40px}
-.wallet-section{display:none;width:min(1100px,92%);margin:0 auto 35px}
-.wallet-card{background:linear-gradient(120deg,#19182b,#151821);border:1px solid #393253;border-radius:15px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.wallet-section,.store-section{display:none;width:min(1100px,92%);margin:0 auto 40px}
+.wallet-card{background:linear-gradient(120deg,#19182b,#151821);border:1px solid #393253;border-radius:15px;padding:22px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
 .wallet-card h2{font-size:19px;margin-bottom:7px}
 .wallet-card p{font-size:13px;color:#aaa;line-height:1.5}
-.wallet-number{font-size:25px;color:#f5d76e;font-weight:bold}
+.wallet-number{font-size:30px;color:#f5d76e;font-weight:bold}
+.wallet-actions{display:flex;gap:10px;flex-wrap:wrap}
+.store-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.store-heading h2{margin:0}
+.premium-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px}
+.premium-card{background:#12151c;border:1px solid #302b48;border-radius:14px;padding:20px}
+.premium-card .premium-icon{font-size:27px;margin-bottom:12px}
+.premium-card h3{margin-bottom:8px}
+.premium-card p{font-size:13px;color:#9ca3af;line-height:1.5;min-height:40px}
+.price{color:#f5d76e;font-weight:bold;margin:15px 0}
+.premium-card button{width:100%;padding:11px;border:0;border-radius:8px;background:#6c63ff;color:white;cursor:pointer}
+.premium-card button:disabled{opacity:.5;cursor:not-allowed}
+.store-note{font-size:12px;color:#858c9a;margin-top:15px;line-height:1.5}
+.wallet-message{font-size:13px;color:#9ca3af;margin-top:12px;min-height:18px}
 .modal-bg{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}
 .modal-bg.show{display:flex}
 .modal{width:min(420px,100%);background:#151821;border:1px solid #303644;border-radius:17px;padding:25px;position:relative;max-height:90vh;overflow-y:auto}
@@ -79,7 +92,7 @@ nav{padding:12px 15px}
 <div class="logo">ToolBox<span>Hub</span></div>
 <div class="nav-right">
 <div class="account" id="accountArea">
-<div class="coin-pill">🪙 Rewards soon</div>
+<div class="coin-pill" id="navCoins">🪙 0 coins</div>
 <span class="account-email" id="userEmail"></span>
 <button class="secondary" onclick="logout()">Logout</button>
 </div>
@@ -102,14 +115,76 @@ nav{padding:12px 15px}
 <button class="category" onclick="filterCategory('Utilities',this)">Utilities</button>
 </div>
 
+<!-- COIN WALLET -->
 <section class="wallet-section" id="walletSection">
 <div class="wallet-card">
 <div>
 <h2>Your Coin Wallet 🪙</h2>
-<p id="walletMessage">Your account is connected.</p>
+<p>Earn coins by using eligible tools and unlock premium features.</p>
+<div class="wallet-message" id="walletMessage">Connecting to your wallet...</div>
 </div>
-<div class="wallet-number" id="walletBalance">Coming soon</div>
+<div>
+<div class="wallet-number" id="walletBalance">0 coins</div>
 </div>
+</div>
+</section>
+
+<!-- PREMIUM STORE -->
+<section class="store-section" id="storeSection">
+<div class="store-heading">
+<h2>👑 Premium Store</h2>
+<span class="coin-pill" id="storeCoins">🪙 0 coins</span>
+</div>
+
+<div class="premium-grid">
+
+<div class="premium-card">
+<div class="premium-icon">✨</div>
+<h3>PFP Maker Pro</h3>
+<p>Unlock extra profile-picture customization features.</p>
+<div class="price">150 coins · 5 days</div>
+<button onclick="buyPremium('pfp_pro',150)">Unlock</button>
+</div>
+
+<div class="premium-card">
+<div class="premium-icon">▣</div>
+<h3>QR Maker Pro</h3>
+<p>Unlock additional QR customization options.</p>
+<div class="price">100 coins · 5 days</div>
+<button onclick="buyPremium('qr_pro',100)">Unlock</button>
+</div>
+
+<div class="premium-card">
+<div class="premium-icon">🖼️</div>
+<h3>Background Remover</h3>
+<p>Premium access to the background-removal tool.</p>
+<div class="price">200 coins · 5 days</div>
+<button onclick="buyPremium('background_remover',200)">Unlock</button>
+</div>
+
+<div class="premium-card">
+<div class="premium-icon">📄</div>
+<h3>PDF Pro</h3>
+<p>Premium PDF tools and additional document features.</p>
+<div class="price">180 coins · 5 days</div>
+<button onclick="buyPremium('pdf_pro',180)">Unlock</button>
+</div>
+
+<div class="premium-card">
+<div class="premium-icon">🎨</div>
+<h3>AI Logo Maker</h3>
+<p>Premium access to AI-assisted logo creation.</p>
+<div class="price">250 coins · 5 days</div>
+<button onclick="buyPremium('ai_logo',250)">Unlock</button>
+</div>
+
+</div>
+
+<p class="store-note">
+Premium purchases last five days. Coins are internal website reward points,
+not cash and cannot be withdrawn. Premium tools will become available as
+their features are added.
+</p>
 </section>
 
 <section class="section">
@@ -130,6 +205,7 @@ nav{padding:12px 15px}
 
 <footer>© 2026 ToolBoxHub</footer>
 
+<!-- AUTH MODAL -->
 <div class="modal-bg" id="authModal">
 <div class="modal">
 <button class="close" onclick="closeAuth()">×</button>
@@ -229,11 +305,10 @@ document.getElementById("emailButton").textContent=busy?"Please wait...":(window
 }
 
 function openTool(path){
-sessionStorage.setItem("toolboxhub_return_to",new URL(path,location.href).href);
 if(window.currentUser){
-sessionStorage.removeItem("toolboxhub_return_to");
 location.href=path;
 }else{
+sessionStorage.setItem("toolboxhub_return_to",new URL(path,location.href).pathname);
 openAuth();
 showMessage("Please log in to use this tool.");
 }
@@ -248,21 +323,43 @@ window.openTool=openTool;
 </script>
 
 <script type="module">
-import {auth,googleProvider} from "./firebase.js";
-import {createUserWithEmailAndPassword,signInWithEmailAndPassword,signInWithPopup,signOut,updateProfile,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+import {auth,googleProvider,db} from "./firebase.js";
+import {
+ createUserWithEmailAndPassword,
+ signInWithEmailAndPassword,
+ signInWithPopup,
+ signOut,
+ updateProfile,
+ onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
+import {
+ doc,getDoc
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+import {
+ getFunctions,httpsCallable
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-functions.js";
+
+const functions=getFunctions();
 const emailInput=document.getElementById("email");
 const passwordInput=document.getElementById("password");
 const nameInput=document.getElementById("displayName");
+
+let walletCoins=0;
 
 window.emailAuth=async function(){
 const email=emailInput.value.trim();
 const password=passwordInput.value;
 const name=nameInput.value.trim();
+
 if(!email||!password){showMessage("Please enter your email and password.");return;}
 if(password.length<6){showMessage("Your password must be at least 6 characters.");return;}
 if(window.authMode==="register"&&!name){showMessage("Please enter your name.");return;}
-setBusy(true);showMessage("");
+
+setBusy(true);
+showMessage("");
+
 try{
 if(window.authMode==="register"){
 const result=await createUserWithEmailAndPassword(auth,email,password);
@@ -271,46 +368,134 @@ await updateProfile(result.user,{displayName:name});
 await signInWithEmailAndPassword(auth,email,password);
 }
 showMessage("Signed in successfully!",true);
-}catch(error){showMessage(friendlyError(error));}
-finally{setBusy(false);}
+}catch(error){
+showMessage(friendlyError(error));
+}finally{
+setBusy(false);
+}
 };
 
 window.googleLogin=async function(){
-setBusy(true);showMessage("");
-try{await signInWithPopup(auth,googleProvider);}
-catch(error){showMessage(friendlyError(error));}
-finally{setBusy(false);}
+setBusy(true);
+showMessage("");
+try{
+await signInWithPopup(auth,googleProvider);
+}catch(error){
+showMessage(friendlyError(error));
+}finally{
+setBusy(false);
+}
 };
 
 window.logout=async function(){
-try{await signOut(auth);}
-catch(error){alert(friendlyError(error));}
+try{
+await signOut(auth);
+}catch(error){
+alert(friendlyError(error));
+}
 };
 
-onAuthStateChanged(auth,user=>{
+// Read-only wallet display. Only the trusted backend should change coin balances.
+async function loadWallet(user){
+const walletMessage=document.getElementById("walletMessage");
+
+try{
+const walletRef=doc(db,"users",user.uid);
+const walletSnap=await getDoc(walletRef);
+
+if(!walletSnap.exists()){
+walletCoins=0;
+walletMessage.textContent="Your wallet is ready. Complete the backend setup to activate rewards.";
+}else{
+const data=walletSnap.data();
+walletCoins=Number(data.coins)||0;
+walletMessage.textContent="Your account wallet is connected.";
+}
+
+updateCoinDisplay();
+}catch(error){
+walletMessage.textContent="Wallet connection is waiting for Firestore security rules and setup.";
+document.getElementById("walletBalance").textContent="Unavailable";
+}
+}
+
+function updateCoinDisplay(){
+document.getElementById("walletBalance").textContent=walletCoins+" coins";
+document.getElementById("navCoins").textContent="🪙 "+walletCoins+" coins";
+document.getElementById("storeCoins").textContent="🪙 "+walletCoins+" coins";
+}
+
+// Purchase calls a secure Cloud Function.
+// The backend function will be added in the next setup step.
+window.buyPremium=async function(productId,price){
+if(!auth.currentUser){
+openAuth();
+showMessage("Please log in before purchasing premium.");
+return;
+}
+
+const buttons=[...document.querySelectorAll(".premium-card button")];
+buttons.forEach(button=>button.disabled=true);
+
+try{
+const purchase=httpsCallable(functions,"purchasePremium");
+const result=await purchase({productId});
+
+if(result.data && result.data.success){
+alert("Premium unlocked!");
+await loadWallet(auth.currentUser);
+}else{
+alert(result.data?.message||"Purchase could not be completed.");
+}
+}catch(error){
+console.error(error);
+alert("The secure premium backend isn't deployed yet. We'll activate purchases after the next setup step.");
+}finally{
+buttons.forEach(button=>button.disabled=false);
+}
+};
+
+onAuthStateChanged(auth,async user=>{
 window.currentUser=user||null;
+
 const accountArea=document.getElementById("accountArea");
 const loginButton=document.getElementById("loginButton");
 const walletSection=document.getElementById("walletSection");
+const storeSection=document.getElementById("storeSection");
 const userEmail=document.getElementById("userEmail");
 
 if(user){
 accountArea.style.display="flex";
 loginButton.style.display="none";
 walletSection.style.display="block";
+storeSection.style.display="block";
 userEmail.textContent=user.displayName||user.email||"Account";
+
+await loadWallet(user);
 
 const returnTo=sessionStorage.getItem("toolboxhub_return_to");
 if(returnTo){
 sessionStorage.removeItem("toolboxhub_return_to");
-location.replace(returnTo);
+const destination=new URL(returnTo,location.origin);
+if(destination.origin===location.origin && destination.pathname.includes("/tools/")){
+location.replace(destination.href);
+}
 }
 }else{
 accountArea.style.display="none";
 loginButton.style.display="block";
 walletSection.style.display="none";
+storeSection.style.display="none";
+walletCoins=0;
 }
 });
+
+// If a protected tool redirected here, open the login window.
+if(new URLSearchParams(location.search).get("auth")==="required"){
+history.replaceState({},document.title,location.pathname);
+openAuth();
+showMessage("Please log in to open that tool.");
+}
 </script>
 </body>
 </html>
