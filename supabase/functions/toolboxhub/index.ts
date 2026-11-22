@@ -9,8 +9,10 @@ const corsHeaders = {
 };
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+// Privileged client: database operations only.
 const admin = createClient(supabaseUrl, serviceRoleKey, {
   auth: {
     persistSession: false,
@@ -58,7 +60,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Authenticate with Supabase, not Firebase.
     const authorization = req.headers.get("Authorization") ?? "";
     const token = authorization.match(/^Bearer\s+(.+)$/i)?.[1];
 
@@ -66,21 +67,35 @@ Deno.serve(async (req) => {
       return respond({ error: "Please sign in first." }, 401);
     }
 
+    // Verify the user's token using the public Supabase key.
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    });
+
     const {
       data: { user },
       error: authError,
-    } = await admin.auth.getUser(token);
+    } = await userClient.auth.getUser();
 
     if (authError || !user) {
+      console.error("Authentication error:", authError);
       return respond({
-        error: "Your session has expired. Please sign in again.",
+        error: "Your session is invalid. Please sign in again.",
       }, 401);
     }
 
     const body = await req.json();
     const action = body?.action;
 
-    // WALLET BALANCE
+    // LOAD WALLET
     if (action === "balance") {
       const [
         { data: wallet, error: walletError },
@@ -96,6 +111,7 @@ Deno.serve(async (req) => {
           .from("premium_purchases")
           .select("product_id, expires_at")
           .eq("user_id", user.id)
+          .gt("expires_at", new Date().toISOString())
           .order("expires_at", { ascending: false }),
       ]);
 
@@ -108,11 +124,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    // CLAIM DAILY TOOL REWARD
+    // CLAIM DAILY REWARD
     if (
-      action === "claim" ||
-      action === "claim_reward" ||
-      action === "claim_tool_reward"
+      ["claim", "claim_reward", "claim_tool_reward"].includes(action)
     ) {
       const toolId = body?.toolId ?? body?.tool_id;
 
@@ -120,7 +134,6 @@ Deno.serve(async (req) => {
         return respond({ error: "Invalid tool." }, 400);
       }
 
-      // 95% chance of 12 coins, 5% chance of 15 coins.
       const reward = Math.random() < 0.05 ? 15 : 12;
 
       const { data, error } = await admin.rpc("claim_tool_reward", {
@@ -130,10 +143,7 @@ Deno.serve(async (req) => {
       });
 
       if (error) {
-        if (
-          error.code === "23505" ||
-          error.message?.toLowerCase().includes("duplicate")
-        ) {
+        if (error.code === "23505") {
           return respond({ error: "Already claimed today." }, 409);
         }
 
@@ -149,9 +159,7 @@ Deno.serve(async (req) => {
 
     // PURCHASE PREMIUM
     if (
-      action === "purchase" ||
-      action === "purchase_premium" ||
-      action === "purchase_toolbox_premium"
+      ["purchase", "purchase_premium", "purchase_toolbox_premium"].includes(action)
     ) {
       const productId = body?.productId ?? body?.product_id;
 
@@ -189,6 +197,7 @@ Deno.serve(async (req) => {
 
     return respond({
       error: "Server error. Please try again.",
+      details: error instanceof Error ? error.message : String(error),
     }, 500);
   }
 });
