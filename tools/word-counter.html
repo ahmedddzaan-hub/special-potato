@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Counter - ToolBoxHub</title>
+
+<style>
+html:not(.toolbox-auth-ready) body {
+  visibility: hidden;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#0b0d12;color:white;min-height:100vh}
+nav{height:70px;padding:0 7%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #20242d}
+.logo{font-size:22px;font-weight:bold}
+.logo span{color:#6c63ff}
+.back{color:#aaa;text-decoration:none}
+.back:hover{color:white}
+.container{width:min(850px,92%);margin:45px auto}
+h1{font-size:35px;margin-bottom:10px}
+.subtitle{color:#9ca3af;margin-bottom:25px;line-height:1.5}
+.box{background:#12151c;border:1px solid #252a35;border-radius:15px;padding:22px}
+textarea{width:100%;height:220px;resize:vertical;background:#0b0d12;color:white;border:1px solid #292e39;border-radius:10px;padding:15px;font:15px Arial;outline:none;line-height:1.6}
+textarea:focus{border-color:#6c63ff}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.stat{background:#1a1e28;border:1px solid #292e39;border-radius:11px;padding:16px}
+.stat strong{display:block;font-size:25px;color:#8c84ff;margin-bottom:7px}
+.stat span{font-size:13px;color:#aaa}
+.actions{display:flex;gap:10px;margin-top:18px}
+button{border:0;border-radius:9px;padding:13px 18px;background:#252a35;color:white;cursor:pointer}
+button:hover{background:#383e50}
+.status{color:#7ee2a8;margin-top:12px;min-height:18px;font-size:14px}
+.status.error{color:#ff9292}
+footer{text-align:center;color:#737985;padding:30px;margin-top:50px;border-top:1px solid #20242d}
+@media(max-width:500px){
+  nav{padding:0 15px}
+  h1{font-size:29px}
+  .box{padding:15px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+
+<script type="module" src="../auth-guard.js"></script>
+</head>
+
+<body>
+
+<nav>
+  <div class="logo">ToolBox<span>Hub</span></div>
+  <a class="back" href="../index.html">← Back</a>
+</nav>
+
+<main class="container">
+  <h1>Word Counter</h1>
+
+  <p class="subtitle">
+    Count words, characters, sentences, paragraphs and reading time instantly.
+  </p>
+
+  <div class="box">
+    <textarea
+      id="text"
+      placeholder="Start typing or paste your text here..."
+      oninput="countText()"
+    ></textarea>
+
+    <div class="stats">
+      <div class="stat">
+        <strong id="words">0</strong>
+        <span>Words</span>
+      </div>
+
+      <div class="stat">
+        <strong id="characters">0</strong>
+        <span>Characters</span>
+      </div>
+
+      <div class="stat">
+        <strong id="noSpaces">0</strong>
+        <span>Without spaces</span>
+      </div>
+
+      <div class="stat">
+        <strong id="sentences">0</strong>
+        <span>Sentences</span>
+      </div>
+
+      <div class="stat">
+        <strong id="paragraphs">0</strong>
+        <span>Paragraphs</span>
+      </div>
+
+      <div class="stat">
+        <strong id="reading">0 min</strong>
+        <span>Reading time</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button onclick="copyText()">Copy Text</button>
+      <button onclick="clearText()">Clear</button>
+    </div>
+
+    <div class="status" id="status" aria-live="polite"></div>
+  </div>
+</main>
+
+<footer>© 2026 ToolBoxHub</footer>
+
+<script>
+const field = document.getElementById("text");
+const statusBox = document.getElementById("status");
+
+function countText() {
+  const value = field.value;
+  const trimmed = value.trim();
+
+  const words = trimmed
+    ? trimmed.split(/\s+/u).length
+    : 0;
+
+  const characters = [...value].length;
+  const noSpaces = [...value.replace(/\s/gu, "")].length;
+
+  const sentences = trimmed
+    ? (trimmed.match(/[.!?]+(?=\s|$)|[^.!?]+$/g) || [])
+        .filter(sentence => sentence.trim()).length
+    : 0;
+
+  const paragraphs = trimmed
+    ? trimmed.split(/\n\s*\n/).filter(p => p.trim()).length
+    : 0;
+
+  const reading = words === 0
+    ? 0
+    : Math.max(1, Math.ceil(words / 200));
+
+  document.getElementById("words").textContent = words;
+  document.getElementById("characters").textContent = characters;
+  document.getElementById("noSpaces").textContent = noSpaces;
+  document.getElementById("sentences").textContent = sentences;
+  document.getElementById("paragraphs").textContent = paragraphs;
+  document.getElementById("reading").textContent = reading + " min";
+}
+
+async function copyText() {
+  if (!field.value) {
+    showStatus("Nothing to copy.", true);
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(field.value);
+    showStatus("Text copied!");
+  } catch (error) {
+    field.select();
+
+    try {
+      const copied = document.execCommand("copy");
+      showStatus(
+        copied ? "Text copied!" : "Copy failed. Please copy manually.",
+        !copied
+      );
+    } catch {
+      showStatus("Copy failed. Please copy manually.", true);
+    }
+  }
+}
+
+function clearText() {
+  field.value = "";
+  countText();
+  showStatus("Text cleared.");
+}
+
+function showStatus(message, error = false) {
+  statusBox.textContent = message;
+  statusBox.className = error ? "status error" : "status";
+}
+
+countText();
+</script>
+
+</body>
+</html>
