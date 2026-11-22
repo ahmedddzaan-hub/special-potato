@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Case Converter - ToolBoxHub</title>
+
+<style>
+html:not(.toolbox-auth-ready) body {
+  visibility: hidden;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#0b0d12;color:white;min-height:100vh}
+nav{height:70px;padding:0 7%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #20242d}
+.logo{font-size:22px;font-weight:bold}
+.logo span{color:#6c63ff}
+.back{color:#aaa;text-decoration:none}
+.back:hover{color:white}
+.container{width:min(800px,92%);margin:45px auto}
+h1{font-size:35px;margin-bottom:10px}
+.subtitle{color:#9ca3af;margin-bottom:25px;line-height:1.5}
+.box{background:#12151c;border:1px solid #252a35;border-radius:15px;padding:22px}
+textarea{width:100%;height:190px;resize:vertical;background:#0b0d12;color:white;border:1px solid #292e39;border-radius:10px;padding:15px;font:15px Arial;outline:none}
+textarea:focus{border-color:#6c63ff}
+.buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin:18px 0}
+button{border:0;border-radius:9px;padding:13px 10px;background:#252a35;color:white;cursor:pointer;font-size:14px}
+button:hover{background:#383e50}
+.primary{background:#6c63ff}
+.primary:hover{background:#574de0}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.actions button{flex:1}
+.stats{display:flex;gap:20px;flex-wrap:wrap;color:#9ca3af;font-size:13px;margin-top:18px}
+.status{color:#7ee2a8;margin-top:14px;min-height:18px;font-size:14px}
+.status.error{color:#ff9292}
+footer{text-align:center;color:#737985;padding:30px;margin-top:50px;border-top:1px solid #20242d}
+@media(max-width:500px){
+  nav{padding:0 15px}
+  h1{font-size:29px}
+  .box{padding:15px}
+}
+</style>
+
+<script type="module" src="../auth-guard.js"></script>
+</head>
+
+<body>
+<nav>
+  <div class="logo">ToolBox<span>Hub</span></div>
+  <a class="back" href="../index.html">← Back</a>
+</nav>
+
+<main class="container">
+  <h1>Text Case Converter</h1>
+  <p class="subtitle">
+    Convert your text into uppercase, lowercase, title case and more.
+  </p>
+
+  <div class="box">
+    <textarea
+      id="text"
+      placeholder="Type or paste your text here..."
+      oninput="updateStats()"
+    ></textarea>
+
+    <div class="buttons">
+      <button class="primary" onclick="convert('upper')">UPPERCASE</button>
+      <button onclick="convert('lower')">lowercase</button>
+      <button onclick="convert('title')">Title Case</button>
+      <button onclick="convert('sentence')">Sentence case</button>
+      <button onclick="convert('alternating')">aLtErNaTiNg</button>
+      <button onclick="convert('inverse')">iNVERSE cASE</button>
+    </div>
+
+    <div class="actions">
+      <button onclick="copyText()">Copy Text</button>
+      <button onclick="clearText()">Clear</button>
+    </div>
+
+    <div class="stats">
+      <span id="characters">Characters: 0</span>
+      <span id="words">Words: 0</span>
+      <span id="sentences">Sentences: 0</span>
+    </div>
+
+    <div class="status" id="status" aria-live="polite"></div>
+  </div>
+</main>
+
+<footer>© 2026 ToolBoxHub</footer>
+
+<script>
+const field = document.getElementById("text");
+const statusBox = document.getElementById("status");
+
+function showStatus(message, error = false) {
+  statusBox.textContent = message;
+  statusBox.className = error ? "status error" : "status";
+}
+
+function convert(type) {
+  let value = field.value;
+
+  if (!value.trim()) {
+    showStatus("Enter some text first.", true);
+    return;
+  }
+
+  switch (type) {
+    case "upper":
+      value = value.toUpperCase();
+      break;
+
+    case "lower":
+      value = value.toLowerCase();
+      break;
+
+    case "title":
+      value = value.toLowerCase().replace(
+        /\b[a-z]/g,
+        char => char.toUpperCase()
+      );
+      break;
+
+    case "sentence":
+      value = value.toLowerCase().replace(
+        /(^\s*[a-z]|[.!?]\s+[a-z])/g,
+        char => char.toUpperCase()
+      );
+      break;
+
+    case "alternating": {
+      let index = 0;
+
+      value = [...value].map(char => {
+        if (/[a-z]/i.test(char)) {
+          const result = index % 2 === 0
+            ? char.toLowerCase()
+            : char.toUpperCase();
+
+          index++;
+          return result;
+        }
+
+        return char;
+      }).join("");
+
+      break;
+    }
+
+    case "inverse":
+      value = [...value].map(char => {
+        if (char === char.toUpperCase()) {
+          return char.toLowerCase();
+        }
+
+        return char.toUpperCase();
+      }).join("");
+      break;
+  }
+
+  field.value = value;
+  updateStats();
+  showStatus("Text converted successfully!");
+}
+
+function updateStats() {
+  const value = field.value;
+
+  const words = value.trim()
+    ? value.trim().split(/\s+/u).length
+    : 0;
+
+  const sentences = value.trim()
+    ? (value.match(/[.!?]+(?=\s|$)|[^.!?]+$/g) || [])
+        .filter(sentence => sentence.trim()).length
+    : 0;
+
+  document.getElementById("characters").textContent =
+    "Characters: " + [...value].length;
+
+  document.getElementById("words").textContent =
+    "Words: " + words;
+
+  document.getElementById("sentences").textContent =
+    "Sentences: " + sentences;
+}
+
+async function copyText() {
+  if (!field.value) {
+    showStatus("Nothing to copy.", true);
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(field.value);
+    showStatus("Copied successfully!");
+  } catch (error) {
+    field.select();
+
+    try {
+      const copied = document.execCommand("copy");
+      showStatus(
+        copied ? "Copied successfully!" : "Copy failed. Please copy manually.",
+        !copied
+      );
+    } catch {
+      showStatus("Copy failed. Please copy manually.", true);
+    }
+  }
+}
+
+function clearText() {
+  field.value = "";
+  updateStats();
+  showStatus("Text cleared.");
+}
+
+updateStats();
+</script>
+</body>
+</html>
