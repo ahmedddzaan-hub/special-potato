@@ -1,0 +1,316 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ToolBoxHub</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#0b0d12;color:white;min-height:100vh}
+nav{min-height:70px;padding:12px 7%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #20242d;gap:12px}
+.logo{font-size:22px;font-weight:bold;white-space:nowrap}
+.logo span{color:#6c63ff}
+.nav-right{display:flex;align-items:center;gap:10px}
+.login,.primary{background:#6c63ff;color:white;border:0;padding:11px 18px;border-radius:9px;cursor:pointer}
+.login:hover,.primary:hover{background:#574ee8}
+.account{display:none;align-items:center;gap:9px}
+.coin-pill{background:#191b29;border:1px solid #34304e;padding:9px 12px;border-radius:9px;color:#f5d76e;font-size:13px}
+.account-email{font-size:12px;color:#aaa;max-width:130px;overflow:hidden;text-overflow:ellipsis}
+.secondary{background:#20242d;color:white;border:1px solid #343a47;padding:10px 13px;border-radius:9px;cursor:pointer}
+.hero{text-align:center;padding:75px 20px 45px}
+.hero h1{font-size:clamp(38px,8vw,70px);line-height:1.05}
+.hero h1 span{color:#6c63ff}
+.hero p{color:#9ca3af;font-size:18px;margin:18px 0 28px}
+.search{width:min(650px,100%);padding:17px 20px;background:#151821;color:white;border:1px solid #292e39;border-radius:12px;font-size:16px;outline:none}
+.search:focus{border-color:#6c63ff}
+.categories{width:min(1100px,92%);margin:auto;display:flex;gap:10px;overflow-x:auto;padding-bottom:35px}
+.category{flex:0 0 auto;padding:10px 17px;border-radius:999px;background:#151821;color:#ddd;border:1px solid #292e39;cursor:pointer}
+.category.active{background:#6c63ff;border-color:#6c63ff;color:white}
+.section{width:min(1100px,92%);margin:auto;padding-bottom:70px}
+.section h2{margin-bottom:20px}
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.tool{background:#12151c;border:1px solid #252a35;border-radius:15px;padding:22px;cursor:pointer;transition:.2s}
+.tool:hover{transform:translateY(-4px);border-color:#6c63ff}
+.icon{width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:#1b1e29;border-radius:12px;font-size:24px;margin-bottom:15px}
+.tool h3{margin-bottom:8px}
+.tool p{color:#9ca3af;line-height:1.5;font-size:14px}
+.no-results{display:none;text-align:center;color:#9ca3af;padding:40px}
+.wallet-section{display:none;width:min(1100px,92%);margin:0 auto 35px}
+.wallet-card{background:linear-gradient(120deg,#19182b,#151821);border:1px solid #393253;border-radius:15px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.wallet-card h2{font-size:19px;margin-bottom:7px}
+.wallet-card p{font-size:13px;color:#aaa;line-height:1.5}
+.wallet-number{font-size:25px;color:#f5d76e;font-weight:bold}
+.modal-bg{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}
+.modal-bg.show{display:flex}
+.modal{width:min(420px,100%);background:#151821;border:1px solid #303644;border-radius:17px;padding:25px;position:relative;max-height:90vh;overflow-y:auto}
+.modal h2{margin-bottom:8px}
+.modal-sub{color:#9ca3af;font-size:14px;margin-bottom:20px;line-height:1.5}
+.close{position:absolute;right:17px;top:15px;background:none;border:0;color:#aaa;font-size:24px;cursor:pointer}
+.tabs{display:flex;gap:8px;margin-bottom:18px}
+.tab{flex:1;background:#222633;color:#aaa;border:0;padding:11px;border-radius:8px;cursor:pointer}
+.tab.active{background:#6c63ff;color:white}
+.field{margin-bottom:13px}
+.field label{display:block;color:#bbb;font-size:13px;margin-bottom:7px}
+.field input{width:100%;background:#0d1017;color:white;border:1px solid #343a47;border-radius:8px;padding:13px;font-size:15px;outline:none}
+.field input:focus{border-color:#6c63ff}
+.full{width:100%;padding:13px;margin-top:5px}
+.google{width:100%;background:#242936;color:white;border:1px solid #3b4252;padding:13px;border-radius:9px;margin-top:12px;cursor:pointer}
+.google:hover{background:#303747}
+.or{text-align:center;color:#777;font-size:12px;margin:15px 0}
+.message{font-size:13px;line-height:1.5;margin-top:13px;color:#ff9999;min-height:18px}
+.message.success{color:#83d9a0}
+.hidden{display:none!important}
+footer{text-align:center;color:#737985;padding:30px;border-top:1px solid #20242d}
+@media(max-width:600px){
+nav{padding:12px 15px}
+.hero{padding-top:55px}
+.tools{grid-template-columns:1fr}
+.account-email{display:none}
+.coin-pill{font-size:12px;padding:8px}
+.login{padding:10px 13px}
+}
+</style>
+</head>
+
+<body>
+<nav>
+<div class="logo">ToolBox<span>Hub</span></div>
+<div class="nav-right">
+<div class="account" id="accountArea">
+<div class="coin-pill">🪙 Rewards soon</div>
+<span class="account-email" id="userEmail"></span>
+<button class="secondary" onclick="logout()">Logout</button>
+</div>
+<button class="login" id="loginButton" onclick="openAuth()">Login / Sign up</button>
+</div>
+</nav>
+
+<section class="hero">
+<h1>All your tools.<br><span>One toolbox.</span></h1>
+<p>Fast, simple and useful online tools for everyone.</p>
+<input id="search" class="search" type="text" placeholder="Search tools..." oninput="searchTools()">
+</section>
+
+<div class="categories">
+<button class="category active" onclick="filterCategory('All',this)">All</button>
+<button class="category" onclick="filterCategory('Images',this)">Images</button>
+<button class="category" onclick="filterCategory('Developer',this)">Developer</button>
+<button class="category" onclick="filterCategory('Design',this)">Design</button>
+<button class="category" onclick="filterCategory('Text',this)">Text</button>
+<button class="category" onclick="filterCategory('Utilities',this)">Utilities</button>
+</div>
+
+<section class="wallet-section" id="walletSection">
+<div class="wallet-card">
+<div>
+<h2>Your Coin Wallet 🪙</h2>
+<p id="walletMessage">Your account is connected.</p>
+</div>
+<div class="wallet-number" id="walletBalance">Coming soon</div>
+</div>
+</section>
+
+<section class="section">
+<h2>Popular Tools</h2>
+<div class="tools">
+<div class="tool" data-name="QR Code Generator" data-category="Utilities" onclick="openTool('tools/qr.html')"><div class="icon">▣</div><h3>QR Code Generator</h3><p>Create QR codes from links, text and messages.</p></div>
+<div class="tool" data-name="Image Resizer" data-category="Images" onclick="openTool('tools/image-resizer.html')"><div class="icon">▧</div><h3>Image Resizer</h3><p>Resize images quickly in your browser.</p></div>
+<div class="tool" data-name="JSON Formatter" data-category="Developer" onclick="openTool('tools/json-formatter.html')"><div class="icon">{ }</div><h3>JSON Formatter</h3><p>Format and clean up JSON instantly.</p></div>
+<div class="tool" data-name="Color Palette" data-category="Design" onclick="openTool('tools/color-palette.html')"><div class="icon">◉</div><h3>Color Palette</h3><p>Generate beautiful color combinations.</p></div>
+<div class="tool" data-name="Username Generator" data-category="Utilities" onclick="openTool('tools/username-generator.html')"><div class="icon">@</div><h3>Username Generator</h3><p>Create unique username ideas.</p></div>
+<div class="tool" data-name="Password Generator" data-category="Utilities" onclick="openTool('tools/password-generator.html')"><div class="icon">◆</div><h3>Password Generator</h3><p>Generate random passwords with custom options.</p></div>
+<div class="tool" data-name="Text Case Converter" data-category="Text" onclick="openTool('tools/text-case-converter.html')"><div class="icon">Aa</div><h3>Text Case Converter</h3><p>Convert text between different cases.</p></div>
+<div class="tool" data-name="Word Counter" data-category="Text" onclick="openTool('tools/word-counter.html')"><div class="icon">≡</div><h3>Word Counter</h3><p>Count words, characters and reading time.</p></div>
+<div class="tool" data-name="PFP Maker Profile Picture Creator" data-category="Images" onclick="openTool('tools/pfp-maker.html')"><div class="icon">✦</div><h3>PFP Maker</h3><p>Create custom profile pictures with photos, text and effects.</p></div>
+</div>
+<div class="no-results" id="noResults">No tools found.</div>
+</section>
+
+<footer>© 2026 ToolBoxHub</footer>
+
+<div class="modal-bg" id="authModal">
+<div class="modal">
+<button class="close" onclick="closeAuth()">×</button>
+<h2 id="modalTitle">Welcome to ToolBoxHub</h2>
+<p class="modal-sub" id="modalSubtitle">Sign in or create your free account.</p>
+<div class="tabs">
+<button class="tab active" id="loginTab" onclick="setMode('login')">Login</button>
+<button class="tab" id="registerTab" onclick="setMode('register')">Register</button>
+</div>
+<div class="field hidden" id="nameField">
+<label>Your name</label>
+<input id="displayName" type="text" placeholder="Enter your name">
+</div>
+<div class="field">
+<label>Email address</label>
+<input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+</div>
+<div class="field">
+<label>Password</label>
+<input id="password" type="password" placeholder="At least 6 characters" autocomplete="current-password">
+</div>
+<button class="primary full" id="emailButton" onclick="emailAuth()">Login</button>
+<div class="or">OR</div>
+<button class="google" id="googleButton" onclick="googleLogin()">Continue with Google</button>
+<div class="message" id="authMessage"></div>
+</div>
+</div>
+
+<script>
+let currentCategory="All";
+window.authMode="login";
+
+function searchTools(){
+const search=document.getElementById("search").value.toLowerCase();
+let count=0;
+document.querySelectorAll(".tool").forEach(tool=>{
+const matches=tool.dataset.name.toLowerCase().includes(search)&&(currentCategory==="All"||tool.dataset.category===currentCategory);
+tool.style.display=matches?"":"none";
+if(matches)count++;
+});
+document.getElementById("noResults").style.display=count===0?"block":"none";
+}
+
+function filterCategory(category,button){
+currentCategory=category;
+document.querySelectorAll(".category").forEach(item=>item.classList.remove("active"));
+button.classList.add("active");
+searchTools();
+}
+
+function openAuth(){
+document.getElementById("authModal").classList.add("show");
+clearMessage();
+}
+function closeAuth(){document.getElementById("authModal").classList.remove("show");}
+
+function setMode(mode){
+window.authMode=mode;
+const register=mode==="register";
+document.getElementById("loginTab").classList.toggle("active",!register);
+document.getElementById("registerTab").classList.toggle("active",register);
+document.getElementById("nameField").classList.toggle("hidden",!register);
+document.getElementById("modalTitle").textContent=register?"Create your account":"Welcome back";
+document.getElementById("modalSubtitle").textContent=register?"Create your free ToolBoxHub account.":"Sign in to your ToolBoxHub account.";
+document.getElementById("emailButton").textContent=register?"Create account":"Login";
+document.getElementById("password").autocomplete=register?"new-password":"current-password";
+clearMessage();
+}
+
+function showMessage(message,success=false){
+const element=document.getElementById("authMessage");
+element.textContent=message;
+element.className=success?"message success":"message";
+}
+function clearMessage(){showMessage("");}
+
+function friendlyError(error){
+const messages={
+"auth/email-already-in-use":"This email already has an account. Try logging in.",
+"auth/invalid-email":"Please enter a valid email address.",
+"auth/weak-password":"Your password must be at least 6 characters.",
+"auth/invalid-credential":"Incorrect email or password.",
+"auth/user-not-found":"No account found with this email.",
+"auth/wrong-password":"Incorrect password.",
+"auth/popup-closed-by-user":"Google sign-in was closed.",
+"auth/popup-blocked":"The browser blocked the sign-in window. Try again.",
+"auth/unauthorized-domain":"This website domain is not authorized in Firebase Authentication.",
+"auth/network-request-failed":"Network error. Check your internet connection."
+};
+return messages[error.code]||error.message||"Something went wrong.";
+}
+
+function setBusy(busy){
+document.getElementById("emailButton").disabled=busy;
+document.getElementById("googleButton").disabled=busy;
+document.getElementById("emailButton").textContent=busy?"Please wait...":(window.authMode==="register"?"Create account":"Login");
+}
+
+function openTool(path){
+sessionStorage.setItem("toolboxhub_return_to",new URL(path,location.href).href);
+if(window.currentUser){
+sessionStorage.removeItem("toolboxhub_return_to");
+location.href=path;
+}else{
+openAuth();
+showMessage("Please log in to use this tool.");
+}
+}
+
+window.openAuth=openAuth;
+window.closeAuth=closeAuth;
+window.setMode=setMode;
+window.searchTools=searchTools;
+window.filterCategory=filterCategory;
+window.openTool=openTool;
+</script>
+
+<script type="module">
+import {auth,googleProvider} from "./firebase.js";
+import {createUserWithEmailAndPassword,signInWithEmailAndPassword,signInWithPopup,signOut,updateProfile,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+const emailInput=document.getElementById("email");
+const passwordInput=document.getElementById("password");
+const nameInput=document.getElementById("displayName");
+
+window.emailAuth=async function(){
+const email=emailInput.value.trim();
+const password=passwordInput.value;
+const name=nameInput.value.trim();
+if(!email||!password){showMessage("Please enter your email and password.");return;}
+if(password.length<6){showMessage("Your password must be at least 6 characters.");return;}
+if(window.authMode==="register"&&!name){showMessage("Please enter your name.");return;}
+setBusy(true);showMessage("");
+try{
+if(window.authMode==="register"){
+const result=await createUserWithEmailAndPassword(auth,email,password);
+await updateProfile(result.user,{displayName:name});
+}else{
+await signInWithEmailAndPassword(auth,email,password);
+}
+showMessage("Signed in successfully!",true);
+}catch(error){showMessage(friendlyError(error));}
+finally{setBusy(false);}
+};
+
+window.googleLogin=async function(){
+setBusy(true);showMessage("");
+try{await signInWithPopup(auth,googleProvider);}
+catch(error){showMessage(friendlyError(error));}
+finally{setBusy(false);}
+};
+
+window.logout=async function(){
+try{await signOut(auth);}
+catch(error){alert(friendlyError(error));}
+};
+
+onAuthStateChanged(auth,user=>{
+window.currentUser=user||null;
+const accountArea=document.getElementById("accountArea");
+const loginButton=document.getElementById("loginButton");
+const walletSection=document.getElementById("walletSection");
+const userEmail=document.getElementById("userEmail");
+
+if(user){
+accountArea.style.display="flex";
+loginButton.style.display="none";
+walletSection.style.display="block";
+userEmail.textContent=user.displayName||user.email||"Account";
+
+const returnTo=sessionStorage.getItem("toolboxhub_return_to");
+if(returnTo){
+sessionStorage.removeItem("toolboxhub_return_to");
+location.replace(returnTo);
+}
+}else{
+accountArea.style.display="none";
+loginButton.style.display="block";
+walletSection.style.display="none";
+}
+});
+</script>
+</body>
+</html>
