@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Palette Generator - ToolBoxHub</title>
+
+<style>
+html:not(.toolbox-auth-ready) body {
+  visibility: hidden;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #0b0d12;
+  color: white;
+  min-height: 100vh;
+}
+
+nav {
+  height: 70px;
+  padding: 0 7%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #20242d;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.logo span {
+  color: #6c63ff;
+}
+
+.back {
+  color: #aaa;
+  text-decoration: none;
+}
+
+.back:hover {
+  color: white;
+}
+
+.container {
+  width: min(1000px, 92%);
+  margin: 50px auto;
+}
+
+h1 {
+  font-size: 38px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #9ca3af;
+  margin-bottom: 30px;
+}
+
+.palette {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  min-height: 320px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #292e39;
+}
+
+.color {
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.color:hover {
+  transform: scale(1.02);
+}
+
+.color-code {
+  background: rgba(0, 0, 0, 0.55);
+  padding: 10px 13px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 14px;
+  backdrop-filter: blur(5px);
+}
+
+.lock {
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 7px;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+
+.lock.locked {
+  background: #6c63ff;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+button {
+  border: 0;
+  padding: 13px 18px;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.generate {
+  background: #6c63ff;
+  color: white;
+}
+
+.copy {
+  background: #242833;
+  color: white;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+.message {
+  margin-top: 15px;
+  color: #7ee2a8;
+  min-height: 20px;
+}
+
+.info {
+  margin-top: 35px;
+  background: #12151c;
+  border: 1px solid #252a35;
+  border-radius: 12px;
+  padding: 20px;
+  color: #9ca3af;
+  line-height: 1.6;
+}
+
+footer {
+  text-align: center;
+  color: #737985;
+  padding: 40px 20px;
+  border-top: 1px solid #20242d;
+  margin-top: 50px;
+}
+
+@media (max-width: 700px) {
+  .palette {
+    grid-template-columns: 1fr;
+  }
+
+  .color {
+    min-height: 110px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  nav {
+    padding: 0 15px;
+  }
+}
+</style>
+
+<script type="module" src="../auth-guard.js"></script>
+</head>
+
+<body>
+
+<nav>
+  <div class="logo">
+    ToolBox<span>Hub</span>
+  </div>
+
+  <a class="back" href="../index.html">← Back</a>
+</nav>
+
+<main class="container">
+
+  <h1>Color Palette Generator</h1>
+
+  <p class="subtitle">
+    Generate beautiful random color palettes for your projects.
+  </p>
+
+  <div class="palette" id="palette"></div>
+
+  <div class="buttons">
+    <button class="generate" onclick="generatePalette()">
+      Generate New Palette
+    </button>
+
+    <button class="copy" onclick="copyPalette()">
+      Copy Palette
+    </button>
+  </div>
+
+  <div class="message" id="message" aria-live="polite"></div>
+
+  <div class="info">
+    <strong>Tips:</strong><br>
+    Tap any color to copy its HEX code.<br>
+    Lock colors to keep them when generating a new palette.
+  </div>
+
+</main>
+
+<footer>
+  © 2026 ToolBoxHub
+</footer>
+
+<script>
+let colors = [];
+let locked = [false, false, false, false, false];
+
+function randomColor() {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+
+  return color;
+}
+
+function renderPalette() {
+  const palette = document.getElementById("palette");
+  palette.innerHTML = "";
+
+  colors.forEach((color, index) => {
+    const box = document.createElement("div");
+    box.className = "color";
+    box.style.background = color;
+
+    const code = document.createElement("div");
+    code.className = "color-code";
+    code.textContent = color;
+
+    const lockButton = document.createElement("button");
+    lockButton.className = "lock" + (locked[index] ? " locked" : "");
+    lockButton.textContent = locked[index] ? "🔒 Locked" : "🔓 Lock";
+    lockButton.setAttribute("aria-label", locked[index] ? "Unlock color" : "Lock color");
+
+    lockButton.onclick = (event) => {
+      event.stopPropagation();
+      locked[index] = !locked[index];
+      renderPalette();
+    };
+
+    box.onclick = () => copyText(color);
+
+    box.appendChild(code);
+    box.appendChild(lockButton);
+    palette.appendChild(box);
+  });
+}
+
+function generatePalette() {
+  for (let i = 0; i < 5; i++) {
+    if (!locked[i] || !colors[i]) {
+      colors[i] = randomColor();
+    }
+  }
+
+  renderPalette();
+
+  document.getElementById("message").textContent =
+    "New palette generated.";
+}
+
+async function copyText(text) {
+  const message = document.getElementById("message");
+
+  try {
+    await navigator.clipboard.writeText(text);
+    message.textContent = text + " copied!";
+  } catch (error) {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+
+    document.body.appendChild(area);
+    area.select();
+
+    try {
+      const copied = document.execCommand("copy");
+      message.textContent = copied
+        ? text + " copied!"
+        : "Copy failed. Please copy manually.";
+    } catch {
+      message.textContent = "Copy failed. Please copy manually.";
+    }
+
+    area.remove();
+  }
+}
+
+function copyPalette() {
+  if (colors.length === 0) {
+    generatePalette();
+  }
+
+  copyText(colors.join("\n"));
+}
+
+generatePalette();
+</script>
+
+</body>
+</html>

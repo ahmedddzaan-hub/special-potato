@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Formatter - ToolBoxHub</title>
+
+<style>
+html:not(.toolbox-auth-ready) body {
+  visibility: hidden;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #0b0d12;
+  color: white;
+  min-height: 100vh;
+}
+
+nav {
+  height: 70px;
+  padding: 0 7%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #20242d;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.logo span {
+  color: #6c63ff;
+}
+
+.back {
+  color: #aaa;
+  text-decoration: none;
+}
+
+.back:hover {
+  color: white;
+}
+
+.container {
+  width: min(1000px, 92%);
+  margin: 50px auto;
+}
+
+h1 {
+  font-size: 38px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #9ca3af;
+  margin-bottom: 25px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 350px;
+  resize: vertical;
+  background: #12151c;
+  color: white;
+  border: 1px solid #292e39;
+  border-radius: 12px;
+  padding: 18px;
+  font-family: monospace;
+  font-size: 15px;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: #6c63ff;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+button {
+  border: 0;
+  padding: 12px 18px;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.format {
+  background: #6c63ff;
+  color: white;
+}
+
+.copy,
+.download,
+.clear {
+  background: #242833;
+  color: white;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+.status {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 10px;
+  display: none;
+}
+
+.success {
+  display: block;
+  background: #102719;
+  border: 1px solid #1f6b3a;
+  color: #7ee2a8;
+}
+
+.error {
+  display: block;
+  background: #2b1414;
+  border: 1px solid #713030;
+  color: #ff9292;
+}
+
+footer {
+  text-align: center;
+  color: #737985;
+  padding: 40px 20px;
+}
+
+@media (max-width: 600px) {
+  nav {
+    padding: 0 15px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  textarea {
+    min-height: 300px;
+  }
+}
+</style>
+
+<!-- Firebase login protection -->
+<script type="module" src="../auth-guard.js"></script>
+</head>
+
+<body>
+
+<nav>
+  <div class="logo">
+    ToolBox<span>Hub</span>
+  </div>
+
+  <a class="back" href="../index.html">
+    ← Back
+  </a>
+</nav>
+
+<main class="container">
+
+  <h1>JSON Formatter</h1>
+
+  <p class="subtitle">
+    Format, validate, copy and download JSON instantly.
+  </p>
+
+  <textarea
+    id="jsonInput"
+    placeholder='Paste your JSON here...
+
+Example:
+{"name":"Kyle","age":15,"games":["Roblox","Minecraft"]}'
+  ></textarea>
+
+  <div class="buttons">
+    <button class="format" onclick="formatJSON()">
+      Format JSON
+    </button>
+
+    <button class="copy" onclick="copyJSON()">
+      Copy
+    </button>
+
+    <button class="download" onclick="downloadJSON()">
+      Download
+    </button>
+
+    <button class="clear" onclick="clearJSON()">
+      Clear
+    </button>
+  </div>
+
+  <div id="status" class="status"></div>
+
+</main>
+
+<footer>
+  © 2026 ToolBoxHub
+</footer>
+
+<script>
+const input = document.getElementById("jsonInput");
+const statusBox = document.getElementById("status");
+
+function showStatus(message, type) {
+  statusBox.textContent = message;
+  statusBox.className = "status " + type;
+}
+
+function formatJSON() {
+  const text = input.value.trim();
+
+  if (!text) {
+    showStatus("Please enter some JSON first.", "error");
+    return;
+  }
+
+  try {
+    const parsed = JSON.parse(text);
+    input.value = JSON.stringify(parsed, null, 2);
+    showStatus("✓ Valid JSON formatted successfully.", "success");
+  } catch (error) {
+    showStatus("✕ Invalid JSON: " + error.message, "error");
+  }
+}
+
+async function copyJSON() {
+  const text = input.value;
+
+  if (!text.trim()) {
+    showStatus("Nothing to copy.", "error");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    showStatus("✓ JSON copied to clipboard.", "success");
+  } catch (error) {
+    input.select();
+
+    try {
+      const copied = document.execCommand("copy");
+
+      if (copied) {
+        showStatus("✓ JSON copied.", "success");
+      } else {
+        showStatus("Copy failed. Please select and copy manually.", "error");
+      }
+    } catch {
+      showStatus("Copy failed. Please copy manually.", "error");
+    }
+  }
+}
+
+function downloadJSON() {
+  const text = input.value;
+
+  if (!text.trim()) {
+    showStatus("Nothing to download.", "error");
+    return;
+  }
+
+  const blob = new Blob([text], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "formatted.json";
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+  showStatus("✓ JSON download started.", "success");
+}
+
+function clearJSON() {
+  input.value = "";
+  statusBox.className = "status";
+}
+</script>
+
+</body>
+</html>
