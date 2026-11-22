@@ -143,7 +143,7 @@ nav{padding:12px 15px}
 <h3>PFP Maker Pro</h3>
 <p>Unlock extra profile-picture customization features.</p>
 <div class="price">150 coins · 5 days</div>
-<button onclick="buyPremium('pfp_pro',150)">Unlock</button>
+<button onclick="buyPremium('pfp-maker-pro')">Unlock</button>
 </div>
 
 <div class="premium-card">
@@ -151,7 +151,7 @@ nav{padding:12px 15px}
 <h3>QR Maker Pro</h3>
 <p>Unlock additional QR customization options.</p>
 <div class="price">100 coins · 5 days</div>
-<button onclick="buyPremium('qr_pro',100)">Unlock</button>
+<button onclick="buyPremium('qr-maker-pro')">Unlock</button>
 </div>
 
 <div class="premium-card">
@@ -159,7 +159,7 @@ nav{padding:12px 15px}
 <h3>Background Remover</h3>
 <p>Premium access to the background-removal tool.</p>
 <div class="price">200 coins · 5 days</div>
-<button onclick="buyPremium('background_remover',200)">Unlock</button>
+<button onclick="buyPremium('background-remover')">Unlock</button>
 </div>
 
 <div class="premium-card">
@@ -167,7 +167,7 @@ nav{padding:12px 15px}
 <h3>PDF Pro</h3>
 <p>Premium PDF tools and additional document features.</p>
 <div class="price">180 coins · 5 days</div>
-<button onclick="buyPremium('pdf_pro',180)">Unlock</button>
+<button onclick="buyPremium('pdf-pro')">Unlock</button>
 </div>
 
 <div class="premium-card">
@@ -175,7 +175,7 @@ nav{padding:12px 15px}
 <h3>AI Logo Maker</h3>
 <p>Premium access to AI-assisted logo creation.</p>
 <div class="price">250 coins · 5 days</div>
-<button onclick="buyPremium('ai_logo',250)">Unlock</button>
+<button onclick="buyPremium('ai-logo-maker')">Unlock</button>
 </div>
 
 </div>
@@ -183,7 +183,7 @@ nav{padding:12px 15px}
 <p class="store-note">
 Premium purchases last five days. Coins are internal website reward points,
 not cash and cannot be withdrawn. Premium tools will become available as
-their features are added.
+and their features are enabled.
 </p>
 </section>
 
@@ -323,7 +323,8 @@ window.openTool=openTool;
 </script>
 
 <script type="module">
-import {auth,googleProvider,db} from "./firebase.js";
+import {auth,googleProvider} from "./firebase.js";
+import {toolboxRequest} from "./toolbox-api.js";
 import {
  createUserWithEmailAndPassword,
  signInWithEmailAndPassword,
@@ -333,15 +334,6 @@ import {
  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
-import {
- doc,getDoc
-} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
-
-import {
- getFunctions,httpsCallable
-} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-functions.js";
-
-const functions=getFunctions();
 const emailInput=document.getElementById("email");
 const passwordInput=document.getElementById("password");
 const nameInput=document.getElementById("displayName");
@@ -395,26 +387,16 @@ alert(friendlyError(error));
 }
 };
 
-// Read-only wallet display. Only the trusted backend should change coin balances.
+// Wallet balances are loaded from the trusted Supabase backend.
 async function loadWallet(user){
 const walletMessage=document.getElementById("walletMessage");
-
 try{
-const walletRef=doc(db,"users",user.uid);
-const walletSnap=await getDoc(walletRef);
-
-if(!walletSnap.exists()){
-walletCoins=0;
-walletMessage.textContent="Your wallet is ready. Complete the backend setup to activate rewards.";
-}else{
-const data=walletSnap.data();
+const data=await toolboxRequest(user,{action:"balance"});
 walletCoins=Number(data.coins)||0;
-walletMessage.textContent="Your account wallet is connected.";
-}
-
+walletMessage.textContent="Your wallet is connected.";
 updateCoinDisplay();
 }catch(error){
-walletMessage.textContent="Wallet connection is waiting for Firestore security rules and setup.";
+walletMessage.textContent=error.message||"Wallet could not be loaded.";
 document.getElementById("walletBalance").textContent="Unavailable";
 }
 }
@@ -425,31 +407,25 @@ document.getElementById("navCoins").textContent="🪙 "+walletCoins+" coins";
 document.getElementById("storeCoins").textContent="🪙 "+walletCoins+" coins";
 }
 
-// Purchase calls a secure Cloud Function.
-// The backend function will be added in the next setup step.
-window.buyPremium=async function(productId,price){
+// Purchases are validated and charged by the secure backend.
+window.buyPremium=async function(productId){
 if(!auth.currentUser){
 openAuth();
 showMessage("Please log in before purchasing premium.");
 return;
 }
-
 const buttons=[...document.querySelectorAll(".premium-card button")];
 buttons.forEach(button=>button.disabled=true);
-
 try{
-const purchase=httpsCallable(functions,"purchasePremium");
-const result=await purchase({productId});
-
-if(result.data && result.data.success){
-alert("Premium unlocked!");
+const result=await toolboxRequest(auth.currentUser,{action:"purchase",productId});
+if(result && result.success){
+alert("Premium unlocked for 5 days!");
 await loadWallet(auth.currentUser);
 }else{
-alert(result.data?.message||"Purchase could not be completed.");
+alert("Purchase could not be completed.");
 }
 }catch(error){
-console.error(error);
-alert("The secure premium backend isn't deployed yet. We'll activate purchases after the next setup step.");
+alert(error.message||"Purchase could not be completed. Please try again.");
 }finally{
 buttons.forEach(button=>button.disabled=false);
 }
