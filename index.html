@@ -11,6 +11,7 @@ body{font-family:Arial,sans-serif;background:#0b0d12;color:#fff;min-height:100vh
 nav{padding:14px 6%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #252a35}
 .logo{font-size:23px;font-weight:bold}.logo span,h1 span{color:#6c63ff}
 button{cursor:pointer}
+button:disabled{opacity:.6;cursor:not-allowed}
 .primary,.login{background:#6c63ff;color:white;border:0;padding:12px 18px;border-radius:9px}
 .secondary{background:#222633;color:white;border:1px solid #444;padding:10px;border-radius:8px}
 .hero{text-align:center;padding:65px 18px 40px}
@@ -102,11 +103,36 @@ footer{text-align:center;color:#777;padding:25px;border-top:1px solid #252a35}
 <section class="store-section" id="storeSection">
  <h2>👑 Premium Store</h2>
  <div class="premium-grid">
-  <div class="premium-card"><h3>✨ PFP Maker Pro</h3><p>Extra profile-picture customization.</p><div class="price">150 coins · 5 days</div><button onclick="buyPremium('pfp-maker-pro')">Unlock</button></div>
-  <div class="premium-card"><h3>▣ QR Maker Pro</h3><p>Extra QR customization.</p><div class="price">100 coins · 5 days</div><button onclick="buyPremium('qr-maker-pro')">Unlock</button></div>
-  <div class="premium-card"><h3>🖼️ Background Remover</h3><p>Premium background removal.</p><div class="price">200 coins · 5 days</div><button onclick="buyPremium('background-remover')">Unlock</button></div>
-  <div class="premium-card"><h3>📄 PDF Pro</h3><p>Extra PDF features.</p><div class="price">180 coins · 5 days</div><button onclick="buyPremium('pdf-pro')">Unlock</button></div>
-  <div class="premium-card"><h3>🎨 AI Logo Maker</h3><p>AI-assisted logo features.</p><div class="price">250 coins · 5 days</div><button onclick="buyPremium('ai-logo-maker')">Unlock</button></div>
+  <div class="premium-card">
+   <h3>✨ PFP Maker Pro</h3>
+   <p>Extra profile-picture customization.</p>
+   <div class="price">150 coins · 5 days</div>
+   <button onclick="buyPremium('pfp-maker-pro')">Unlock</button>
+  </div>
+  <div class="premium-card">
+   <h3>▣ QR Maker Pro</h3>
+   <p>Extra QR customization.</p>
+   <div class="price">100 coins · 5 days</div>
+   <button onclick="buyPremium('qr-maker-pro')">Unlock</button>
+  </div>
+  <div class="premium-card">
+   <h3>🖼️ Background Remover</h3>
+   <p>Premium background removal.</p>
+   <div class="price">200 coins · 5 days</div>
+   <button onclick="buyPremium('background-remover')">Unlock</button>
+  </div>
+  <div class="premium-card">
+   <h3>📄 PDF Pro</h3>
+   <p>Extra PDF features.</p>
+   <div class="price">180 coins · 5 days</div>
+   <button onclick="buyPremium('pdf-pro')">Unlock</button>
+  </div>
+  <div class="premium-card">
+   <h3>🎨 AI Logo Maker</h3>
+   <p>AI-assisted logo features.</p>
+   <div class="price">250 coins · 5 days</div>
+   <button onclick="buyPremium('ai-logo-maker')">Unlock</button>
+  </div>
  </div>
  <p class="store-note">Coins are internal reward points, not cash. Premium lasts five days.</p>
 </section>
@@ -114,15 +140,33 @@ footer{text-align:center;color:#777;padding:25px;border-top:1px solid #252a35}
 <section class="section">
  <h2>Popular Tools</h2>
  <div class="tools">
-  <div class="tool" data-category="Utilities" data-name="QR Code Generator" onclick="openTool('tools/qr.html')"><div class="tool-icon">▣</div><h3>QR Code Generator</h3><p>Create QR codes from links and text.</p></div>
-  <div class="tool" data-category="Images" data-name="Image Resizer" onclick="openTool('tools/image-resizer.html')"><div class="tool-icon">▧</div><h3>Image Resizer</h3><p>Resize images in your browser.</p></div>
-  <div class="tool" data-category="Developer" data-name="JSON Formatter" onclick="openTool('tools/json-formatter.html')"><div class="tool-icon">{ }</div><h3>JSON Formatter</h3><p>Format JSON instantly.</p></div>
-  <div class="tool" data-category="Design" data-name="Color Palette" onclick="openTool('tools/color-palette.html')"><div class="tool-icon">◉</div><h3>Color Palette</h3><p>Generate color combinations.</p></div>
-  <div class="tool" data-category="Utilities" data-name="Username Generator" onclick="openTool('tools/username-generator.html')"><div class="tool-icon">@</div><h3>Username Generator</h3><p>Create username ideas.</p></div>
-  <div class="tool" data-category="Utilities" data-name="Password Generator" onclick="openTool('tools/password-generator.html')"><div class="tool-icon">◆</div><h3>Password Generator</h3><p>Generate random passwords.</p></div>
-  <div class="tool" data-category="Text" data-name="Text Case Converter" onclick="openTool('tools/text-case-converter.html')"><div class="tool-icon">Aa</div><h3>Text Case Converter</h3><p>Convert text between cases.</p></div>
-  <div class="tool" data-category="Text" data-name="Word Counter" onclick="openTool('tools/word-counter.html')"><div class="tool-icon">≡</div><h3>Word Counter</h3><p>Count words and characters.</p></div>
-  <div class="tool" data-category="Images" data-name="PFP Maker" onclick="openTool('tools/pfp-maker.html')"><div class="tool-icon">✦</div><h3>PFP Maker</h3><p>Create profile pictures.</p></div>
+  <div class="tool" data-category="Utilities" data-name="QR Code Generator" onclick="openTool('tools/qr.html')">
+   <div class="tool-icon">▣</div><h3>QR Code Generator</h3><p>Create QR codes from links and text.</p>
+  </div>
+  <div class="tool" data-category="Images" data-name="Image Resizer" onclick="openTool('tools/image-resizer.html')">
+   <div class="tool-icon">▧</div><h3>Image Resizer</h3><p>Resize images in your browser.</p>
+  </div>
+  <div class="tool" data-category="Developer" data-name="JSON Formatter" onclick="openTool('tools/json-formatter.html')">
+   <div class="tool-icon">{ }</div><h3>JSON Formatter</h3><p>Format JSON instantly.</p>
+  </div>
+  <div class="tool" data-category="Design" data-name="Color Palette" onclick="openTool('tools/color-palette.html')">
+   <div class="tool-icon">◉</div><h3>Color Palette</h3><p>Generate color combinations.</p>
+  </div>
+  <div class="tool" data-category="Utilities" data-name="Username Generator" onclick="openTool('tools/username-generator.html')">
+   <div class="tool-icon">@</div><h3>Username Generator</h3><p>Create username ideas.</p>
+  </div>
+  <div class="tool" data-category="Utilities" data-name="Password Generator" onclick="openTool('tools/password-generator.html')">
+   <div class="tool-icon">◆</div><h3>Password Generator</h3><p>Generate random passwords.</p>
+  </div>
+  <div class="tool" data-category="Text" data-name="Text Case Converter" onclick="openTool('tools/text-case-converter.html')">
+   <div class="tool-icon">Aa</div><h3>Text Case Converter</h3><p>Convert text between cases.</p>
+  </div>
+  <div class="tool" data-category="Text" data-name="Word Counter" onclick="openTool('tools/word-counter.html')">
+   <div class="tool-icon">≡</div><h3>Word Counter</h3><p>Count words and characters.</p>
+  </div>
+  <div class="tool" data-category="Images" data-name="PFP Maker" onclick="openTool('tools/pfp-maker.html')">
+   <div class="tool-icon">✦</div><h3>PFP Maker</h3><p>Create profile pictures.</p>
+  </div>
  </div>
  <div class="no-results" id="noResults">No tools found.</div>
 </section>
@@ -138,9 +182,18 @@ footer{text-align:center;color:#777;padding:25px;border-top:1px solid #252a35}
    <button class="tab active" id="loginTab" onclick="setMode('login')">Login</button>
    <button class="tab" id="registerTab" onclick="setMode('register')">Register</button>
   </div>
-  <div class="field hidden" id="nameField"><label for="displayName">Your name</label><input id="displayName" placeholder="Your name" autocomplete="name"></div>
-  <div class="field"><label for="email">Email</label><input id="email" type="email" placeholder="you@example.com" autocomplete="email"></div>
-  <div class="field"><label for="password">Password</label><input id="password" type="password" placeholder="At least 6 characters" autocomplete="current-password"></div>
+  <div class="field hidden" id="nameField">
+   <label for="displayName">Your name</label>
+   <input id="displayName" placeholder="Your name" autocomplete="name">
+  </div>
+  <div class="field">
+   <label for="email">Email</label>
+   <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+  </div>
+  <div class="field">
+   <label for="password">Password</label>
+   <input id="password" type="password" placeholder="At least 6 characters" autocomplete="current-password">
+  </div>
   <button class="primary full" id="emailButton" onclick="emailAuth()">Login</button>
   <div class="or">OR</div>
   <button class="google" id="googleButton" onclick="googleLogin()">Continue with Google</button>
@@ -158,8 +211,13 @@ function showMessage(message,success=false){
  el.className=success?"message success":"message";
 }
 function clearMessage(){showMessage("")}
-function openAuth(){document.getElementById("authModal").classList.add("show");clearMessage()}
-function closeAuth(){document.getElementById("authModal").classList.remove("show")}
+function openAuth(){
+ document.getElementById("authModal").classList.add("show");
+ clearMessage();
+}
+function closeAuth(){
+ document.getElementById("authModal").classList.remove("show");
+}
 function setMode(mode){
  window.authMode=mode;
  const register=mode==="register";
@@ -208,71 +266,136 @@ function openTool(path){
  openAuth();
  showMessage("Please log in to use this tool.");
 }
+
 window.openAuth=openAuth;
 window.closeAuth=closeAuth;
 window.setMode=setMode;
+
 window.emailAuth=async function(){
  const email=document.getElementById("email").value.trim();
  const password=document.getElementById("password").value;
  const name=document.getElementById("displayName").value.trim();
+
  if(!email||!password)return showMessage("Enter your email and password.");
  if(password.length<6)return showMessage("Password must be at least 6 characters.");
  if(window.authMode==="register"&&!name)return showMessage("Please enter your name.");
- setBusy(true);showMessage("");
+
+ if(!window.supabase){
+  return showMessage("Supabase is still loading. Please refresh and try again.");
+ }
+
+ setBusy(true);
+ showMessage("");
+
  try{
   if(window.authMode==="register"){
-   const {data,error}=await supabase.auth.signUp({email,password,options:{data:{display_name:name}}});
+   const {data,error}=await window.supabase.auth.signUp({
+    email,
+    password,
+    options:{data:{display_name:name}}
+   });
    if(error)throw error;
-   if(!data.session)showMessage("Account created! Check your email to confirm your account.",true);
-   else{showMessage("Account created successfully!",true);closeAuth()}
+
+   if(!data.session){
+    showMessage("Account created! Check your email to confirm your account.",true);
+   }else{
+    showMessage("Account created successfully!",true);
+    closeAuth();
+   }
   }else{
-   const {error}=await supabase.auth.signInWithPassword({email,password});
+   const {error}=await window.supabase.auth.signInWithPassword({email,password});
    if(error)throw error;
    closeAuth();
   }
- }catch(error){showMessage(friendlyError(error))}
- finally{setBusy(false)}
+ }catch(error){
+  showMessage(friendlyError(error));
+ }finally{
+  setBusy(false);
+ }
 };
+
 window.googleLogin=async function(){
- setBusy(true);showMessage("");
+ if(!window.supabase){
+  return showMessage("Supabase is still loading. Please refresh and try again.");
+ }
+
+ setBusy(true);
+ showMessage("");
+
  try{
-  const {error}=await supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:location.origin+location.pathname}});
+  const {error}=await window.supabase.auth.signInWithOAuth({
+   provider:"google",
+   options:{redirectTo:location.origin+location.pathname}
+  });
   if(error)throw error;
- }catch(error){showMessage(friendlyError(error));setBusy(false)}
+ }catch(error){
+  showMessage(friendlyError(error));
+  setBusy(false);
+ }
 };
+
 window.logout=async function(){
- const {error}=await supabase.auth.signOut();
+ if(!window.supabase)return;
+
+ const {error}=await window.supabase.auth.signOut();
  if(error)alert(friendlyError(error));
 };
+
 window.buyPremium=async function(productId){
- if(!window.currentUser){openAuth();showMessage("Please log in first.");return}
+ if(!window.currentUser){
+  openAuth();
+  showMessage("Please log in first.");
+  return;
+ }
  try{
-  const result=await toolboxRequest(window.currentUser,{action:"purchase",productId});
-  if(result.success){alert("Premium unlocked for 5 days!");await loadWallet(window.currentUser)}
-  else alert(result.error||"Purchase failed.");
- }catch(error){alert(friendlyError(error))}
+  const result=await window.toolboxRequest(window.currentUser,{
+   action:"purchase",
+   productId
+  });
+  if(result.success){
+   alert("Premium unlocked for 5 days!");
+   await window.loadWallet(window.currentUser);
+  }else{
+   alert(result.error||"Purchase failed.");
+  }
+ }catch(error){
+  alert(friendlyError(error));
+ }
 };
 </script>
 
 <script type="module">
 import {supabase} from "./supabase.js";
 
+/* Make Supabase accessible to the normal script above */
+window.supabase=supabase;
+
 async function toolboxRequest(user,body){
+ if(!user)throw new Error("Please sign in first.");
+
  const {data:{session},error:sessionError}=await supabase.auth.getSession();
  if(sessionError)throw sessionError;
- if(!session?.access_token)throw new Error("Your session expired. Please sign in again.");
+
+ if(!session?.access_token){
+  throw new Error("Your session expired. Please sign in again.");
+ }
+
  const {data,error}=await supabase.functions.invoke("toolboxhub",{
   body,
   headers:{Authorization:`Bearer ${session.access_token}`}
  });
+
  if(error)throw new Error(data?.error||error.message||"Request failed.");
  if(data?.error)throw new Error(data.error);
+
  return data;
 }
+
 async function loadWallet(user){
  try{
   const data=await toolboxRequest(user,{action:"balance"});
   const coins=Number(data.coins)||0;
+
   document.getElementById("walletBalance").textContent=coins+" coins";
   document.getElementById("navCoins").textContent="🪙 "+coins+" coins";
   document.getElementById("walletMessage").textContent="Your wallet is connected.";
@@ -281,31 +404,43 @@ async function loadWallet(user){
   document.getElementById("walletBalance").textContent="Unavailable";
  }
 }
+
 supabase.auth.onAuthStateChange((_event,session)=>{
  const user=session?.user||null;
  window.currentUser=user;
+
  document.getElementById("accountArea").style.display=user?"flex":"none";
  document.getElementById("loginButton").style.display=user?"none":"block";
  document.getElementById("walletSection").style.display=user?"block":"none";
  document.getElementById("storeSection").style.display=user?"block":"none";
+
  if(user){
-  document.getElementById("userEmail").textContent=user.user_metadata?.display_name||user.email||"Account";
+  document.getElementById("userEmail").textContent=
+   user.user_metadata?.display_name||user.email||"Account";
+
   Promise.resolve().then(()=>loadWallet(user));
+
   const returnTo=sessionStorage.getItem("toolboxhub_return_to");
   if(returnTo){
    sessionStorage.removeItem("toolboxhub_return_to");
    const destination=new URL(returnTo,location.origin);
-   if(destination.origin===location.origin&&destination.pathname.includes("/tools/"))location.replace(destination.href);
+
+   if(destination.origin===location.origin&&destination.pathname.includes("/tools/")){
+    location.replace(destination.href);
+   }
   }
  }
 });
+
 window.toolboxRequest=toolboxRequest;
 window.loadWallet=loadWallet;
+
 if(new URLSearchParams(location.search).get("auth")==="required"){
  history.replaceState({},document.title,location.pathname);
  openAuth();
  showMessage("Please log in to open that tool.");
 }
 </script>
+
 </body>
 </html>
