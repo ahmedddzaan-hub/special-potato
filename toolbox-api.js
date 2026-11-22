@@ -30,6 +30,7 @@ export async function toolboxRequest(user, body) {
   );
 
   if (error) {
+    console.error("ToolBoxHub function error:", error);
     throw new Error(
       data?.error || error.message || "Request failed."
     );
