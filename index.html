@@ -3,76 +3,420 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>ToolBoxHub</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#0b0d12;color:#fff;min-height:100vh}
-nav{padding:14px 6%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #252a35}
-.logo{font-size:23px;font-weight:bold}.logo span,h1 span{color:#6c63ff}
-button{cursor:pointer}
-.primary,.login{background:#6c63ff;color:white;border:0;padding:12px 18px;border-radius:9px}
-.secondary{background:#222633;color:white;border:1px solid #444;padding:10px;border-radius:8px}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-.hero{text-align:center;padding:65px 18px 40px}
-.hero h1{font-size:clamp(38px,8vw,65px)}
-.hero p{color:#aaa;margin:17px 0 25px}
-.search{width:min(650px,95%);padding:16px;background:#151821;border:1px solid #333;color:white;border-radius:10px;font-size:16px}
+body{
+  font-family:Arial,sans-serif;
+  background:#0b0d12;
+  color:#fff;
+  min-height:100vh;
+}
 
-.categories{display:flex;gap:10px;overflow:auto;padding:20px 5%;justify-content:center}
-.category{padding:10px 17px;background:#191d27;border:1px solid #333;color:white;border-radius:20px;white-space:nowrap}
-.category.active{background:#6c63ff}
+nav{
+  padding:14px 6%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #252a35;
+  gap:20px;
+}
 
-.section{width:90%;max-width:1100px;margin:25px auto 60px}
-.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px;margin-top:20px}
-.tool{background:#141821;border:1px solid #292f3b;border-radius:13px;padding:22px}
-.tool{cursor:pointer}
-.tool:hover{border-color:#6c63ff}
-.tool-icon{font-size:28px;margin-bottom:15px}
-.tool p{color:#aaa;font-size:14px;margin-top:9px;line-height:1.5}
+.logo{
+  font-size:23px;
+  font-weight:bold;
+  flex-shrink:0;
+}
 
-.wallet-section{display:none;width:90%;max-width:1100px;margin:25px auto}
-.wallet-card{background:#141821;border:1px solid #292f3b;border-radius:13px;padding:22px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.logo span,
+h1 span{
+  color:#6c63ff;
+}
 
-.coins{color:#f5d76e;font-size:25px;font-weight:bold}
-.coin-pill{color:#f5d76e;background:#242033;padding:9px 12px;border-radius:9px}
+button{
+  cursor:pointer;
+}
 
-.account{display:none;align-items:center;gap:10px}
-.account-email{font-size:12px;color:#aaa}
+.primary,
+.login{
+  background:#6c63ff;
+  color:white;
+  border:0;
+  padding:12px 18px;
+  border-radius:9px;
+}
 
-.wallet-message{color:#aaa;font-size:13px;margin-top:12px}
+.secondary{
+  background:#222633;
+  color:white;
+  border:1px solid #444;
+  padding:10px;
+  border-radius:8px;
+}
 
-.modal-bg{display:none;position:fixed;inset:0;background:#000c;z-index:20;align-items:center;justify-content:center;padding:15px}
-.modal-bg.show{display:flex}
-.modal{width:min(420px,100%);background:#171b25;border:1px solid #343a48;border-radius:15px;padding:25px;position:relative}
-.modal h2{margin-bottom:9px}
-.modal-sub{color:#aaa;font-size:14px;margin-bottom:20px}
-.close{position:absolute;right:15px;top:12px;background:none;border:0;color:white;font-size:25px}
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-left:auto;
+}
 
-.tabs{display:flex;gap:8px;margin-bottom:17px}
-.tab{flex:1;padding:11px;background:#292e3a;color:#aaa;border:0;border-radius:8px}
-.tab.active{background:#6c63ff;color:white}
+.premium-link{
+  color:#fff;
+  text-decoration:none;
+  background:rgba(108,99,255,.15);
+  border:1px solid rgba(108,99,255,.4);
+  padding:10px 14px;
+  border-radius:9px;
+  font-size:14px;
+  font-weight:bold;
+  white-space:nowrap;
+}
 
-.field{margin-bottom:13px}
-.field label{display:block;font-size:13px;color:#bbb;margin-bottom:7px}
-.field input{width:100%;padding:13px;background:#0b0d12;border:1px solid #343a48;border-radius:8px;color:white;font-size:15px}
+.premium-link:hover{
+  background:rgba(108,99,255,.25);
+  border-color:#6c63ff;
+}
 
-.full{width:100%;padding:13px}
-.google{width:100%;padding:13px;background:#252b37;color:white;border:1px solid #454c5c;border-radius:8px;margin-top:12px}
-.or{text-align:center;color:#777;margin:14px}
+.hero{
+  text-align:center;
+  padding:65px 18px 40px;
+}
 
-.message{font-size:13px;color:#ff9999;margin-top:12px;line-height:1.5;overflow-wrap:anywhere}
-.message.success{color:#83d9a0}
+.hero h1{
+  font-size:clamp(38px,8vw,65px);
+}
 
-.hidden{display:none!important}
-.no-results{display:none;color:#aaa;text-align:center;padding:35px}
+.hero p{
+  color:#aaa;
+  margin:17px 0 25px;
+}
 
-footer{text-align:center;color:#777;padding:25px;border-top:1px solid #252a35}
+.search{
+  width:min(650px,95%);
+  padding:16px;
+  background:#151821;
+  border:1px solid #333;
+  color:white;
+  border-radius:10px;
+  font-size:16px;
+  outline:none;
+}
+
+.search:focus{
+  border-color:#6c63ff;
+}
+
+.categories{
+  display:flex;
+  gap:10px;
+  overflow:auto;
+  padding:20px 5%;
+  justify-content:center;
+}
+
+.category{
+  padding:10px 17px;
+  background:#191d27;
+  border:1px solid #333;
+  color:white;
+  border-radius:20px;
+  white-space:nowrap;
+}
+
+.category.active{
+  background:#6c63ff;
+  border-color:#6c63ff;
+}
+
+.section{
+  width:90%;
+  max-width:1100px;
+  margin:25px auto 60px;
+}
+
+.tools{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:15px;
+  margin-top:20px;
+}
+
+.tool{
+  background:#141821;
+  border:1px solid #292f3b;
+  border-radius:13px;
+  padding:22px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.tool:hover{
+  border-color:#6c63ff;
+  transform:translateY(-2px);
+}
+
+.tool-icon{
+  font-size:28px;
+  margin-bottom:15px;
+}
+
+.tool p{
+  color:#aaa;
+  font-size:14px;
+  margin-top:9px;
+  line-height:1.5;
+}
+
+.wallet-section{
+  display:none;
+  width:90%;
+  max-width:1100px;
+  margin:25px auto;
+}
+
+.wallet-card{
+  background:#141821;
+  border:1px solid #292f3b;
+  border-radius:13px;
+  padding:22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.coins{
+  color:#f5d76e;
+  font-size:25px;
+  font-weight:bold;
+}
+
+.coin-pill{
+  color:#f5d76e;
+  background:#242033;
+  padding:9px 12px;
+  border-radius:9px;
+}
+
+.account{
+  display:none;
+  align-items:center;
+  gap:10px;
+}
+
+.account-email{
+  font-size:12px;
+  color:#aaa;
+}
+
+.wallet-message{
+  color:#aaa;
+  font-size:13px;
+  margin-top:12px;
+}
+
+.modal-bg{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#000c;
+  z-index:20;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+}
+
+.modal-bg.show{
+  display:flex;
+}
+
+.modal{
+  width:min(420px,100%);
+  background:#171b25;
+  border:1px solid #343a48;
+  border-radius:15px;
+  padding:25px;
+  position:relative;
+}
+
+.modal h2{
+  margin-bottom:9px;
+}
+
+.modal-sub{
+  color:#aaa;
+  font-size:14px;
+  margin-bottom:20px;
+}
+
+.close{
+  position:absolute;
+  right:15px;
+  top:12px;
+  background:none;
+  border:0;
+  color:white;
+  font-size:25px;
+}
+
+.tabs{
+  display:flex;
+  gap:8px;
+  margin-bottom:17px;
+}
+
+.tab{
+  flex:1;
+  padding:11px;
+  background:#292e3a;
+  color:#aaa;
+  border:0;
+  border-radius:8px;
+}
+
+.tab.active{
+  background:#6c63ff;
+  color:white;
+}
+
+.field{
+  margin-bottom:13px;
+}
+
+.field label{
+  display:block;
+  font-size:13px;
+  color:#bbb;
+  margin-bottom:7px;
+}
+
+.field input{
+  width:100%;
+  padding:13px;
+  background:#0b0d12;
+  border:1px solid #343a48;
+  border-radius:8px;
+  color:white;
+  font-size:15px;
+  outline:none;
+}
+
+.field input:focus{
+  border-color:#6c63ff;
+}
+
+.full{
+  width:100%;
+  padding:13px;
+}
+
+.google{
+  width:100%;
+  padding:13px;
+  background:#252b37;
+  color:white;
+  border:1px solid #454c5c;
+  border-radius:8px;
+  margin-top:12px;
+}
+
+.or{
+  text-align:center;
+  color:#777;
+  margin:14px;
+}
+
+.message{
+  font-size:13px;
+  color:#ff9999;
+  margin-top:12px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+
+.message.success{
+  color:#83d9a0;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.no-results{
+  display:none;
+  color:#aaa;
+  text-align:center;
+  padding:35px;
+}
+
+footer{
+  text-align:center;
+  color:#777;
+  padding:25px;
+  border-top:1px solid #252a35;
+}
 
 @media(max-width:600px){
-  .categories{justify-content:flex-start}
-  .account-email{display:none}
-  .hero{padding-top:45px}
+
+  nav{
+    padding:14px 16px;
+    gap:18px;
+  }
+
+  .logo{
+    font-size:20px;
+  }
+
+  .nav-right{
+    gap:12px;
+  }
+
+  .premium-link{
+    padding:8px 10px;
+    font-size:12px;
+  }
+
+  .account-email{
+    display:none;
+  }
+
+  .hero{
+    padding-top:45px;
+  }
+}
+
+@media(max-width:430px){
+
+  nav{
+    gap:12px;
+  }
+
+  .logo{
+    font-size:18px;
+  }
+
+  .premium-link{
+    padding:7px 9px;
+    font-size:11px;
+  }
+
+  .login{
+    padding:9px 11px;
+    font-size:12px;
+  }
+
+  .nav-right{
+    gap:8px;
+  }
 }
 </style>
 </head>
@@ -85,34 +429,36 @@ footer{text-align:center;color:#777;padding:25px;border-top:1px solid #252a35}
     ToolBox<span>Hub</span>
   </div>
 
-  <div style="display:flex;align-items:center;gap:10px">
+  <div class="nav-right">
 
-    <!-- NEW PREMIUM TAB -->
     <a
       href="./premium.html"
-      style="
-        color:#fff;
-        text-decoration:none;
-        background:rgba(108,99,255,.15);
-        border:1px solid rgba(108,99,255,.4);
-        padding:10px 14px;
-        border-radius:9px;
-        font-size:14px;
-        font-weight:bold;
-      "
+      class="premium-link"
     >
       ✨ Premium
     </a>
 
-    <div class="account" id="accountArea">
+    <div
+      class="account"
+      id="accountArea"
+    >
 
-      <span class="coin-pill" id="navCoins">
+      <span
+        class="coin-pill"
+        id="navCoins"
+      >
         🪙 0 coins
       </span>
 
-      <span class="account-email" id="userEmail"></span>
+      <span
+        class="account-email"
+        id="userEmail"
+      ></span>
 
-      <button class="secondary" onclick="logout()">
+      <button
+        class="secondary"
+        onclick="logout()"
+      >
         Logout
       </button>
 
@@ -199,7 +545,10 @@ footer{text-align:center;color:#777;padding:25px;border-top:1px solid #252a35}
 </div>
 
 
-<section class="wallet-section" id="walletSection">
+<section
+  class="wallet-section"
+  id="walletSection"
+>
 
   <div class="wallet-card">
 
@@ -417,6 +766,7 @@ footer{text-align:center;color:#777;padding:25px;border-top:1px solid #252a35}
       class="field hidden"
       id="nameField"
     >
+
       <label for="displayName">
         Your name
       </label>
@@ -426,6 +776,7 @@ footer{text-align:center;color:#777;padding:25px;border-top:1px solid #252a35}
         placeholder="Your name"
         autocomplete="name"
       >
+
     </div>
 
 
@@ -509,9 +860,10 @@ function showMessage(message,success=false){
 
   el.textContent=message;
 
-  el.className=success
-    ? "message success"
-    : "message";
+  el.className=
+    success
+      ? "message success"
+      : "message";
 
 }
 
@@ -545,43 +897,65 @@ function setMode(mode){
 
   window.authMode=mode;
 
-  const register=mode==="register";
+  const register=
+    mode==="register";
+
 
   document
     .getElementById("loginTab")
-    .classList.toggle("active",!register);
+    .classList.toggle(
+      "active",
+      !register
+    );
+
 
   document
     .getElementById("registerTab")
-    .classList.toggle("active",register);
+    .classList.toggle(
+      "active",
+      register
+    );
+
 
   document
     .getElementById("nameField")
-    .classList.toggle("hidden",!register);
+    .classList.toggle(
+      "hidden",
+      !register
+    );
+
 
   document
     .getElementById("modalTitle")
-    .textContent=register
-      ?"Create your account"
-      :"Welcome back";
+    .textContent=
+      register
+        ? "Create your account"
+        : "Welcome back";
+
 
   document
     .getElementById("modalSubtitle")
-    .textContent=register
-      ?"Create your free account."
-      :"Sign in to your account.";
+    .textContent=
+      register
+        ? "Create your free account."
+        : "Sign in to your account.";
+
 
   document
     .getElementById("emailButton")
-    .textContent=register
-      ?"Create account"
-      :"Login";
+    .textContent=
+      register
+        ? "Create account"
+        : "Login";
+
 
   document
     .getElementById("password")
-    .autocomplete=register
-      ?"new-password"
-      :"current-password";
+    .autocomplete=
+      register
+        ? "new-password"
+        : "current-password";
+
 
   clearMessage();
 
@@ -598,35 +972,56 @@ function setBusy(busy){
     .getElementById("googleButton")
     .disabled=busy;
 
+
   document
     .getElementById("emailButton")
-    .textContent=busy
-      ?"Please wait..."
-      :(window.authMode==="register"
-        ?"Create account"
-        :"Login");
+    .textContent=
+      busy
+        ? "Please wait..."
+        : (
+            window.authMode==="register"
+              ? "Create account"
+              : "Login"
+          );
 
 }
 
 
 function friendlyError(error){
 
-  const m=error?.message||"Something went wrong.";
+  const m=
+    error?.message||
+    "Something went wrong.";
+
 
   if(m.includes("Invalid login credentials"))
     return "Incorrect email or password.";
 
+
   if(m.includes("User already registered"))
     return "This email already has an account. Try logging in.";
 
-  if(m.toLowerCase().includes("email not confirmed"))
+
+  if(
+    m.toLowerCase()
+      .includes("email not confirmed")
+  )
     return "Please confirm your email first.";
 
-  if(m.toLowerCase().includes("provider is not enabled"))
+
+  if(
+    m.toLowerCase()
+      .includes("provider is not enabled")
+  )
     return "Google login is not enabled in Supabase yet.";
 
-  if(m.toLowerCase().includes("failed to fetch"))
-    return "Could not connect to Supabase. Check your connection and project settings.";
+
+  if(
+    m.toLowerCase()
+      .includes("failed to fetch")
+  )
+    return "Could not connect to Supabase.";
+
 
   return m;
 
@@ -641,34 +1036,46 @@ function searchTools(){
       .value
       .toLowerCase();
 
+
   let count=0;
+
 
   document
     .querySelectorAll(".tool")
     .forEach(tool=>{
 
-      const ok=
+      const matchesName=
         tool.dataset.name
           .toLowerCase()
-          .includes(query)
-        &&
-        (
-          currentCategory==="All"
-          ||
-          tool.dataset.category===currentCategory
-        );
+          .includes(query);
 
-      tool.style.display=ok?"":"none";
 
-      if(ok)count++;
+      const matchesCategory=
+        currentCategory==="All"||
+        tool.dataset.category===currentCategory;
+
+
+      const show=
+        matchesName&&matchesCategory;
+
+
+      tool.style.display=
+        show
+          ? ""
+          : "none";
+
+
+      if(show)count++;
 
     });
 
+
   document
     .getElementById("noResults")
-    .style.display=count
-      ?"none"
-      :"block";
+    .style.display=
+      count
+        ? "none"
+        : "block";
 
 }
 
@@ -677,39 +1084,95 @@ function filterCategory(category,button){
 
   currentCategory=category;
 
+
   document
     .querySelectorAll(".category")
-    .forEach(b=>b.classList.remove("active"));
+    .forEach(b=>{
+      b.classList.remove("active");
+    });
+
 
   button.classList.add("active");
+
 
   searchTools();
 
 }
 
 
-function openTool(path){
+/*
+  Checks the actual Supabase session before
+  opening a protected tool.
+*/
 
-  if(window.currentUser){
+window.openTool=async function(path){
 
-    location.href=path;
+  if(!window.supabase){
+
+    openAuth();
+
+    showMessage(
+      "Supabase is still loading. Please try again."
+    );
 
     return;
 
   }
 
-  sessionStorage.setItem(
-    "toolboxhub_return_to",
-    new URL(path,location.href).pathname
-  );
 
-  openAuth();
+  try{
 
-  showMessage(
-    "Please log in to use this tool."
-  );
+    const {
+      data:{session},
+      error
+    }=
+      await window.supabase.auth.getSession();
 
-}
+
+    if(error)
+      throw error;
+
+
+    if(session?.user){
+
+      window.currentUser=
+        session.user;
+
+
+      // Logged in -> open directly.
+      window.location.href=path;
+
+      return;
+
+    }
+
+
+    // Logged out -> show login.
+
+    openAuth();
+
+    showMessage(
+      "Please log in to use this tool."
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Tool access check failed:",
+      error
+    );
+
+
+    openAuth();
+
+    showMessage(
+      "Could not verify your login."
+    );
+
+  }
+
+};
 
 
 window.openAuth=openAuth;
@@ -725,10 +1188,12 @@ window.emailAuth=async function(){
       .value
       .trim();
 
+
   const password=
     document
       .getElementById("password")
       .value;
+
 
   const name=
     document
@@ -737,34 +1202,55 @@ window.emailAuth=async function(){
       .trim();
 
 
-  if(!email||!password)
-    return showMessage(
+  if(!email||!password){
+
+    showMessage(
       "Enter your email and password."
     );
 
+    return;
 
-  if(password.length<6)
-    return showMessage(
+  }
+
+
+  if(password.length<6){
+
+    showMessage(
       "Password must be at least 6 characters."
     );
 
+    return;
 
-  if(window.authMode==="register"&&!name)
-    return showMessage(
+  }
+
+
+  if(
+    window.authMode==="register" &&
+    !name
+  ){
+
+    showMessage(
       "Please enter your name."
     );
+
+    return;
+
+  }
 
 
   setBusy(true);
 
-  showMessage("");
+  clearMessage();
 
 
   try{
 
     if(window.authMode==="register"){
 
-      const {data,error}=
+      const {
+        data,
+        error
+      }=
         await supabase.auth.signUp({
 
           email,
@@ -779,7 +1265,8 @@ window.emailAuth=async function(){
         });
 
 
-      if(error)throw error;
+      if(error)
+        throw error;
 
 
       if(!data.session){
@@ -803,12 +1290,16 @@ window.emailAuth=async function(){
     }else{
 
       const {error}=
-        await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
+        await supabase.auth
+          .signInWithPassword({
+            email,
+            password
+          });
 
-      if(error)throw error;
+
+      if(error)
+        throw error;
+
 
       closeAuth();
 
@@ -833,26 +1324,29 @@ window.googleLogin=async function(){
 
   setBusy(true);
 
-  showMessage("");
+  clearMessage();
 
 
   try{
 
     const {error}=
-      await supabase.auth.signInWithOAuth({
+      await supabase.auth
+        .signInWithOAuth({
 
-        provider:"google",
+          provider:"google",
 
-        options:{
-          redirectTo:
-            location.origin+
-            location.pathname
-        }
+          options:{
+            redirectTo:
+              location.origin+
+              location.pathname
+          }
 
-      });
+        });
 
 
-    if(error)throw error;
+    if(error)
+      throw error;
+
 
   }catch(error){
 
@@ -869,11 +1363,25 @@ window.googleLogin=async function(){
 
 window.logout=async function(){
 
-  const {error}=
-    await supabase.auth.signOut();
+  try{
 
-  if(error)
-    alert(friendlyError(error));
+    const {error}=
+      await supabase.auth.signOut();
+
+
+    if(error)
+      throw error;
+
+
+    window.currentUser=null;
+
+  }catch(error){
+
+    alert(
+      friendlyError(error)
+    );
+
+  }
 
 };
 
@@ -883,7 +1391,10 @@ window.logout=async function(){
 <script type="module">
 
 import {supabase}
-  from "./supabase.js";
+from "./supabase.js";
+
+
+window.supabase=supabase;
 
 
 async function toolboxRequest(user,body){
@@ -905,11 +1416,15 @@ async function toolboxRequest(user,body){
     );
 
 
-  const {data,error}=
+  const {
+    data,
+    error
+  }=
     await supabase.functions.invoke(
       "toolboxhub",
       {
         body,
+
         headers:{
           Authorization:
             `Bearer ${session.access_token}`
@@ -918,12 +1433,15 @@ async function toolboxRequest(user,body){
     );
 
 
-  if(error)
+  if(error){
+
     throw new Error(
       data?.error||
       error.message||
       "Request failed."
     );
+
+  }
 
 
   if(data?.error)
@@ -971,10 +1489,17 @@ async function loadWallet(user){
 
   }catch(error){
 
+    console.error(
+      "Wallet error:",
+      error
+    );
+
+
     document
       .getElementById("walletMessage")
       .textContent=
         error.message;
+
 
     document
       .getElementById("walletBalance")
@@ -992,6 +1517,7 @@ supabase.auth.onAuthStateChange(
     const user=
       session?.user||null;
 
+
     window.currentUser=user;
 
 
@@ -999,24 +1525,24 @@ supabase.auth.onAuthStateChange(
       .getElementById("accountArea")
       .style.display=
         user
-          ?"flex"
-          :"none";
+          ? "flex"
+          : "none";
 
 
     document
       .getElementById("loginButton")
       .style.display=
         user
-          ?"none"
-          :"block";
+          ? "none"
+          : "block";
 
 
     document
       .getElementById("walletSection")
       .style.display=
         user
-          ?"block"
-          :"none";
+          ? "block"
+          : "none";
 
 
     if(user){
@@ -1029,45 +1555,12 @@ supabase.auth.onAuthStateChange(
           "Account";
 
 
-      Promise.resolve()
-        .then(
-          ()=>loadWallet(user)
-        );
-
-
-      const returnTo=
-        sessionStorage.getItem(
-          "toolboxhub_return_to"
-        );
-
-
-      if(returnTo){
-
-        sessionStorage.removeItem(
-          "toolboxhub_return_to"
-        );
-
-
-        const destination=
-          new URL(
-            returnTo,
-            location.origin
-          );
-
-
-        if(
-          destination.origin===location.origin
-          &&
-          destination.pathname.includes("/tools/")
-        ){
-
-          location.replace(
-            destination.href
-          );
-
-        }
-
-      }
+      setTimeout(
+        ()=>{
+          loadWallet(user);
+        },
+        0
+      );
 
     }
 
@@ -1075,11 +1568,60 @@ supabase.auth.onAuthStateChange(
 );
 
 
-window.toolboxRequest=
-  toolboxRequest;
+/*
+  Restore existing Supabase session
+  when the page opens.
+*/
 
-window.loadWallet=
-  loadWallet;
+try{
+
+  const {
+    data:{session}
+  }=
+    await supabase.auth.getSession();
+
+
+  if(session?.user){
+
+    window.currentUser=
+      session.user;
+
+
+    document
+      .getElementById("accountArea")
+      .style.display="flex";
+
+
+    document
+      .getElementById("loginButton")
+      .style.display="none";
+
+
+    document
+      .getElementById("walletSection")
+      .style.display="block";
+
+
+    document
+      .getElementById("userEmail")
+      .textContent=
+        session.user.user_metadata?.display_name||
+        session.user.email||
+        "Account";
+
+
+    await loadWallet(session.user);
+
+  }
+
+}catch(error){
+
+  console.error(
+    "Session restore failed:",
+    error
+  );
+
+}
 
 
 if(
@@ -1093,10 +1635,12 @@ if(
     location.pathname
   );
 
+
   openAuth();
 
+
   showMessage(
-    "Please log in to open that tool."
+    "Please log in to use that tool."
   );
 
 }
