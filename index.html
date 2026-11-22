@@ -1,445 +1,1742 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ToolBoxHub</title>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#0b0d12;color:#fff;min-height:100vh}
-nav{padding:14px 6%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #252a35}
-.logo{font-size:23px;font-weight:bold}.logo span,h1 span{color:#6c63ff}
-button{cursor:pointer}
-button:disabled{opacity:.6;cursor:not-allowed}
-.primary,.login{background:#6c63ff;color:white;border:0;padding:12px 18px;border-radius:9px}
-.secondary{background:#222633;color:white;border:1px solid #444;padding:10px;border-radius:8px}
-.hero{text-align:center;padding:65px 18px 40px}
-.hero h1{font-size:clamp(38px,8vw,65px)}
-.hero p{color:#aaa;margin:17px 0 25px}
-.search{width:min(650px,95%);padding:16px;background:#151821;border:1px solid #333;color:white;border-radius:10px;font-size:16px}
-.categories{display:flex;gap:10px;overflow:auto;padding:20px 5%;justify-content:center}
-.category{padding:10px 17px;background:#191d27;border:1px solid #333;color:white;border-radius:20px;white-space:nowrap}
-.category.active{background:#6c63ff}
-.section{width:90%;max-width:1100px;margin:25px auto 60px}
-.tools,.premium-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px;margin-top:20px}
-.tool,.premium-card,.wallet-card{background:#141821;border:1px solid #292f3b;border-radius:13px;padding:22px}
-.tool{cursor:pointer}.tool:hover{border-color:#6c63ff}
-.tool-icon{font-size:28px;margin-bottom:15px}
-.tool p,.premium-card p{color:#aaa;font-size:14px;margin-top:9px;line-height:1.5}
-.wallet-section,.store-section{display:none;width:90%;max-width:1100px;margin:25px auto}
-.wallet-card{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
-.coins{color:#f5d76e;font-size:25px;font-weight:bold}
-.coin-pill{color:#f5d76e;background:#242033;padding:9px 12px;border-radius:9px}
-.account{display:none;align-items:center;gap:10px}
-.account-email{font-size:12px;color:#aaa}
-.premium-card h3{margin-bottom:8px}
-.price{color:#f5d76e;margin:15px 0}
-.premium-card button{width:100%;padding:11px;background:#6c63ff;color:white;border:0;border-radius:8px}
-.wallet-message,.store-note{color:#aaa;font-size:13px;margin-top:12px}
-.modal-bg{display:none;position:fixed;inset:0;background:#000c;z-index:20;align-items:center;justify-content:center;padding:15px}
-.modal-bg.show{display:flex}
-.modal{width:min(420px,100%);background:#171b25;border:1px solid #343a48;border-radius:15px;padding:25px;position:relative}
-.modal h2{margin-bottom:9px}
-.modal-sub{color:#aaa;font-size:14px;margin-bottom:20px}
-.close{position:absolute;right:15px;top:12px;background:none;border:0;color:white;font-size:25px}
-.tabs{display:flex;gap:8px;margin-bottom:17px}
-.tab{flex:1;padding:11px;background:#292e3a;color:#aaa;border:0;border-radius:8px}
-.tab.active{background:#6c63ff;color:white}
-.field{margin-bottom:13px}
-.field label{display:block;font-size:13px;color:#bbb;margin-bottom:7px}
-.field input{width:100%;padding:13px;background:#0b0d12;border:1px solid #343a48;border-radius:8px;color:white;font-size:15px}
-.full{width:100%;padding:13px}
-.google{width:100%;padding:13px;background:#252b37;color:white;border:1px solid #454c5c;border-radius:8px;margin-top:12px}
-.or{text-align:center;color:#777;margin:14px}
-.message{font-size:13px;color:#ff9999;margin-top:12px;line-height:1.5;overflow-wrap:anywhere}
-.message.success{color:#83d9a0}
-.hidden{display:none!important}
-.no-results{display:none;color:#aaa;text-align:center;padding:35px}
-footer{text-align:center;color:#777;padding:25px;border-top:1px solid #252a35}
-@media(max-width:600px){.categories{justify-content:flex-start}.account-email{display:none}.hero{padding-top:45px}}
+
+body{
+ font-family:Arial,sans-serif;
+ background:#0b0d12;
+ color:#fff;
+ min-height:100vh
+}
+
+nav{
+ padding:14px 6%;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ border-bottom:1px solid #252a35
+}
+
+.logo{
+ font-size:23px;
+ font-weight:bold
+}
+
+.logo span,h1 span{
+ color:#6c63ff
+}
+
+button{
+ cursor:pointer
+}
+
+button:disabled{
+ opacity:.6;
+ cursor:not-allowed
+}
+
+.primary,.login{
+ background:#6c63ff;
+ color:white;
+ border:0;
+ padding:12px 18px;
+ border-radius:9px
+}
+
+.secondary{
+ background:#222633;
+ color:white;
+ border:1px solid #444;
+ padding:10px;
+ border-radius:8px
+}
+
+.hero{
+ text-align:center;
+ padding:65px 18px 40px
+}
+
+.hero h1{
+ font-size:clamp(38px,8vw,65px)
+}
+
+.hero p{
+ color:#aaa;
+ margin:17px 0 25px
+}
+
+.search{
+ width:min(650px,95%);
+ padding:16px;
+ background:#151821;
+ border:1px solid #333;
+ color:white;
+ border-radius:10px;
+ font-size:16px
+}
+
+.categories{
+ display:flex;
+ gap:10px;
+ overflow:auto;
+ padding:20px 5%;
+ justify-content:center
+}
+
+.category{
+ padding:10px 17px;
+ background:#191d27;
+ border:1px solid #333;
+ color:white;
+ border-radius:20px;
+ white-space:nowrap
+}
+
+.category.active{
+ background:#6c63ff
+}
+
+.section{
+ width:90%;
+ max-width:1100px;
+ margin:25px auto 60px
+}
+
+.tools,.premium-grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+ gap:15px;
+ margin-top:20px
+}
+
+.tool,.premium-card,.wallet-card{
+ background:#141821;
+ border:1px solid #292f3b;
+ border-radius:13px;
+ padding:22px
+}
+
+.tool{
+ cursor:pointer
+}
+
+.tool:hover{
+ border-color:#6c63ff
+}
+
+.tool-icon{
+ font-size:28px;
+ margin-bottom:15px
+}
+
+.tool p,.premium-card p{
+ color:#aaa;
+ font-size:14px;
+ margin-top:9px;
+ line-height:1.5
+}
+
+.wallet-section,.store-section{
+ display:none;
+ width:90%;
+ max-width:1100px;
+ margin:25px auto
+}
+
+.wallet-card{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:15px;
+ flex-wrap:wrap
+}
+
+.coins{
+ color:#f5d76e;
+ font-size:25px;
+ font-weight:bold
+}
+
+.coin-pill{
+ color:#f5d76e;
+ background:#242033;
+ padding:9px 12px;
+ border-radius:9px
+}
+
+.account{
+ display:none;
+ align-items:center;
+ gap:10px
+}
+
+.account-email{
+ font-size:12px;
+ color:#aaa
+}
+
+.premium-card h3{
+ margin-bottom:8px
+}
+
+.price{
+ color:#f5d76e;
+ margin:15px 0
+}
+
+.premium-card button{
+ width:100%;
+ padding:11px;
+ background:#6c63ff;
+ color:white;
+ border:0;
+ border-radius:8px
+}
+
+.wallet-message,.store-note{
+ color:#aaa;
+ font-size:13px;
+ margin-top:12px
+}
+
+.modal-bg{
+ display:none;
+ position:fixed;
+ inset:0;
+ background:#000c;
+ z-index:20;
+ align-items:center;
+ justify-content:center;
+ padding:15px
+}
+
+.modal-bg.show{
+ display:flex
+}
+
+.modal{
+ width:min(420px,100%);
+ background:#171b25;
+ border:1px solid #343a48;
+ border-radius:15px;
+ padding:25px;
+ position:relative
+}
+
+.modal h2{
+ margin-bottom:9px
+}
+
+.modal-sub{
+ color:#aaa;
+ font-size:14px;
+ margin-bottom:20px
+}
+
+.close{
+ position:absolute;
+ right:15px;
+ top:12px;
+ background:none;
+ border:0;
+ color:white;
+ font-size:25px
+}
+
+.tabs{
+ display:flex;
+ gap:8px;
+ margin-bottom:17px
+}
+
+.tab{
+ flex:1;
+ padding:11px;
+ background:#292e3a;
+ color:#aaa;
+ border:0;
+ border-radius:8px
+}
+
+.tab.active{
+ background:#6c63ff;
+ color:white
+}
+
+.field{
+ margin-bottom:13px
+}
+
+.field label{
+ display:block;
+ font-size:13px;
+ color:#bbb;
+ margin-bottom:7px
+}
+
+.field input{
+ width:100%;
+ padding:13px;
+ background:#0b0d12;
+ border:1px solid #343a48;
+ border-radius:8px;
+ color:white;
+ font-size:15px
+}
+
+.full{
+ width:100%;
+ padding:13px
+}
+
+.google{
+ width:100%;
+ padding:13px;
+ background:#252b37;
+ color:white;
+ border:1px solid #454c5c;
+ border-radius:8px;
+ margin-top:12px
+}
+
+.or{
+ text-align:center;
+ color:#777;
+ margin:14px
+}
+
+.message{
+ font-size:13px;
+ color:#ff9999;
+ margin-top:12px;
+ line-height:1.5;
+ overflow-wrap:anywhere
+}
+
+.message.success{
+ color:#83d9a0
+}
+
+.hidden{
+ display:none!important
+}
+
+.no-results{
+ display:none;
+ color:#aaa;
+ text-align:center;
+ padding:35px
+}
+
+footer{
+ text-align:center;
+ color:#777;
+ padding:25px;
+ border-top:1px solid #252a35
+}
+
+@media(max-width:600px){
+ .categories{
+  justify-content:flex-start
+ }
+
+ .account-email{
+  display:none
+ }
+
+ .hero{
+  padding-top:45px
+ }
+}
 </style>
 </head>
+
 <body>
 
 <nav>
  <div class="logo">ToolBox<span>Hub</span></div>
+
  <div style="display:flex;align-items:center;gap:10px">
+
   <div class="account" id="accountArea">
-   <span class="coin-pill" id="navCoins">🪙 0 coins</span>
+
+   <span class="coin-pill" id="navCoins">
+    🪙 0 coins
+   </span>
+
    <span class="account-email" id="userEmail"></span>
-   <button class="secondary" onclick="logout()">Logout</button>
+
+   <button class="secondary" onclick="logout()">
+    Logout
+   </button>
+
   </div>
-  <button class="login" id="loginButton" onclick="openAuth()">Login / Sign up</button>
+
+  <button class="login" id="loginButton" onclick="openAuth()">
+   Login / Sign up
+  </button>
+
  </div>
 </nav>
 
+
 <section class="hero">
- <h1>All your tools.<br><span>One toolbox.</span></h1>
- <p>Fast, simple and useful online tools for everyone.</p>
- <input class="search" id="search" placeholder="Search tools..." oninput="searchTools()">
+
+ <h1>
+  All your tools.<br>
+  <span>One toolbox.</span>
+ </h1>
+
+ <p>
+  Fast, simple and useful online tools for everyone.
+ </p>
+
+ <input
+  class="search"
+  id="search"
+  placeholder="Search tools..."
+  oninput="searchTools()"
+ >
+
 </section>
+
 
 <div class="categories">
- <button class="category active" onclick="filterCategory('All',this)">All</button>
- <button class="category" onclick="filterCategory('Images',this)">Images</button>
- <button class="category" onclick="filterCategory('Developer',this)">Developer</button>
- <button class="category" onclick="filterCategory('Design',this)">Design</button>
- <button class="category" onclick="filterCategory('Text',this)">Text</button>
- <button class="category" onclick="filterCategory('Utilities',this)">Utilities</button>
+
+ <button
+  class="category active"
+  onclick="filterCategory('All',this)">
+  All
+ </button>
+
+ <button
+  class="category"
+  onclick="filterCategory('Images',this)">
+  Images
+ </button>
+
+ <button
+  class="category"
+  onclick="filterCategory('Developer',this)">
+  Developer
+ </button>
+
+ <button
+  class="category"
+  onclick="filterCategory('Design',this)">
+  Design
+ </button>
+
+ <button
+  class="category"
+  onclick="filterCategory('Text',this)">
+  Text
+ </button>
+
+ <button
+  class="category"
+  onclick="filterCategory('Utilities',this)">
+  Utilities
+ </button>
+
 </div>
+
 
 <section class="wallet-section" id="walletSection">
+
  <div class="wallet-card">
+
   <div>
+
    <h2>🪙 Your Coin Wallet</h2>
-   <p>Earn coins and unlock premium features.</p>
-   <div class="wallet-message" id="walletMessage">Connecting...</div>
+
+   <p>
+    Earn coins and unlock premium features.
+   </p>
+
+   <div
+    class="wallet-message"
+    id="walletMessage">
+    Connecting...
+   </div>
+
   </div>
-  <div class="coins" id="walletBalance">0 coins</div>
+
+  <div
+   class="coins"
+   id="walletBalance">
+   0 coins
+  </div>
+
  </div>
+
 </section>
+
 
 <section class="store-section" id="storeSection">
+
  <h2>👑 Premium Store</h2>
+
  <div class="premium-grid">
+
   <div class="premium-card">
+
    <h3>✨ PFP Maker Pro</h3>
-   <p>Extra profile-picture customization.</p>
-   <div class="price">150 coins · 5 days</div>
-   <button onclick="buyPremium('pfp-maker-pro')">Unlock</button>
+
+   <p>
+    Extra profile-picture customization.
+   </p>
+
+   <div class="price">
+    150 coins · 5 days
+   </div>
+
+   <button onclick="buyPremium('pfp-maker-pro')">
+    Unlock
+   </button>
+
   </div>
+
+
   <div class="premium-card">
+
    <h3>▣ QR Maker Pro</h3>
-   <p>Extra QR customization.</p>
-   <div class="price">100 coins · 5 days</div>
-   <button onclick="buyPremium('qr-maker-pro')">Unlock</button>
+
+   <p>
+    Extra QR customization.
+   </p>
+
+   <div class="price">
+    100 coins · 5 days
+   </div>
+
+   <button onclick="buyPremium('qr-maker-pro')">
+    Unlock
+   </button>
+
   </div>
+
+
   <div class="premium-card">
+
    <h3>🖼️ Background Remover</h3>
-   <p>Premium background removal.</p>
-   <div class="price">200 coins · 5 days</div>
-   <button onclick="buyPremium('background-remover')">Unlock</button>
+
+   <p>
+    Premium background removal.
+   </p>
+
+   <div class="price">
+    200 coins · 5 days
+   </div>
+
+   <button onclick="buyPremium('background-remover')">
+    Unlock
+   </button>
+
   </div>
+
+
   <div class="premium-card">
+
    <h3>📄 PDF Pro</h3>
-   <p>Extra PDF features.</p>
-   <div class="price">180 coins · 5 days</div>
-   <button onclick="buyPremium('pdf-pro')">Unlock</button>
+
+   <p>
+    Extra PDF features.
+   </p>
+
+   <div class="price">
+    180 coins · 5 days
+   </div>
+
+   <button onclick="buyPremium('pdf-pro')">
+    Unlock
+   </button>
+
   </div>
+
+
   <div class="premium-card">
+
    <h3>🎨 AI Logo Maker</h3>
-   <p>AI-assisted logo features.</p>
-   <div class="price">250 coins · 5 days</div>
-   <button onclick="buyPremium('ai-logo-maker')">Unlock</button>
+
+   <p>
+    AI-assisted logo features.
+   </p>
+
+   <div class="price">
+    250 coins · 5 days
+   </div>
+
+   <button onclick="buyPremium('ai-logo-maker')">
+    Unlock
+   </button>
+
   </div>
+
  </div>
- <p class="store-note">Coins are internal reward points, not cash. Premium lasts five days.</p>
+
+ <p class="store-note">
+  Coins are internal reward points, not cash.
+  Premium lasts five days.
+ </p>
+
 </section>
+
 
 <section class="section">
+
  <h2>Popular Tools</h2>
+
  <div class="tools">
-  <div class="tool" data-category="Utilities" data-name="QR Code Generator" onclick="openTool('tools/qr.html')">
-   <div class="tool-icon">▣</div><h3>QR Code Generator</h3><p>Create QR codes from links and text.</p>
+
+
+  <div
+   class="tool"
+   data-category="Utilities"
+   data-name="QR Code Generator"
+   onclick="openTool('tools/qr.html')">
+
+   <div class="tool-icon">▣</div>
+
+   <h3>QR Code Generator</h3>
+
+   <p>
+    Create QR codes from links and text.
+   </p>
+
   </div>
-  <div class="tool" data-category="Images" data-name="Image Resizer" onclick="openTool('tools/image-resizer.html')">
-   <div class="tool-icon">▧</div><h3>Image Resizer</h3><p>Resize images in your browser.</p>
+
+
+  <div
+   class="tool"
+   data-category="Images"
+   data-name="Image Resizer"
+   onclick="openTool('tools/image-resizer.html')">
+
+   <div class="tool-icon">▧</div>
+
+   <h3>Image Resizer</h3>
+
+   <p>
+    Resize images in your browser.
+   </p>
+
   </div>
-  <div class="tool" data-category="Developer" data-name="JSON Formatter" onclick="openTool('tools/json-formatter.html')">
-   <div class="tool-icon">{ }</div><h3>JSON Formatter</h3><p>Format JSON instantly.</p>
+
+
+  <div
+   class="tool"
+   data-category="Developer"
+   data-name="JSON Formatter"
+   onclick="openTool('tools/json-formatter.html')">
+
+   <div class="tool-icon">{ }</div>
+
+   <h3>JSON Formatter</h3>
+
+   <p>
+    Format JSON instantly.
+   </p>
+
   </div>
-  <div class="tool" data-category="Design" data-name="Color Palette" onclick="openTool('tools/color-palette.html')">
-   <div class="tool-icon">◉</div><h3>Color Palette</h3><p>Generate color combinations.</p>
+
+
+  <div
+   class="tool"
+   data-category="Design"
+   data-name="Color Palette"
+   onclick="openTool('tools/color-palette.html')">
+
+   <div class="tool-icon">◉</div>
+
+   <h3>Color Palette</h3>
+
+   <p>
+    Generate color combinations.
+   </p>
+
   </div>
-  <div class="tool" data-category="Utilities" data-name="Username Generator" onclick="openTool('tools/username-generator.html')">
-   <div class="tool-icon">@</div><h3>Username Generator</h3><p>Create username ideas.</p>
+
+
+  <div
+   class="tool"
+   data-category="Utilities"
+   data-name="Username Generator"
+   onclick="openTool('tools/username-generator.html')">
+
+   <div class="tool-icon">@</div>
+
+   <h3>Username Generator</h3>
+
+   <p>
+    Create username ideas.
+   </p>
+
   </div>
-  <div class="tool" data-category="Utilities" data-name="Password Generator" onclick="openTool('tools/password-generator.html')">
-   <div class="tool-icon">◆</div><h3>Password Generator</h3><p>Generate random passwords.</p>
+
+
+  <div
+   class="tool"
+   data-category="Utilities"
+   data-name="Password Generator"
+   onclick="openTool('tools/password-generator.html')">
+
+   <div class="tool-icon">◆</div>
+
+   <h3>Password Generator</h3>
+
+   <p>
+    Generate random passwords.
+   </p>
+
   </div>
-  <div class="tool" data-category="Text" data-name="Text Case Converter" onclick="openTool('tools/text-case-converter.html')">
-   <div class="tool-icon">Aa</div><h3>Text Case Converter</h3><p>Convert text between cases.</p>
+
+
+  <div
+   class="tool"
+   data-category="Text"
+   data-name="Text Case Converter"
+   onclick="openTool('tools/text-case-converter.html')">
+
+   <div class="tool-icon">Aa</div>
+
+   <h3>Text Case Converter</h3>
+
+   <p>
+    Convert text between cases.
+   </p>
+
   </div>
-  <div class="tool" data-category="Text" data-name="Word Counter" onclick="openTool('tools/word-counter.html')">
-   <div class="tool-icon">≡</div><h3>Word Counter</h3><p>Count words and characters.</p>
+
+
+  <div
+   class="tool"
+   data-category="Text"
+   data-name="Word Counter"
+   onclick="openTool('tools/word-counter.html')">
+
+   <div class="tool-icon">≡</div>
+
+   <h3>Word Counter</h3>
+
+   <p>
+    Count words and characters.
+   </p>
+
   </div>
-  <div class="tool" data-category="Images" data-name="PFP Maker" onclick="openTool('tools/pfp-maker.html')">
-   <div class="tool-icon">✦</div><h3>PFP Maker</h3><p>Create profile pictures.</p>
+
+
+  <div
+   class="tool"
+   data-category="Images"
+   data-name="PFP Maker"
+   onclick="openTool('tools/pfp-maker.html')">
+
+   <div class="tool-icon">✦</div>
+
+   <h3>PFP Maker</h3>
+
+   <p>
+    Create profile pictures.
+   </p>
+
   </div>
+
  </div>
- <div class="no-results" id="noResults">No tools found.</div>
+
+ <div class="no-results" id="noResults">
+  No tools found.
+ </div>
+
 </section>
 
-<footer>© 2026 ToolBoxHub</footer>
+
+<footer>
+ © 2026 ToolBoxHub
+</footer>
+
 
 <div class="modal-bg" id="authModal">
+
  <div class="modal">
-  <button class="close" onclick="closeAuth()">×</button>
-  <h2 id="modalTitle">Welcome to ToolBoxHub</h2>
-  <p class="modal-sub" id="modalSubtitle">Sign in or create your free account.</p>
+
+  <button
+   class="close"
+   onclick="closeAuth()">
+   ×
+  </button>
+
+  <h2 id="modalTitle">
+   Welcome to ToolBoxHub
+  </h2>
+
+  <p
+   class="modal-sub"
+   id="modalSubtitle">
+   Sign in or create your free account.
+  </p>
+
+
   <div class="tabs">
-   <button class="tab active" id="loginTab" onclick="setMode('login')">Login</button>
-   <button class="tab" id="registerTab" onclick="setMode('register')">Register</button>
+
+   <button
+    class="tab active"
+    id="loginTab"
+    onclick="setMode('login')">
+    Login
+   </button>
+
+   <button
+    class="tab"
+    id="registerTab"
+    onclick="setMode('register')">
+    Register
+   </button>
+
   </div>
-  <div class="field hidden" id="nameField">
-   <label for="displayName">Your name</label>
-   <input id="displayName" placeholder="Your name" autocomplete="name">
+
+
+  <div
+   class="field hidden"
+   id="nameField">
+
+   <label for="displayName">
+    Your name
+   </label>
+
+   <input
+    id="displayName"
+    placeholder="Your name"
+    autocomplete="name">
+
   </div>
+
+
   <div class="field">
-   <label for="email">Email</label>
-   <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+
+   <label for="email">
+    Email
+   </label>
+
+   <input
+    id="email"
+    type="email"
+    placeholder="you@example.com"
+    autocomplete="email">
+
   </div>
+
+
   <div class="field">
-   <label for="password">Password</label>
-   <input id="password" type="password" placeholder="At least 6 characters" autocomplete="current-password">
+
+   <label for="password">
+    Password
+   </label>
+
+   <input
+    id="password"
+    type="password"
+    placeholder="At least 6 characters"
+    autocomplete="current-password">
+
   </div>
-  <button class="primary full" id="emailButton" onclick="emailAuth()">Login</button>
-  <div class="or">OR</div>
-  <button class="google" id="googleButton" onclick="googleLogin()">Continue with Google</button>
-  <div class="message" id="authMessage" role="status" aria-live="polite"></div>
+
+
+  <button
+   class="primary full"
+   id="emailButton"
+   onclick="emailAuth()">
+   Login
+  </button>
+
+
+  <div class="or">
+   OR
+  </div>
+
+
+  <button
+   class="google"
+   id="googleButton"
+   onclick="googleLogin()">
+   Continue with Google
+  </button>
+
+
+  <div
+   class="message"
+   id="authMessage"
+   role="status"
+   aria-live="polite">
+  </div>
+
  </div>
+
 </div>
 
+
 <script>
+
 let currentCategory="All";
+
 window.authMode="login";
 
+
 function showMessage(message,success=false){
+
  const el=document.getElementById("authMessage");
+
  el.textContent=message;
- el.className=success?"message success":"message";
+
+ el.className=success
+  ?"message success"
+  :"message";
+
 }
-function clearMessage(){showMessage("")}
+
+
+function clearMessage(){
+ showMessage("");
+}
+
+
 function openAuth(){
- document.getElementById("authModal").classList.add("show");
+
+ document.getElementById("authModal")
+  .classList.add("show");
+
  clearMessage();
+
 }
+
+
 function closeAuth(){
- document.getElementById("authModal").classList.remove("show");
+
+ document.getElementById("authModal")
+  .classList.remove("show");
+
 }
+
+
 function setMode(mode){
+
  window.authMode=mode;
+
  const register=mode==="register";
- document.getElementById("loginTab").classList.toggle("active",!register);
- document.getElementById("registerTab").classList.toggle("active",register);
- document.getElementById("nameField").classList.toggle("hidden",!register);
- document.getElementById("modalTitle").textContent=register?"Create your account":"Welcome back";
- document.getElementById("modalSubtitle").textContent=register?"Create your free account.":"Sign in to your account.";
- document.getElementById("emailButton").textContent=register?"Create account":"Login";
- document.getElementById("password").autocomplete=register?"new-password":"current-password";
+
+ document.getElementById("loginTab")
+  .classList.toggle("active",!register);
+
+ document.getElementById("registerTab")
+  .classList.toggle("active",register);
+
+ document.getElementById("nameField")
+  .classList.toggle("hidden",!register);
+
+ document.getElementById("modalTitle")
+  .textContent=register
+   ?"Create your account"
+   :"Welcome back";
+
+ document.getElementById("modalSubtitle")
+  .textContent=register
+   ?"Create your free account."
+   :"Sign in to your account.";
+
+ document.getElementById("emailButton")
+  .textContent=register
+   ?"Create account"
+   :"Login";
+
+ document.getElementById("password")
+  .autocomplete=register
+   ?"new-password"
+   :"current-password";
+
  clearMessage();
+
 }
+
+
 function setBusy(busy){
- document.getElementById("emailButton").disabled=busy;
- document.getElementById("googleButton").disabled=busy;
- document.getElementById("emailButton").textContent=busy?"Please wait...":(window.authMode==="register"?"Create account":"Login");
+
+ document.getElementById("emailButton")
+  .disabled=busy;
+
+ document.getElementById("googleButton")
+  .disabled=busy;
+
+ document.getElementById("emailButton")
+  .textContent=busy
+   ?"Please wait..."
+   :(window.authMode==="register"
+      ?"Create account"
+      :"Login");
+
 }
+
+
 function friendlyError(error){
+
  const m=error?.message||"Something went wrong.";
- if(m.includes("Invalid login credentials"))return "Incorrect email or password.";
- if(m.includes("User already registered"))return "This email already has an account. Try logging in.";
- if(m.toLowerCase().includes("email not confirmed"))return "Please confirm your email first.";
- if(m.toLowerCase().includes("provider is not enabled"))return "Google login is not enabled in Supabase yet.";
- if(m.toLowerCase().includes("failed to fetch"))return "Could not connect to Supabase. Check your connection and project settings.";
+
+ if(m.includes("Invalid login credentials"))
+  return "Incorrect email or password.";
+
+ if(m.includes("User already registered"))
+  return "This email already has an account. Try logging in.";
+
+ if(m.toLowerCase().includes("email not confirmed"))
+  return "Please confirm your email first.";
+
+ if(m.toLowerCase().includes("provider is not enabled"))
+  return "Google login is not enabled in Supabase yet.";
+
+ if(m.toLowerCase().includes("failed to fetch"))
+  return "Could not connect to Supabase. Check your connection and project settings.";
+
  return m;
+
 }
+
+
 function searchTools(){
- const query=document.getElementById("search").value.toLowerCase();
+
+ const query=
+  document.getElementById("search")
+   .value
+   .toLowerCase();
+
  let count=0;
- document.querySelectorAll(".tool").forEach(tool=>{
-  const ok=tool.dataset.name.toLowerCase().includes(query)&&(currentCategory==="All"||tool.dataset.category===currentCategory);
-  tool.style.display=ok?"":"none";
-  if(ok)count++;
- });
- document.getElementById("noResults").style.display=count?"none":"block";
+
+ document.querySelectorAll(".tool")
+  .forEach(tool=>{
+
+   const ok=
+    tool.dataset.name
+     .toLowerCase()
+     .includes(query)
+    &&
+    (
+     currentCategory==="All"
+     ||
+     tool.dataset.category===currentCategory
+    );
+
+   tool.style.display=ok?"":"none";
+
+   if(ok)count++;
+
+  });
+
+ document.getElementById("noResults")
+  .style.display=count?"none":"block";
+
 }
+
+
 function filterCategory(category,button){
+
  currentCategory=category;
- document.querySelectorAll(".category").forEach(b=>b.classList.remove("active"));
+
+ document.querySelectorAll(".category")
+  .forEach(b=>b.classList.remove("active"));
+
  button.classList.add("active");
+
  searchTools();
+
 }
-function openTool(path){
- if(window.currentUser){location.href=path;return}
- sessionStorage.setItem("toolboxhub_return_to",new URL(path,location.href).pathname);
- openAuth();
- showMessage("Please log in to use this tool.");
-}
+
+
+/*
+ IMPORTANT FIX:
+
+ Instead of checking only window.currentUser,
+ this function asks Supabase directly for
+ the current session.
+
+ This prevents the login popup appearing
+ when the user is already logged in but
+ window.currentUser has not updated yet.
+*/
+window.openTool=async function(path){
+
+ if(!window.supabase){
+
+  openAuth();
+
+  showMessage(
+   "Supabase is still loading. Please try again."
+  );
+
+  return;
+
+ }
+
+
+ try{
+
+  const {
+   data:{session},
+   error
+  }=await window.supabase.auth.getSession();
+
+
+  if(error){
+   throw error;
+  }
+
+
+  if(session?.user){
+
+   window.currentUser=session.user;
+
+   location.href=path;
+
+   return;
+
+  }
+
+
+  sessionStorage.setItem(
+   "toolboxhub_return_to",
+   new URL(path,location.href).pathname
+  );
+
+
+  openAuth();
+
+  showMessage(
+   "Please log in to use this tool."
+  );
+
+ }catch(error){
+
+  console.error("Tool auth check failed:",error);
+
+  openAuth();
+
+  showMessage(
+   "Please log in to use this tool."
+  );
+
+ }
+
+};
+
 
 window.openAuth=openAuth;
 window.closeAuth=closeAuth;
 window.setMode=setMode;
 
+
 window.emailAuth=async function(){
- const email=document.getElementById("email").value.trim();
- const password=document.getElementById("password").value;
- const name=document.getElementById("displayName").value.trim();
 
- if(!email||!password)return showMessage("Enter your email and password.");
- if(password.length<6)return showMessage("Password must be at least 6 characters.");
- if(window.authMode==="register"&&!name)return showMessage("Please enter your name.");
+ const email=
+  document.getElementById("email")
+   .value
+   .trim();
 
- if(!window.supabase){
-  return showMessage("Supabase is still loading. Please refresh and try again.");
- }
+ const password=
+  document.getElementById("password")
+   .value;
+
+ const name=
+  document.getElementById("displayName")
+   .value
+   .trim();
+
+
+ if(!email||!password)
+  return showMessage(
+   "Enter your email and password."
+  );
+
+
+ if(password.length<6)
+  return showMessage(
+   "Password must be at least 6 characters."
+  );
+
+
+ if(window.authMode==="register"&&!name)
+  return showMessage(
+   "Please enter your name."
+  );
+
+
+ if(!window.supabase)
+  return showMessage(
+   "Supabase is still loading. Please refresh and try again."
+  );
+
 
  setBusy(true);
  showMessage("");
 
+
  try{
+
   if(window.authMode==="register"){
-   const {data,error}=await window.supabase.auth.signUp({
-    email,
-    password,
-    options:{data:{display_name:name}}
-   });
-   if(error)throw error;
+
+   const {data,error}=
+    await window.supabase.auth.signUp({
+
+     email,
+     password,
+
+     options:{
+      data:{
+       display_name:name
+      }
+     }
+
+    });
+
+
+   if(error)
+    throw error;
+
 
    if(!data.session){
-    showMessage("Account created! Check your email to confirm your account.",true);
+
+    showMessage(
+     "Account created! Check your email to confirm your account.",
+     true
+    );
+
    }else{
-    showMessage("Account created successfully!",true);
+
+    showMessage(
+     "Account created successfully!",
+     true
+    );
+
     closeAuth();
+
    }
+
+
   }else{
-   const {error}=await window.supabase.auth.signInWithPassword({email,password});
-   if(error)throw error;
+
+   const {error}=
+    await window.supabase.auth
+     .signInWithPassword({
+      email,
+      password
+     });
+
+
+   if(error)
+    throw error;
+
+
    closeAuth();
+
   }
+
+
  }catch(error){
-  showMessage(friendlyError(error));
+
+  showMessage(
+   friendlyError(error)
+  );
+
  }finally{
+
   setBusy(false);
+
  }
+
 };
 
+
 window.googleLogin=async function(){
- if(!window.supabase){
-  return showMessage("Supabase is still loading. Please refresh and try again.");
- }
+
+ if(!window.supabase)
+  return showMessage(
+   "Supabase is still loading. Please refresh and try again."
+  );
+
 
  setBusy(true);
  showMessage("");
 
+
  try{
-  const {error}=await window.supabase.auth.signInWithOAuth({
-   provider:"google",
-   options:{redirectTo:location.origin+location.pathname}
-  });
-  if(error)throw error;
+
+  const {error}=
+   await window.supabase.auth
+    .signInWithOAuth({
+
+     provider:"google",
+
+     options:{
+      redirectTo:
+       location.origin+
+       location.pathname
+     }
+
+    });
+
+
+  if(error)
+   throw error;
+
+
  }catch(error){
-  showMessage(friendlyError(error));
+
+  showMessage(
+   friendlyError(error)
+  );
+
   setBusy(false);
+
  }
+
 };
+
 
 window.logout=async function(){
- if(!window.supabase)return;
 
- const {error}=await window.supabase.auth.signOut();
- if(error)alert(friendlyError(error));
+ if(!window.supabase)
+  return;
+
+
+ const {error}=
+  await window.supabase.auth.signOut();
+
+
+ if(error)
+  alert(friendlyError(error));
+
 };
+
 
 window.buyPremium=async function(productId){
- if(!window.currentUser){
+
+ if(!window.supabase){
+
   openAuth();
-  showMessage("Please log in first.");
+
+  showMessage(
+   "Please log in first."
+  );
+
   return;
+
  }
+
+
  try{
-  const result=await window.toolboxRequest(window.currentUser,{
-   action:"purchase",
-   productId
-  });
-  if(result.success){
-   alert("Premium unlocked for 5 days!");
-   await window.loadWallet(window.currentUser);
-  }else{
-   alert(result.error||"Purchase failed.");
+
+  const {
+   data:{session},
+   error
+  }=
+   await window.supabase.auth.getSession();
+
+
+  if(error)
+   throw error;
+
+
+  if(!session?.user){
+
+   window.currentUser=null;
+
+   openAuth();
+
+   showMessage(
+    "Please log in first."
+   );
+
+   return;
+
   }
+
+
+  window.currentUser=session.user;
+
+
+  const result=
+   await window.toolboxRequest(
+    session.user,
+    {
+     action:"purchase",
+     productId
+    }
+   );
+
+
+  if(result.success){
+
+   alert(
+    "Premium unlocked for 5 days!"
+   );
+
+   await window.loadWallet(
+    session.user
+   );
+
+  }else{
+
+   alert(
+    result.error||
+    "Purchase failed."
+   );
+
+  }
+
+
  }catch(error){
-  alert(friendlyError(error));
+
+  alert(
+   friendlyError(error)
+  );
+
  }
+
 };
+
 </script>
 
-<script type="module">
-import {supabase} from "./supabase.js";
 
-/* Make Supabase accessible to the normal script above */
+<script type="module">
+
+import {supabase}
+ from "./supabase.js";
+
+
+/*
+ Make Supabase available to the normal
+ script above.
+*/
 window.supabase=supabase;
 
-async function toolboxRequest(user,body){
- if(!user)throw new Error("Please sign in first.");
 
- const {data:{session},error:sessionError}=await supabase.auth.getSession();
- if(sessionError)throw sessionError;
+async function toolboxRequest(user,body){
+
+ if(!user)
+  throw new Error(
+   "Please sign in first."
+  );
+
+
+ const {
+  data:{session},
+  error:sessionError
+ }=
+  await supabase.auth.getSession();
+
+
+ if(sessionError)
+  throw sessionError;
+
 
  if(!session?.access_token){
-  throw new Error("Your session expired. Please sign in again.");
+
+  throw new Error(
+   "Your session expired. Please sign in again."
+  );
+
  }
 
- const {data,error}=await supabase.functions.invoke("toolboxhub",{
-  body,
-  headers:{Authorization:`Bearer ${session.access_token}`}
- });
 
- if(error)throw new Error(data?.error||error.message||"Request failed.");
- if(data?.error)throw new Error(data.error);
+ const {
+  data,
+  error
+ }=
+  await supabase.functions.invoke(
+   "toolboxhub",
+   {
+    body,
+
+    headers:{
+     Authorization:
+      `Bearer ${session.access_token}`
+    }
+
+   }
+  );
+
+
+ if(error){
+
+  throw new Error(
+   data?.error||
+   error.message||
+   "Request failed."
+  );
+
+ }
+
+
+ if(data?.error)
+  throw new Error(data.error);
+
 
  return data;
+
 }
+
 
 async function loadWallet(user){
+
  try{
-  const data=await toolboxRequest(user,{action:"balance"});
-  const coins=Number(data.coins)||0;
 
-  document.getElementById("walletBalance").textContent=coins+" coins";
-  document.getElementById("navCoins").textContent="🪙 "+coins+" coins";
-  document.getElementById("walletMessage").textContent="Your wallet is connected.";
+  const data=
+   await toolboxRequest(
+    user,
+    {
+     action:"balance"
+    }
+   );
+
+
+  const coins=
+   Number(data.coins)||0;
+
+
+  document.getElementById(
+   "walletBalance"
+  ).textContent=
+   coins+" coins";
+
+
+  document.getElementById(
+   "navCoins"
+  ).textContent=
+   "🪙 "+coins+" coins";
+
+
+  document.getElementById(
+   "walletMessage"
+  ).textContent=
+   "Your wallet is connected.";
+
+
  }catch(error){
-  document.getElementById("walletMessage").textContent=error.message;
-  document.getElementById("walletBalance").textContent="Unavailable";
+
+  document.getElementById(
+   "walletMessage"
+  ).textContent=
+   error.message;
+
+
+  document.getElementById(
+   "walletBalance"
+  ).textContent=
+   "Unavailable";
+
  }
+
 }
 
-supabase.auth.onAuthStateChange((_event,session)=>{
- const user=session?.user||null;
- window.currentUser=user;
 
- document.getElementById("accountArea").style.display=user?"flex":"none";
- document.getElementById("loginButton").style.display=user?"none":"block";
- document.getElementById("walletSection").style.display=user?"block":"none";
- document.getElementById("storeSection").style.display=user?"block":"none";
+supabase.auth.onAuthStateChange(
+ async (_event,session)=>{
 
- if(user){
-  document.getElementById("userEmail").textContent=
-   user.user_metadata?.display_name||user.email||"Account";
+  const user=
+   session?.user||null;
 
-  Promise.resolve().then(()=>loadWallet(user));
 
-  const returnTo=sessionStorage.getItem("toolboxhub_return_to");
-  if(returnTo){
-   sessionStorage.removeItem("toolboxhub_return_to");
-   const destination=new URL(returnTo,location.origin);
+  window.currentUser=user;
 
-   if(destination.origin===location.origin&&destination.pathname.includes("/tools/")){
-    location.replace(destination.href);
+
+  document.getElementById(
+   "accountArea"
+  ).style.display=
+   user?"flex":"none";
+
+
+  document.getElementById(
+   "loginButton"
+  ).style.display=
+   user?"none":"block";
+
+
+  document.getElementById(
+   "walletSection"
+  ).style.display=
+   user?"block":"none";
+
+
+  document.getElementById(
+   "storeSection"
+  ).style.display=
+   user?"block":"none";
+
+
+  if(user){
+
+   document.getElementById(
+    "userEmail"
+   ).textContent=
+    user.user_metadata?.display_name||
+    user.email||
+    "Account";
+
+
+   /*
+    Delay wallet work so Supabase's
+    auth state transition is complete.
+   */
+   setTimeout(
+    ()=>loadWallet(user),
+    0
+   );
+
+
+   /*
+    If the user tried opening a tool
+    while logged out, send them there
+    after successful login.
+   */
+   const returnTo=
+    sessionStorage.getItem(
+     "toolboxhub_return_to"
+    );
+
+
+   if(returnTo){
+
+    sessionStorage.removeItem(
+     "toolboxhub_return_to"
+    );
+
+
+    const destination=
+     new URL(
+      returnTo,
+      location.origin
+     );
+
+
+    if(
+     destination.origin===location.origin&&
+     destination.pathname.includes("/tools/")
+    ){
+
+     setTimeout(
+      ()=>{
+       location.replace(
+        destination.href
+       );
+      },
+      100
+     );
+
+    }
+
    }
+
   }
+
  }
-});
+);
 
-window.toolboxRequest=toolboxRequest;
-window.loadWallet=loadWallet;
 
-if(new URLSearchParams(location.search).get("auth")==="required"){
- history.replaceState({},document.title,location.pathname);
+window.toolboxRequest=
+ toolboxRequest;
+
+window.loadWallet=
+ loadWallet;
+
+
+/*
+ If Supabase redirects back to the
+ homepage after OAuth, this makes sure
+ the session is loaded before the UI
+ is displayed.
+*/
+(async function(){
+
+ try{
+
+  const {
+   data:{session}
+  }=
+   await supabase.auth.getSession();
+
+
+  window.currentUser=
+   session?.user||null;
+
+
+  if(session?.user){
+
+   document.getElementById(
+    "accountArea"
+   ).style.display="flex";
+
+
+   document.getElementById(
+    "loginButton"
+   ).style.display="none";
+
+
+   document.getElementById(
+    "walletSection"
+   ).style.display="block";
+
+
+   document.getElementById(
+    "storeSection"
+   ).style.display="block";
+
+
+   document.getElementById(
+    "userEmail"
+   ).textContent=
+    session.user.user_metadata?.display_name||
+    session.user.email||
+    "Account";
+
+
+   loadWallet(session.user);
+
+  }
+
+ }catch(error){
+
+  console.error(
+   "Initial Supabase session check failed:",
+   error
+  );
+
+ }
+
+})();
+
+
+if(
+ new URLSearchParams(
+  location.search
+ ).get("auth")==="required"
+){
+
+ history.replaceState(
+  {},
+  document.title,
+  location.pathname
+ );
+
  openAuth();
- showMessage("Please log in to open that tool.");
+
+ showMessage(
+  "Please log in to open that tool."
+ );
+
 }
+
 </script>
 
 </body>
