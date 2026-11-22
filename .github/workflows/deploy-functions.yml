@@ -30,11 +30,23 @@ jobs:
         working-directory: functions
         run: npm install
 
-      - name: Create credentials
+      - name: Create Google credentials
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "$RUNNER_TEMP/firebase-service-account.json"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-service-account.json"
+
+      - name: Check credentials
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-service-account.json
+        run: |
+          node -e "const fs=require('fs'); const p=process.env.GOOGLE_APPLICATION_CREDENTIALS; const x=JSON.parse(fs.readFileSync(p)); console.log('Service account:', x.client_email); console.log('Project:', x.project_id);"
 
       - name: Deploy Firebase
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-service-account.json
-        run: firebase deploy --project toolbox-64694 --non-interactive
+        run: |
+          firebase deploy \
+            --project toolbox-64694 \
+            --non-interactive \
+            --force
