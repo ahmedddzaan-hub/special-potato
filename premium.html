@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Premium • ToolBoxHub</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:
+    radial-gradient(circle at top,#25134a 0%,#0b0d12 42%);
+  color:#fff;
+  min-height:100vh;
+}
+
+button{
+  font-family:inherit;
+  cursor:pointer;
+}
+
+.nav{
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 28px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  background:rgba(11,13,18,.75);
+  backdrop-filter:blur(15px);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.logo{
+  color:#fff;
+  font-size:22px;
+  font-weight:800;
+  text-decoration:none;
+}
+
+.logo span{
+  color:#8b7cff;
+}
+
+.navlinks{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.navlinks a{
+  color:#aaa;
+  text-decoration:none;
+  padding:10px 15px;
+  border-radius:10px;
+  transition:.2s;
+}
+
+.navlinks a:hover,
+.navlinks .active{
+  color:#fff;
+  background:rgba(108,99,255,.15);
+}
+
+.account{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.coins{
+  background:rgba(255,196,0,.1);
+  border:1px solid rgba(255,196,0,.25);
+  color:#ffd84d;
+  padding:8px 13px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:bold;
+}
+
+.login{
+  border:0;
+  background:#6c63ff;
+  color:white;
+  padding:10px 16px;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+.hero{
+  max-width:1100px;
+  margin:0 auto;
+  padding:65px 25px 35px;
+  text-align:center;
+}
+
+.badge{
+  display:inline-block;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(139,124,255,.13);
+  border:1px solid rgba(139,124,255,.3);
+  color:#b8aeff;
+  font-size:12px;
+  font-weight:bold;
+  letter-spacing:1px;
+  margin-bottom:18px;
+}
+
+.hero h1{
+  font-size:clamp(38px,8vw,70px);
+  line-height:1;
+  margin-bottom:18px;
+  background:linear-gradient(90deg,#fff,#b9adff,#fff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.hero p{
+  color:#aaa;
+  max-width:650px;
+  margin:auto;
+  line-height:1.6;
+  font-size:16px;
+}
+
+.balance{
+  max-width:1100px;
+  margin:25px auto 45px;
+  padding:0 25px;
+}
+
+.balancebox{
+  background:
+    linear-gradient(135deg,
+      rgba(108,99,255,.18),
+      rgba(30,20,55,.55));
+  border:1px solid rgba(139,124,255,.25);
+  border-radius:20px;
+  padding:20px 25px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+
+.balance-title{
+  color:#aaa;
+  font-size:13px;
+  margin-bottom:5px;
+}
+
+.balance-number{
+  font-size:30px;
+  font-weight:800;
+  color:#ffd84d;
+}
+
+.balance-note{
+  color:#777;
+  font-size:12px;
+}
+
+.grid{
+  max-width:1100px;
+  margin:0 auto;
+  padding:0 25px 70px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+}
+
+.card{
+  position:relative;
+  overflow:hidden;
+  background:rgba(17,19,28,.9);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:22px;
+  padding:25px;
+  transition:.25s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+  border-color:rgba(139,124,255,.5);
+  box-shadow:0 15px 45px rgba(80,60,180,.15);
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  width:130px;
+  height:130px;
+  background:#6c63ff;
+  filter:blur(70px);
+  opacity:.12;
+  top:-70px;
+  right:-50px;
+}
+
+.icon{
+  width:50px;
+  height:50px;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(108,99,255,.14);
+  font-size:24px;
+  margin-bottom:18px;
+}
+
+.card h2{
+  font-size:20px;
+  margin-bottom:8px;
+}
+
+.card p{
+  color:#999;
+  font-size:14px;
+  line-height:1.5;
+  min-height:43px;
+}
+
+.card-bottom{
+  margin-top:22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.price{
+  color:#ffd84d;
+  font-weight:800;
+  font-size:16px;
+}
+
+.duration{
+  display:block;
+  color:#777;
+  font-size:11px;
+  font-weight:normal;
+  margin-top:3px;
+}
+
+.unlock{
+  border:0;
+  background:linear-gradient(135deg,#6c63ff,#8b7cff);
+  color:#fff;
+  padding:11px 16px;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+.unlock:hover{
+  filter:brightness(1.1);
+}
+
+.footer{
+  text-align:center;
+  padding:30px 20px;
+  color:#555;
+  font-size:12px;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+
+.message{
+  position:fixed;
+  left:50%;
+  bottom:25px;
+  transform:translateX(-50%) translateY(20px);
+  background:#171923;
+  border:1px solid rgba(255,255,255,.1);
+  padding:13px 18px;
+  border-radius:12px;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+  z-index:100;
+  white-space:nowrap;
+}
+
+.message.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+@media(max-width:700px){
+  .nav{
+    padding:0 15px;
+  }
+
+  .navlinks a{
+    padding:8px 9px;
+    font-size:13px;
+  }
+
+  .account{
+    display:none;
+  }
+
+  .hero{
+    padding-top:45px;
+  }
+
+  .balancebox{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<nav class="nav">
+
+  <a class="logo" href="./index.html">
+    ToolBox<span>Hub</span>
+  </a>
+
+  <div class="navlinks">
+    <a href="./index.html">Home</a>
+    <a href="./premium.html" class="active">Premium</a>
+  </div>
+
+  <div class="account">
+    <div class="coins" id="coinDisplay">
+      🪙 <span id="coinAmount">—</span>
+    </div>
+
+    <button class="login" id="accountButton">
+      Login
+    </button>
+  </div>
+
+</nav>
+
+
+<section class="hero">
+
+  <div class="badge">
+    TOOLBOXHUB PREMIUM
+  </div>
+
+  <h1>Unlock More.</h1>
+
+  <p>
+    Upgrade your favorite ToolBoxHub tools with powerful Pro features.
+    Every purchase gives you access for 5 days.
+  </p>
+
+</section>
+
+
+<section class="balance">
+
+  <div class="balancebox">
+
+    <div>
+      <div class="balance-title">
+        YOUR COIN BALANCE
+      </div>
+
+      <div class="balance-number">
+        🪙 <span id="bigCoinAmount">—</span>
+      </div>
+    </div>
+
+    <div class="balance-note">
+      Premium purchases use ToolBoxHub coins.
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="grid">
+
+  <div class="card">
+
+    <div class="icon">🖼️</div>
+
+    <h2>PFP Maker Pro</h2>
+
+    <p>
+      Unlock the Pro version of the profile picture maker.
+    </p>
+
+    <div class="card-bottom">
+
+      <div class="price">
+        🪙 150
+        <span class="duration">5 DAYS</span>
+      </div>
+
+      <button class="unlock"
+        onclick="buyPremium('pfp-maker-pro',150,'PFP Maker Pro')">
+        Unlock
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="icon">🔳</div>
+
+    <h2>QR Maker Pro</h2>
+
+    <p>
+      Unlock additional features for the QR code maker.
+    </p>
+
+    <div class="card-bottom">
+
+      <div class="price">
+        🪙 100
+        <span class="duration">5 DAYS</span>
+      </div>
+
+      <button class="unlock"
+        onclick="buyPremium('qr-maker-pro',100,'QR Maker Pro')">
+        Unlock
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="icon">🪄</div>
+
+    <h2>Background Remover</h2>
+
+    <p>
+      Unlock the Pro background removal features.
+    </p>
+
+    <div class="card-bottom">
+
+      <div class="price">
+        🪙 200
+        <span class="duration">5 DAYS</span>
+      </div>
+
+      <button class="unlock"
+        onclick="buyPremium('background-remover',200,'Background Remover')">
+        Unlock
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="icon">📄</div>
+
+    <h2>PDF Pro</h2>
+
+    <p>
+      Unlock advanced PDF tools and Pro functionality.
+    </p>
+
+    <div class="card-bottom">
+
+      <div class="price">
+        🪙 180
+        <span class="duration">5 DAYS</span>
+      </div>
+
+      <button class="unlock"
+        onclick="buyPremium('pdf-pro',180,'PDF Pro')">
+        Unlock
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="icon">🤖</div>
+
+    <h2>AI Logo Maker</h2>
+
+    <p>
+      Unlock the premium AI logo creation features.
+    </p>
+
+    <div class="card-bottom">
+
+      <div class="price">
+        🪙 250
+        <span class="duration">5 DAYS</span>
+      </div>
+
+      <button class="unlock"
+        onclick="buyPremium('ai-logo-maker',250,'AI Logo Maker')">
+        Unlock
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<footer class="footer">
+  © 2026 ToolBoxHub • Premium
+</footer>
+
+
+<div class="message" id="message"></div>
+
+
+<script type="module">
+
+import { supabase } from "./supabase.js";
+
+window.supabase = supabase;
+
+
+function showMessage(text){
+
+  const box = document.getElementById("message");
+
+  box.textContent = text;
+  box.classList.add("show");
+
+  setTimeout(()=>{
+    box.classList.remove("show");
+  },3000);
+}
+
+
+async function loadWallet(){
+
+  try{
+
+    const {
+      data:{session}
+    } = await supabase.auth.getSession();
+
+    if(!session?.user){
+
+      document.getElementById("coinAmount").textContent = "Login";
+      document.getElementById("bigCoinAmount").textContent = "Login";
+
+      return;
+    }
+
+
+    const {data,error} = await supabase
+      .from("wallets")
+      .select("coins")
+      .eq("user_id",session.user.id)
+      .single();
+
+
+    if(error){
+
+      console.error(error);
+
+      document.getElementById("coinAmount").textContent = "0";
+      document.getElementById("bigCoinAmount").textContent = "0";
+
+      return;
+    }
+
+
+    const coins = data?.coins ?? 0;
+
+    document.getElementById("coinAmount").textContent = coins;
+    document.getElementById("bigCoinAmount").textContent = coins;
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+}
+
+
+window.buyPremium = async function(productId,price,productName){
+
+  try{
+
+    const {
+      data:{session}
+    } = await supabase.auth.getSession();
+
+
+    if(!session?.user){
+
+      showMessage("Please log in first.");
+
+      setTimeout(()=>{
+        location.href="./index.html?auth=required";
+      },900);
+
+      return;
+    }
+
+
+    const confirmed = confirm(
+      `Unlock ${productName} for ${price} coins?\n\nPremium lasts for 5 days.`
+    );
+
+
+    if(!confirmed) return;
+
+
+    showMessage("Processing purchase...");
+
+
+    /*
+      Calls the same Supabase Edge Function
+      used by ToolBoxHub's existing premium system.
+    */
+
+    const {data,error} = await supabase.functions.invoke(
+      "toolboxhub",
+      {
+        body:{
+          action:"purchase_premium",
+          product_id:productId
+        }
+      }
+    );
+
+
+    if(error){
+
+      console.error(error);
+
+      showMessage(
+        error.message || "Purchase failed."
+      );
+
+      return;
+    }
+
+
+    if(data?.error){
+
+      showMessage(data.error);
+
+      return;
+    }
+
+
+    showMessage(
+      `${productName} unlocked for 5 days!`
+    );
+
+
+    await loadWallet();
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showMessage(
+      "Something went wrong with the purchase."
+    );
+
+  }
+
+};
+
+
+document
+  .getElementById("accountButton")
+  .addEventListener("click",async()=>{
+
+    const {
+      data:{session}
+    } = await supabase.auth.getSession();
+
+    if(session?.user){
+
+      const email =
+        session.user.email || "Account";
+
+      showMessage(email);
+
+    }else{
+
+      location.href="./index.html?auth=required";
+
+    }
+
+  });
+
+
+supabase.auth.onAuthStateChange(
+  async(event,session)=>{
+
+    if(session?.user){
+
+      document.getElementById("accountButton")
+        .textContent="Account";
+
+    }else{
+
+      document.getElementById("accountButton")
+        .textContent="Login";
+
+    }
+
+    await loadWallet();
+
+  }
+);
+
+
+await loadWallet();
+
+</script>
+
+</body>
+  </html>
