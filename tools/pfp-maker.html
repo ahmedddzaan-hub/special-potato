@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +6,10 @@
 <title>PFP Maker - ToolBoxHub</title>
 
 <style>
+html:not(.toolbox-auth-ready) body {
+  visibility: hidden;
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#0b0d12;color:white;min-height:100vh}
 nav{height:70px;padding:0 6%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #252a35}
@@ -37,6 +40,7 @@ canvas{width:100%;max-width:360px;height:auto;aspect-ratio:1;display:block}
 .status{color:#7ee2a8;font-size:13px;margin-top:12px;min-height:18px}
 .status.error{color:#ff9292}
 footer{text-align:center;color:#737985;padding:30px;border-top:1px solid #252a35;margin-top:45px}
+
 @media(max-width:700px){
   .editor{grid-template-columns:1fr}
   .container{margin:25px auto}
@@ -55,7 +59,9 @@ footer{text-align:center;color:#737985;padding:30px;border-top:1px solid #252a35
 </nav>
 
 <main class="container">
+
   <h1>PFP Maker</h1>
+
   <p class="subtitle">
     Create your own profile picture with photos, colors, text and borders.
   </p>
@@ -63,84 +69,221 @@ footer{text-align:center;color:#737985;padding:30px;border-top:1px solid #252a35
   <div class="editor">
 
     <section class="panel">
+
       <h2>Customize your PFP</h2>
 
-      <label for="photo">Upload your picture</label>
-      <input type="file" id="photo" accept="image/*">
+      <label for="photo">
+        Upload your picture
+      </label>
 
-      <label for="background">Background color</label>
-      <input type="color" id="background" value="#171b35">
+      <input
+        type="file"
+        id="photo"
+        accept="image/*"
+      >
 
-      <label for="shape">Picture shape</label>
+      <label for="background">
+        Background color
+      </label>
+
+      <input
+        type="color"
+        id="background"
+        value="#171b35"
+      >
+
+      <label for="shape">
+        Picture shape
+      </label>
+
       <select id="shape">
         <option value="circle">Circle</option>
         <option value="square">Square</option>
       </select>
 
-      <label for="zoom">Photo zoom</label>
-      <input type="range" id="zoom" min="1" max="3" step=".05" value="1">
+      <label for="zoom">
+        Photo zoom
+      </label>
 
-      <label for="borderColor">Border color</label>
-      <input type="color" id="borderColor" value="#6c63ff">
+      <input
+        type="range"
+        id="zoom"
+        min="1"
+        max="3"
+        step=".05"
+        value="1"
+      >
 
-      <label for="borderWidth">Border thickness</label>
-      <input type="range" id="borderWidth" min="0" max="30" value="10">
+      <label for="borderColor">
+        Border color
+      </label>
 
-      <label for="caption">Text on your PFP</label>
-      <input type="text" id="caption" maxlength="25" placeholder="Enter your name">
+      <input
+        type="color"
+        id="borderColor"
+        value="#6c63ff"
+      >
 
-      <label for="textColor">Text color</label>
-      <input type="color" id="textColor" value="#ffffff">
+      <label for="borderWidth">
+        Border thickness
+      </label>
 
-      <label for="textSize">Text size</label>
-      <input type="range" id="textSize" min="12" max="65" value="32">
+      <input
+        type="range"
+        id="borderWidth"
+        min="0"
+        max="30"
+        value="10"
+      >
+
+      <label for="caption">
+        Text on your PFP
+      </label>
+
+      <input
+        type="text"
+        id="caption"
+        maxlength="25"
+        placeholder="Enter your name"
+      >
+
+      <label for="textColor">
+        Text color
+      </label>
+
+      <input
+        type="color"
+        id="textColor"
+        value="#ffffff"
+      >
+
+      <label for="textSize">
+        Text size
+      </label>
+
+      <input
+        type="range"
+        id="textSize"
+        min="12"
+        max="65"
+        value="32"
+      >
 
       <div class="buttons">
-        <button id="topButton" class="active" type="button" onclick="setTextPosition('top',this)">Text at top</button>
-        <button id="bottomButton" type="button" onclick="setTextPosition('bottom',this)">Text at bottom</button>
+
+        <button
+          id="topButton"
+          class="active"
+          type="button"
+          onclick="setTextPosition('top',this)"
+        >
+          Text at top
+        </button>
+
+        <button
+          id="bottomButton"
+          type="button"
+          onclick="setTextPosition('bottom',this)"
+        >
+          Text at bottom
+        </button>
+
       </div>
 
       <div class="buttons">
-        <button type="button" onclick="resetEditor()">Reset</button>
-        <button type="button" onclick="removePhoto()">Remove photo</button>
+
+        <button
+          type="button"
+          onclick="resetEditor()"
+        >
+          Reset
+        </button>
+
+        <button
+          type="button"
+          onclick="removePhoto()"
+        >
+          Remove photo
+        </button>
+
       </div>
 
       <p class="hint">
-        Tip: Upload a square image for the easiest result. Your picture stays in your browser.
+        Tip: Upload a square image for the easiest result.
+        Your picture stays in your browser.
       </p>
 
-      <div class="status" id="status" aria-live="polite"></div>
+      <div
+        class="status"
+        id="status"
+        aria-live="polite"
+      ></div>
+
     </section>
 
+
     <section class="preview">
+
       <h2>Live Preview</h2>
 
       <div class="canvas-wrap">
-        <canvas id="canvas" width="600" height="600"></canvas>
+
+        <canvas
+          id="canvas"
+          width="600"
+          height="600"
+        ></canvas>
+
       </div>
 
-      <button class="download" type="button" onclick="downloadPFP()">
+      <button
+        class="download"
+        type="button"
+        onclick="downloadPFP()"
+      >
         Download PFP PNG
       </button>
 
       <p class="hint">
-        Your finished profile picture will be downloaded as a 600 × 600 PNG image.
+        Your finished profile picture will be downloaded
+        as a 600 × 600 PNG image.
       </p>
+
     </section>
 
   </div>
+
 </main>
 
-<footer>© 2026 ToolBoxHub</footer>
+<footer>
+  © 2026 ToolBoxHub
+</footer>
 
-<script>
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-const photoInput = document.getElementById("photo");
+
+<script type="module">
+
+import {
+  initializeToolPage,
+  runTool
+} from "../tools.js";
+
+
+const canvas =
+  document.getElementById("canvas");
+
+const ctx =
+  canvas.getContext("2d");
+
+const photoInput =
+  document.getElementById("photo");
+
 
 let uploadedImage = null;
+
 let textPosition = "bottom";
+
 let imageURL = null;
+
 
 const controls = [
   "background",
@@ -153,90 +296,261 @@ const controls = [
   "zoom"
 ];
 
+
 controls.forEach(id => {
-  document.getElementById(id).addEventListener("input", draw);
+
+  document
+    .getElementById(id)
+    .addEventListener(
+      "input",
+      draw
+    );
+
 });
 
-photoInput.addEventListener("change", function() {
-  const file = this.files[0];
 
-  if (!file) return;
+photoInput.addEventListener(
+  "change",
+  function () {
 
-  if (!file.type.startsWith("image/")) {
-    showStatus("Please select a valid image file.", true);
-    this.value = "";
-    return;
+    const file =
+      this.files[0];
+
+    if (!file) return;
+
+
+    if (
+      !file.type.startsWith("image/")
+    ) {
+
+      showStatus(
+        "Please select a valid image file.",
+        true
+      );
+
+      this.value = "";
+
+      return;
+
+    }
+
+
+    if (
+      file.size >
+      15 * 1024 * 1024
+    ) {
+
+      showStatus(
+        "Image is too large. Maximum size is 15 MB.",
+        true
+      );
+
+      this.value = "";
+
+      return;
+
+    }
+
+
+    const newURL =
+      URL.createObjectURL(file);
+
+    const img =
+      new Image();
+
+
+    img.onload = function () {
+
+      if (imageURL) {
+        URL.revokeObjectURL(
+          imageURL
+        );
+      }
+
+
+      imageURL =
+        newURL;
+
+      uploadedImage =
+        img;
+
+
+      document.getElementById(
+        "zoom"
+      ).value = 1;
+
+
+      draw();
+
+
+      showStatus(
+        "Picture uploaded!"
+      );
+
+    };
+
+
+    img.onerror = function () {
+
+      URL.revokeObjectURL(
+        newURL
+      );
+
+      showStatus(
+        "Could not load this image.",
+        true
+      );
+
+      photoInput.value = "";
+
+    };
+
+
+    img.src = newURL;
+
   }
+);
 
-  if (file.size > 15 * 1024 * 1024) {
-    showStatus("Image is too large. Maximum size is 15 MB.", true);
-    this.value = "";
-    return;
-  }
-
-  const newURL = URL.createObjectURL(file);
-  const img = new Image();
-
-  img.onload = function() {
-    if (imageURL) URL.revokeObjectURL(imageURL);
-
-    imageURL = newURL;
-    uploadedImage = img;
-
-    document.getElementById("zoom").value = 1;
-    draw();
-
-    showStatus("Picture uploaded!");
-  };
-
-  img.onerror = function() {
-    URL.revokeObjectURL(newURL);
-    showStatus("Could not load this image.", true);
-    photoInput.value = "";
-  };
-
-  img.src = newURL;
-});
 
 function roundedClip(shape) {
+
   ctx.beginPath();
 
+
   if (shape === "circle") {
-    ctx.arc(300, 300, 300, 0, Math.PI * 2);
+
+    ctx.arc(
+      300,
+      300,
+      300,
+      0,
+      Math.PI * 2
+    );
+
   } else {
-    ctx.rect(0, 0, 600, 600);
+
+    ctx.rect(
+      0,
+      0,
+      600,
+      600
+    );
+
   }
 
+
   ctx.clip();
+
 }
 
-function draw() {
-  const bg = document.getElementById("background").value;
-  const shape = document.getElementById("shape").value;
-  const borderColor = document.getElementById("borderColor").value;
-  const borderWidth = Number(document.getElementById("borderWidth").value);
-  const caption = document.getElementById("caption").value;
-  const textColor = document.getElementById("textColor").value;
-  const textSize = Number(document.getElementById("textSize").value);
-  const zoom = Number(document.getElementById("zoom").value);
 
-  ctx.clearRect(0, 0, 600, 600);
+function draw() {
+
+  const bg =
+    document.getElementById(
+      "background"
+    ).value;
+
+
+  const shape =
+    document.getElementById(
+      "shape"
+    ).value;
+
+
+  const borderColor =
+    document.getElementById(
+      "borderColor"
+    ).value;
+
+
+  const borderWidth =
+    Number(
+      document.getElementById(
+        "borderWidth"
+      ).value
+    );
+
+
+  const caption =
+    document.getElementById(
+      "caption"
+    ).value;
+
+
+  const textColor =
+    document.getElementById(
+      "textColor"
+    ).value;
+
+
+  const textSize =
+    Number(
+      document.getElementById(
+        "textSize"
+      ).value
+    );
+
+
+  const zoom =
+    Number(
+      document.getElementById(
+        "zoom"
+      ).value
+    );
+
+
+  ctx.clearRect(
+    0,
+    0,
+    600,
+    600
+  );
+
 
   // Background
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, 600, 600);
+
+  ctx.fillStyle =
+    bg;
+
+  ctx.fillRect(
+    0,
+    0,
+    600,
+    600
+  );
+
 
   // Photo
+
   ctx.save();
+
   roundedClip(shape);
 
-  if (uploadedImage) {
-    const iw = uploadedImage.width;
-    const ih = uploadedImage.height;
 
-    const scale = Math.max(600 / iw, 600 / ih) * zoom;
-    const w = iw * scale;
-    const h = ih * scale;
+  if (uploadedImage) {
+
+    const iw =
+      uploadedImage.width;
+
+    const ih =
+      uploadedImage.height;
+
+
+    const scale =
+      Math.max(
+        600 / iw,
+        600 / ih
+      ) * zoom;
+
+
+    const w =
+      iw * scale;
+
+
+    const h =
+      ih * scale;
+
 
     ctx.drawImage(
       uploadedImage,
@@ -245,126 +559,400 @@ function draw() {
       w,
       h
     );
+
   }
+
 
   ctx.restore();
 
+
   // Border
+
   if (borderWidth > 0) {
+
     ctx.beginPath();
 
+
     if (shape === "circle") {
-      ctx.arc(300, 300, 300 - borderWidth / 2, 0, Math.PI * 2);
+
+      ctx.arc(
+        300,
+        300,
+        300 - borderWidth / 2,
+        0,
+        Math.PI * 2
+      );
+
     } else {
+
       ctx.rect(
         borderWidth / 2,
         borderWidth / 2,
         600 - borderWidth,
         600 - borderWidth
       );
+
     }
 
-    ctx.strokeStyle = borderColor;
-    ctx.lineWidth = borderWidth;
+
+    ctx.strokeStyle =
+      borderColor;
+
+    ctx.lineWidth =
+      borderWidth;
+
     ctx.stroke();
+
   }
+
 
   // Caption
+
   if (caption.trim()) {
+
     ctx.save();
 
-    ctx.font = "bold " + textSize + "px Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.lineJoin = "round";
+
+    ctx.font =
+      "bold " +
+      textSize +
+      "px Arial";
+
+
+    ctx.textAlign =
+      "center";
+
+
+    ctx.textBaseline =
+      "middle";
+
+
+    ctx.lineJoin =
+      "round";
+
+
     ctx.lineWidth = 5;
-    ctx.strokeStyle = "rgba(0,0,0,.65)";
-    ctx.fillStyle = textColor;
 
-    const y = textPosition === "top" ? 65 : 535;
 
-    ctx.strokeText(caption, 300, y, 520);
-    ctx.fillText(caption, 300, y, 520);
+    ctx.strokeStyle =
+      "rgba(0,0,0,.65)";
+
+
+    ctx.fillStyle =
+      textColor;
+
+
+    const y =
+      textPosition === "top"
+        ? 65
+        : 535;
+
+
+    ctx.strokeText(
+      caption,
+      300,
+      y,
+      520
+    );
+
+
+    ctx.fillText(
+      caption,
+      300,
+      y,
+      520
+    );
+
 
     ctx.restore();
+
   }
+
 }
 
-function setTextPosition(position, button) {
-  textPosition = position;
 
-  document.getElementById("topButton").classList.remove("active");
-  document.getElementById("bottomButton").classList.remove("active");
+function setTextPosition(
+  position,
+  button
+) {
 
-  button.classList.add("active");
+  textPosition =
+    position;
+
+
+  document
+    .getElementById(
+      "topButton"
+    )
+    .classList.remove(
+      "active"
+    );
+
+
+  document
+    .getElementById(
+      "bottomButton"
+    )
+    .classList.remove(
+      "active"
+    );
+
+
+  button.classList.add(
+    "active"
+  );
+
+
   draw();
+
 }
+
 
 function removePhoto() {
-  uploadedImage = null;
-  photoInput.value = "";
+
+  uploadedImage =
+    null;
+
+  photoInput.value =
+    "";
+
 
   if (imageURL) {
-    URL.revokeObjectURL(imageURL);
-    imageURL = null;
+
+    URL.revokeObjectURL(
+      imageURL
+    );
+
+    imageURL =
+      null;
+
   }
 
+
   draw();
-  showStatus("Picture removed.");
+
+
+  showStatus(
+    "Picture removed."
+  );
+
 }
+
 
 function resetEditor() {
-  document.getElementById("background").value = "#171b35";
-  document.getElementById("shape").value = "circle";
-  document.getElementById("borderColor").value = "#6c63ff";
-  document.getElementById("borderWidth").value = 10;
-  document.getElementById("caption").value = "";
-  document.getElementById("textColor").value = "#ffffff";
-  document.getElementById("textSize").value = 32;
-  document.getElementById("zoom").value = 1;
 
-  textPosition = "bottom";
+  document.getElementById(
+    "background"
+  ).value =
+    "#171b35";
 
-  document.getElementById("topButton").classList.remove("active");
-  document.getElementById("bottomButton").classList.add("active");
+
+  document.getElementById(
+    "shape"
+  ).value =
+    "circle";
+
+
+  document.getElementById(
+    "borderColor"
+  ).value =
+    "#6c63ff";
+
+
+  document.getElementById(
+    "borderWidth"
+  ).value =
+    10;
+
+
+  document.getElementById(
+    "caption"
+  ).value =
+    "";
+
+
+  document.getElementById(
+    "textColor"
+  ).value =
+    "#ffffff";
+
+
+  document.getElementById(
+    "textSize"
+  ).value =
+    32;
+
+
+  document.getElementById(
+    "zoom"
+  ).value =
+    1;
+
+
+  textPosition =
+    "bottom";
+
+
+  document
+    .getElementById(
+      "topButton"
+    )
+    .classList.remove(
+      "active"
+    );
+
+
+  document
+    .getElementById(
+      "bottomButton"
+    )
+    .classList.add(
+      "active"
+    );
+
 
   draw();
-  showStatus("Editor reset.");
+
+
+  showStatus(
+    "Editor reset."
+  );
+
 }
 
-function downloadPFP() {
-  draw();
 
-  canvas.toBlob(function(blob) {
-    if (!blob) {
-      showStatus("Could not create the image.", true);
-      return;
+async function downloadPFP() {
+
+  await runTool(
+    "pfp-maker",
+    async () => {
+
+      draw();
+
+
+      const blob =
+        await new Promise(
+          resolve =>
+            canvas.toBlob(
+              resolve,
+              "image/png"
+            )
+        );
+
+
+      if (!blob) {
+
+        showStatus(
+          "Could not create the image.",
+          true
+        );
+
+        throw new Error(
+          "Could not create the image."
+        );
+
+      }
+
+
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      const link =
+        document.createElement(
+          "a"
+        );
+
+
+      link.href =
+        url;
+
+
+      link.download =
+        "toolboxhub-pfp.png";
+
+
+      document.body.appendChild(
+        link
+      );
+
+
+      link.click();
+
+
+      link.remove();
+
+
+      setTimeout(
+        () =>
+          URL.revokeObjectURL(
+            url
+          ),
+        1000
+      );
+
+
+      showStatus(
+        "Your PFP is ready!"
+      );
+
     }
+  );
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = "toolboxhub-pfp.png";
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-
-    showStatus("Your PFP is ready!");
-  }, "image/png");
 }
 
-function showStatus(message, error = false) {
-  const status = document.getElementById("status");
 
-  status.textContent = message;
-  status.className = error ? "status error" : "status";
+function showStatus(
+  message,
+  error = false
+) {
+
+  const status =
+    document.getElementById(
+      "status"
+    );
+
+
+  status.textContent =
+    message;
+
+
+  status.className =
+    error
+      ? "status error"
+      : "status";
+
 }
+
+
+// Keep existing inline
+// onclick handlers working.
+
+window.setTextPosition =
+  setTextPosition;
+
+window.resetEditor =
+  resetEditor;
+
+window.removePhoto =
+  removePhoto;
+
+window.downloadPFP =
+  downloadPFP;
+
+window.showStatus =
+  showStatus;
+
 
 draw();
+
+
+// Require login and load wallet.
+
+initializeToolPage();
+
 </script>
 
 </body>
