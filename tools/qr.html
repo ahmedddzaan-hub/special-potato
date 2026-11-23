@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,228 +6,383 @@
 <title>QR Code Generator — ToolBoxHub</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
 body{
   font-family:Arial,sans-serif;
   background:#0b0d12;
-  color:white;
+  color:#fff;
   min-height:100vh;
   padding:30px 20px;
 }
-.container{width:min(600px,100%);margin:auto}
-a{color:#9b96ff;text-decoration:none}
-.back{display:inline-block;margin-bottom:30px}
+
+.container{
+  width:min(600px,100%);
+  margin:auto;
+}
+
+.back{
+  display:inline-block;
+  margin-bottom:25px;
+  color:#9b96ff;
+  text-decoration:none;
+}
+
 .card{
   background:#12151c;
   border:1px solid #252a35;
   border-radius:18px;
   padding:25px;
 }
-h1{margin-bottom:10px}
-.description{color:#9ca3af;margin-bottom:25px}
+
+h1{
+  margin-bottom:10px;
+}
+
+.description{
+  color:#9ca3af;
+  margin-bottom:25px;
+}
+
 textarea{
   width:100%;
-  height:120px;
+  min-height:120px;
   resize:vertical;
   background:#0b0d12;
-  color:white;
+  color:#fff;
   border:1px solid #292e39;
   border-radius:10px;
   padding:15px;
   font-size:16px;
   outline:none;
 }
-textarea:focus{border-color:#6c63ff}
+
+textarea:focus{
+  border-color:#6c63ff;
+}
+
 button{
-  border:none;
+  border:0;
   border-radius:10px;
   padding:13px 18px;
   font-size:15px;
   cursor:pointer;
-  margin-top:15px;
 }
-button:disabled{opacity:.6;cursor:not-allowed}
-.generate{background:#6c63ff;color:white;width:100%}
-.clear{background:#252a35;color:white;width:100%}
+
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.generate{
+  width:100%;
+  margin-top:15px;
+  background:#6c63ff;
+  color:#fff;
+}
+
+.clear{
+  width:100%;
+  margin-top:15px;
+  background:#252a35;
+  color:#fff;
+}
+
 #qrContainer{
   display:none;
   margin-top:25px;
   text-align:center;
-  background:white;
+  background:#fff;
   padding:20px;
   border-radius:12px;
 }
-#qrContainer img{max-width:100%;width:260px;height:260px}
-.download{background:#111;color:white;width:100%;margin-top:15px}
-.error{color:#ff7777;margin-top:15px;display:none}
-.status{
-  margin-top:18px;
-  padding:13px;
-  background:#0b0d12;
-  border:1px solid #292e39;
-  border-radius:10px;
-  color:#c4c7d0;
-  font-size:14px;
+
+#qrImage{
+  width:260px;
+  max-width:100%;
+  height:260px;
 }
-.wallet{
+
+.download{
+  width:100%;
+  margin-top:15px;
+  background:#111;
+  color:#fff;
+}
+
+#error{
+  display:none;
+  margin-top:10px;
+  color:#ff7777;
+}
+
+#wallet{
   margin-top:15px;
   color:#c4bfff;
   font-weight:bold;
+}
+
+#toolMessage{
+  margin-top:15px;
 }
 </style>
 </head>
 
 <body>
+
 <div class="container">
-<a class="back" href="../index.html">← Back to ToolBoxHub</a>
+
+<a class="back" href="../index.html">
+← Back to ToolBoxHub
+</a>
 
 <div class="card">
+
 <h1>QR Code Generator</h1>
-<p class="description">Create a QR code from any text, link, or message.</p>
 
-<textarea id="text" placeholder="Enter a URL or text..."></textarea>
+<p class="description">
+Create a QR code from any text, link, or message.
+</p>
 
-<p id="error" class="error">Please enter something first.</p>
+<textarea
+  id="qrText"
+  placeholder="Enter a URL or text..."
+></textarea>
 
-<button id="generateButton" class="generate" onclick="generateQR()">
+<div id="error">
+Please enter something first.
+</div>
+
+<button
+  id="generateButton"
+  class="generate"
+>
 Generate QR Code
 </button>
 
 <div id="qrContainer">
-<img id="qrImage" alt="Generated QR Code">
-<button class="download" onclick="downloadQR()">Download QR Code</button>
+
+<img
+  id="qrImage"
+  alt="Generated QR Code"
+>
+
+<button
+  id="downloadButton"
+  class="download"
+>
+Download QR Code
+</button>
+
 </div>
 
-<div id="status" class="status">Sign in and generate a QR code to earn coins.</div>
-<div id="wallet" class="wallet">Wallet: Loading...</div>
+<div id="wallet">
+Wallet: Loading...
+</div>
 
-<button class="clear" onclick="clearQR()">Clear</button>
+<button
+  id="clearButton"
+  class="clear"
+>
+Clear
+</button>
+
 </div>
 </div>
 
 <script type="module">
+
 import {
-  getToolboxUser,
-  getToolboxBalance,
-  claimToolReward
-} from "../toolbox-api.js";
+  initializeToolPage,
+  refreshWallet,
+  runTool
+} from "../tools.js";
 
-const textInput = document.getElementById("text");
-const error = document.getElementById("error");
-const container = document.getElementById("qrContainer");
-const image = document.getElementById("qrImage");
-const statusBox = document.getElementById("status");
-const walletBox = document.getElementById("wallet");
-const generateButton = document.getElementById("generateButton");
 
-let currentUser = null;
-let generationNumber = 0;
-let rewardRequestRunning = false;
+const text =
+  document.getElementById("qrText");
 
-function setStatus(message) {
-  statusBox.textContent = message;
-}
+const error =
+  document.getElementById("error");
 
-async function refreshWallet() {
-  try {
-    currentUser = await getToolboxUser();
-    const balance = await getToolboxBalance(currentUser);
-    walletBox.textContent = "Wallet: " + (balance.coins ?? 0) + " coins";
-  } catch (err) {
-    walletBox.textContent = "Wallet unavailable";
-    console.error("Wallet error:", err);
-  }
-}
+const generateButton =
+  document.getElementById("generateButton");
 
-async function rewardAfterSuccessfulGeneration() {
-  if (rewardRequestRunning) return;
+const qrContainer =
+  document.getElementById("qrContainer");
 
-  rewardRequestRunning = true;
-  setStatus("QR generated! Checking your coin reward...");
+const qrImage =
+  document.getElementById("qrImage");
 
-  try {
-    currentUser = await getToolboxUser();
+const downloadButton =
+  document.getElementById("downloadButton");
 
-    const result = await claimToolReward(currentUser, "qr");
+const clearButton =
+  document.getElementById("clearButton");
 
-    if (result?.success) {
-      setStatus(
-        "Success! You earned " + result.reward + " coins!"
-      );
-    } else {
-      setStatus("QR generated, but the reward was not confirmed.");
-    }
+const wallet =
+  document.getElementById("wallet");
 
+
+/*
+  Load login + wallet when the page opens.
+*/
+
+const loggedIn =
+  await initializeToolPage();
+
+
+if (loggedIn) {
+
+  const coins =
     await refreshWallet();
 
-  } catch (err) {
-    const message = err.message || "Reward request failed.";
-
-    if (message.toLowerCase().includes("already claimed")) {
-      setStatus("QR generated! You've already claimed today's QR reward.");
-    } else {
-      setStatus("QR generated, but reward failed: " + message);
-    }
-
-    await refreshWallet();
-
-  } finally {
-    rewardRequestRunning = false;
+  if (coins !== null) {
+    wallet.textContent =
+      `Wallet: ${coins} coins`;
   }
+
 }
 
-window.generateQR = function() {
-  const value = textInput.value.trim();
 
-  if (!value) {
-    error.style.display = "block";
-    container.style.display = "none";
-    return;
+/*
+  Generate QR
+*/
+
+generateButton.addEventListener(
+  "click",
+  async () => {
+
+    const value =
+      text.value.trim();
+
+    if (!value) {
+
+      error.style.display =
+        "block";
+
+      return;
+
+    }
+
+    error.style.display =
+      "none";
+
+    generateButton.disabled =
+      true;
+
+    qrContainer.style.display =
+      "block";
+
+
+    /*
+      The shared runTool() handles the
+      reward AFTER the QR actually loads.
+    */
+
+    await runTool(
+      "qr",
+      async () => {
+
+        await new Promise(
+          (resolve, reject) => {
+
+            qrImage.onload =
+              () => resolve();
+
+            qrImage.onerror =
+              () => reject(
+                new Error(
+                  "QR code could not be generated."
+                )
+              );
+
+            qrImage.src =
+              "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" +
+              encodeURIComponent(value);
+
+          }
+        );
+
+      }
+    );
+
+
+    generateButton.disabled =
+      false;
+
+
+    const coins =
+      await refreshWallet();
+
+    if (coins !== null) {
+
+      wallet.textContent =
+        `Wallet: ${coins} coins`;
+
+    }
+
   }
+);
 
-  error.style.display = "none";
-  container.style.display = "block";
-  setStatus("Generating your QR code...");
 
-  const thisGeneration = ++generationNumber;
+/*
+  Download
+*/
 
-  image.onload = async function() {
-    if (thisGeneration !== generationNumber) return;
-    await rewardAfterSuccessfulGeneration();
-  };
+downloadButton.addEventListener(
+  "click",
+  () => {
 
-  image.onerror = function() {
-    if (thisGeneration !== generationNumber) return;
-    container.style.display = "none";
-    setStatus("QR generation failed. Please try again.");
-  };
+    if (!qrImage.src) {
+      return;
+    }
 
-  image.src =
-    "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" +
-    encodeURIComponent(value);
-};
+    const link =
+      document.createElement("a");
 
-window.downloadQR = function() {
-  if (!image.src) return;
+    link.href =
+      qrImage.src;
 
-  const link = document.createElement("a");
-  link.href = image.src;
-  link.download = "toolboxhub-qr.png";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-};
+    link.download =
+      "toolboxhub-qr.png";
 
-window.clearQR = function() {
-  generationNumber++;
-  textInput.value = "";
-  image.src = "";
-  container.style.display = "none";
-  error.style.display = "none";
-  setStatus("Ready to generate another QR code.");
-};
+    document.body.appendChild(link);
 
-refreshWallet();
+    link.click();
+
+    link.remove();
+
+  }
+);
+
+
+/*
+  Clear
+*/
+
+clearButton.addEventListener(
+  "click",
+  () => {
+
+    text.value = "";
+
+    qrImage.src = "";
+
+    qrContainer.style.display =
+      "none";
+
+    error.style.display =
+      "none";
+
+  }
+);
+
 </script>
+
 </body>
 </html>
