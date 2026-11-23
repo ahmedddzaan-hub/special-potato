@@ -1,330 +1,670 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Resizer — ToolBoxHub</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Resizer — ToolBoxHub</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #0b0d12;
-      color: white;
-      min-height: 100vh;
-      padding: 30px 20px;
-    }
+body{
+  font-family:Arial,sans-serif;
+  background:#0b0d12;
+  color:white;
+  min-height:100vh;
+  padding:30px 20px;
+}
 
-    .container {
-      width: min(700px, 100%);
-      margin: auto;
-    }
+.container{
+  width:min(700px,100%);
+  margin:auto;
+}
 
-    .back {
-      display: inline-block;
-      color: #9b96ff;
-      text-decoration: none;
-      margin-bottom: 30px;
-    }
+.back{
+  display:inline-block;
+  color:#9b96ff;
+  text-decoration:none;
+  margin-bottom:30px;
+}
 
-    .card {
-      background: #12151c;
-      border: 1px solid #252a35;
-      border-radius: 18px;
-      padding: 25px;
-    }
+.card{
+  background:#12151c;
+  border:1px solid #252a35;
+  border-radius:18px;
+  padding:25px;
+}
 
-    h1 { margin-bottom: 10px; }
+h1{
+  margin-bottom:10px;
+}
 
-    .description {
-      color: #9ca3af;
-      margin-bottom: 25px;
-    }
+.description{
+  color:#9ca3af;
+  margin-bottom:25px;
+}
 
-    .upload {
-      display: block;
-      border: 2px dashed #363b48;
-      border-radius: 14px;
-      padding: 35px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+.upload{
+  display:block;
+  border:2px dashed #363b48;
+  border-radius:14px;
+  padding:35px 20px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s;
+}
 
-    .upload:hover { border-color: #6c63ff; }
-    .upload input { display: none; }
+.upload:hover{
+  border-color:#6c63ff;
+}
 
-    .upload-icon {
-      font-size: 40px;
-      margin-bottom: 10px;
-    }
+.upload input{
+  display:none;
+}
 
-    .upload p { color: #9ca3af; }
+.upload-icon{
+  font-size:40px;
+  margin-bottom:10px;
+}
 
-    .controls {
-      display: none;
-      margin-top: 25px;
-    }
+.upload p{
+  color:#9ca3af;
+}
 
-    .preview {
-      text-align: center;
-      margin-bottom: 25px;
-    }
+.controls{
+  display:none;
+  margin-top:25px;
+}
 
-    #previewImage {
-      max-width: 100%;
-      max-height: 350px;
-      border-radius: 10px;
-      border: 1px solid #292e39;
-    }
+.preview{
+  text-align:center;
+  margin-bottom:25px;
+}
 
-    .dimensions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
+#previewImage{
+  max-width:100%;
+  max-height:350px;
+  border-radius:10px;
+  border:1px solid #292e39;
+}
 
-    label {
-      display: block;
-      color: #b8bdc8;
-      font-size: 14px;
-      margin-bottom: 7px;
-    }
+.dimensions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+  margin-bottom:15px;
+}
 
-    input[type="number"] {
-      width: 100%;
-      padding: 13px;
-      background: #0b0d12;
-      color: white;
-      border: 1px solid #292e39;
-      border-radius: 9px;
-      outline: none;
-      font-size: 15px;
-    }
+label{
+  display:block;
+  color:#b8bdc8;
+  font-size:14px;
+  margin-bottom:7px;
+}
 
-    input[type="number"]:focus { border-color: #6c63ff; }
+input[type="number"]{
+  width:100%;
+  padding:13px;
+  background:#0b0d12;
+  color:white;
+  border:1px solid #292e39;
+  border-radius:9px;
+  outline:none;
+  font-size:15px;
+}
 
-    .ratio {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #9ca3af;
-      margin-bottom: 20px;
-      font-size: 14px;
-    }
+input[type="number"]:focus{
+  border-color:#6c63ff;
+}
 
-    .ratio input { margin: 0; }
+.ratio{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#9ca3af;
+  margin-bottom:20px;
+  font-size:14px;
+}
 
-    button {
-      width: 100%;
-      border: 0;
-      border-radius: 10px;
-      padding: 14px;
-      cursor: pointer;
-      font-size: 15px;
-      margin-top: 10px;
-    }
+.ratio input{
+  margin:0;
+}
 
-    .resize {
-      background: #6c63ff;
-      color: white;
-    }
+button{
+  width:100%;
+  border:0;
+  border-radius:10px;
+  padding:14px;
+  cursor:pointer;
+  font-size:15px;
+  margin-top:10px;
+}
 
-    .download {
-      background: #252a35;
-      color: white;
-    }
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
 
-    .reset {
-      background: transparent;
-      color: #9ca3af;
-      border: 1px solid #292e39;
-    }
+.resize{
+  background:#6c63ff;
+  color:white;
+}
 
-    #result {
-      display: none;
-      margin-top: 25px;
-      text-align: center;
-    }
+.download{
+  background:#252a35;
+  color:white;
+}
 
-    #resultImage {
-      max-width: 100%;
-      max-height: 350px;
-      border-radius: 10px;
-      border: 1px solid #292e39;
-    }
+.reset{
+  background:transparent;
+  color:#9ca3af;
+  border:1px solid #292e39;
+}
 
-    .info {
-      color: #9ca3af;
-      margin-top: 10px;
-      font-size: 14px;
-    }
+#result{
+  display:none;
+  margin-top:25px;
+  text-align:center;
+}
 
-    @media (max-width: 500px) {
-      .dimensions { grid-template-columns: 1fr; }
-    }
-  </style>
+#resultImage{
+  max-width:100%;
+  max-height:350px;
+  border-radius:10px;
+  border:1px solid #292e39;
+}
+
+.info{
+  color:#9ca3af;
+  margin-top:10px;
+  font-size:14px;
+}
+
+#wallet{
+  margin-top:18px;
+  color:#c4bfff;
+  font-weight:bold;
+}
+
+@media(max-width:500px){
+  .dimensions{
+    grid-template-columns:1fr;
+  }
+}
+</style>
 </head>
 
 <body>
+
 <div class="container">
 
-  <a class="back" href="../index.html">
-    ← Back to ToolBoxHub
-  </a>
+<a class="back" href="../index.html">
+← Back to ToolBoxHub
+</a>
 
-  <div class="card">
-    <h1>Image Resizer</h1>
+<div class="card">
 
-    <p class="description">
-      Resize an image directly in your browser.
-    </p>
+<h1>Image Resizer</h1>
 
-    <label class="upload">
-      <input
-        type="file"
-        id="imageInput"
-        accept="image/*"
-        onchange="loadImage(event)"
-      >
+<p class="description">
+Resize an image directly in your browser.
+</p>
 
-      <div class="upload-icon">🖼️</div>
-      <strong>Choose an image</strong>
+<label class="upload">
 
-      <p>
-        JPG, PNG, WEBP and other common image formats
-      </p>
-    </label>
+<input
+  type="file"
+  id="imageInput"
+  accept="image/*"
+>
 
-    <div class="controls" id="controls">
-      <div class="preview">
-        <img id="previewImage" alt="Image preview">
-      </div>
+<div class="upload-icon">🖼️</div>
 
-      <div class="dimensions">
-        <div>
-          <label for="width">Width (px)</label>
-          <input type="number" id="width" min="1">
-        </div>
+<strong>Choose an image</strong>
 
-        <div>
-          <label for="height">Height (px)</label>
-          <input type="number" id="height" min="1">
-        </div>
-      </div>
+<p>
+JPG, PNG, WEBP and other common image formats
+</p>
 
-      <label class="ratio">
-        <input type="checkbox" id="keepRatio" checked>
-        Keep aspect ratio
-      </label>
+</label>
 
-      <button class="resize" onclick="resizeImage()">
-        Resize Image
-      </button>
+<div
+  class="controls"
+  id="controls"
+>
 
-      <button class="reset" onclick="resetTool()">
-        Choose Another Image
-      </button>
-    </div>
+<div class="preview">
 
-    <div id="result">
-      <h2>Resized Image</h2>
-      <br>
+<img
+  id="previewImage"
+  alt="Image preview"
+>
 
-      <img id="resultImage" alt="Resized image">
-
-      <p class="info" id="resultInfo"></p>
-
-      <button class="download" onclick="downloadImage()">
-        Download Resized Image
-      </button>
-    </div>
-  </div>
 </div>
 
-<script>
-  let originalImage = new Image();
-  let originalFile = null;
-  let resizedData = null;
+<div class="dimensions">
 
-  function loadImage(event) {
-    const file = event.target.files[0];
+<div>
 
-    if (!file) return;
+<label for="width">
+Width (px)
+</label>
 
-    if (!file.type.startsWith("image/")) {
-      alert("Please select a valid image.");
-      event.target.value = "";
-      return;
-    }
+<input
+  type="number"
+  id="width"
+  min="1"
+>
 
-    originalFile = file;
-    resizedData = null;
+</div>
 
-    const reader = new FileReader();
+<div>
 
-    reader.onload = function(e) {
-      originalImage.onload = function() {
-        document.getElementById("previewImage").src = e.target.result;
-        document.getElementById("width").value = originalImage.width;
-        document.getElementById("height").value = originalImage.height;
-        document.getElementById("controls").style.display = "block";
-        document.getElementById("result").style.display = "none";
-      };
+<label for="height">
+Height (px)
+</label>
 
-      originalImage.onerror = function() {
-        alert("Could not load this image. Try another file.");
-      };
+<input
+  type="number"
+  id="height"
+  min="1"
+>
 
-      originalImage.src = e.target.result;
-    };
+</div>
 
-    reader.onerror = function() {
-      alert("Could not read this image.");
-    };
+</div>
 
-    reader.readAsDataURL(file);
+<label class="ratio">
+
+<input
+  type="checkbox"
+  id="keepRatio"
+  checked
+>
+
+Keep aspect ratio
+
+</label>
+
+<button
+  id="resizeButton"
+  class="resize"
+>
+Resize Image
+</button>
+
+<button
+  id="resetButton"
+  class="reset"
+>
+Choose Another Image
+</button>
+
+</div>
+
+<div id="result">
+
+<h2>Resized Image</h2>
+
+<br>
+
+<img
+  id="resultImage"
+  alt="Resized image"
+>
+
+<p
+  class="info"
+  id="resultInfo"
+></p>
+
+<button
+  id="downloadButton"
+  class="download"
+>
+Download Resized Image
+</button>
+
+</div>
+
+<div id="wallet">
+Wallet: Loading...
+</div>
+
+</div>
+</div>
+
+
+<script type="module">
+
+import {
+  initializeToolPage,
+  refreshWallet,
+  runTool
+} from "../tools.js";
+
+
+let originalImage =
+  new Image();
+
+let originalFile =
+  null;
+
+let resizedData =
+  null;
+
+
+const imageInput =
+  document.getElementById(
+    "imageInput"
+  );
+
+const controls =
+  document.getElementById(
+    "controls"
+  );
+
+const previewImage =
+  document.getElementById(
+    "previewImage"
+  );
+
+const widthInput =
+  document.getElementById(
+    "width"
+  );
+
+const heightInput =
+  document.getElementById(
+    "height"
+  );
+
+const keepRatio =
+  document.getElementById(
+    "keepRatio"
+  );
+
+const resizeButton =
+  document.getElementById(
+    "resizeButton"
+  );
+
+const resetButton =
+  document.getElementById(
+    "resetButton"
+  );
+
+const result =
+  document.getElementById(
+    "result"
+  );
+
+const resultImage =
+  document.getElementById(
+    "resultImage"
+  );
+
+const resultInfo =
+  document.getElementById(
+    "resultInfo"
+  );
+
+const downloadButton =
+  document.getElementById(
+    "downloadButton"
+  );
+
+const wallet =
+  document.getElementById(
+    "wallet"
+  );
+
+
+/*
+  LOGIN + WALLET
+*/
+
+const loggedIn =
+  await initializeToolPage();
+
+if (loggedIn) {
+
+  const coins =
+    await refreshWallet();
+
+  if (coins !== null) {
+
+    wallet.textContent =
+      `Wallet: ${coins} coins`;
+
   }
 
-  document.getElementById("width").addEventListener("input", function() {
-    if (!document.getElementById("keepRatio").checked) return;
-    if (!originalImage.width || !originalImage.height) return;
+}
 
-    const newWidth = parseInt(this.value, 10);
 
-    if (Number.isFinite(newWidth) && newWidth > 0) {
-      document.getElementById("height").value =
-        Math.round(newWidth * originalImage.height / originalImage.width);
-    }
-  });
+/*
+  LOAD IMAGE
+*/
 
-  document.getElementById("height").addEventListener("input", function() {
-    if (!document.getElementById("keepRatio").checked) return;
-    if (!originalImage.width || !originalImage.height) return;
+imageInput.addEventListener(
+  "change",
+  loadImage
+);
 
-    const newHeight = parseInt(this.value, 10);
 
-    if (Number.isFinite(newHeight) && newHeight > 0) {
-      document.getElementById("width").value =
-        Math.round(newHeight * originalImage.width / originalImage.height);
-    }
-  });
+function loadImage(event) {
 
-  function resizeImage() {
-    if (!originalFile || !originalImage.width) {
-      alert("Please choose an image first.");
+  const file =
+    event.target.files[0];
+
+  if (!file) {
+    return;
+  }
+
+
+  if (!file.type.startsWith("image/")) {
+
+    alert(
+      "Please select a valid image."
+    );
+
+    event.target.value = "";
+
+    return;
+
+  }
+
+
+  originalFile =
+    file;
+
+  resizedData =
+    null;
+
+
+  const reader =
+    new FileReader();
+
+
+  reader.onload =
+    function(event) {
+
+      originalImage.onload =
+        function() {
+
+          previewImage.src =
+            event.target.result;
+
+          widthInput.value =
+            originalImage.width;
+
+          heightInput.value =
+            originalImage.height;
+
+          controls.style.display =
+            "block";
+
+          result.style.display =
+            "none";
+
+        };
+
+
+      originalImage.onerror =
+        function() {
+
+          alert(
+            "Could not load this image. Try another file."
+          );
+
+        };
+
+
+      originalImage.src =
+        event.target.result;
+
+    };
+
+
+  reader.onerror =
+    function() {
+
+      alert(
+        "Could not read this image."
+      );
+
+    };
+
+
+  reader.readAsDataURL(file);
+
+}
+
+
+/*
+  KEEP ASPECT RATIO
+*/
+
+widthInput.addEventListener(
+  "input",
+  function() {
+
+    if (!keepRatio.checked) {
       return;
     }
 
-    const width = parseInt(document.getElementById("width").value, 10);
-    const height = parseInt(document.getElementById("height").value, 10);
+    if (
+      !originalImage.width ||
+      !originalImage.height
+    ) {
+      return;
+    }
+
+
+    const newWidth =
+      parseInt(
+        this.value,
+        10
+      );
+
+
+    if (
+      Number.isFinite(newWidth) &&
+      newWidth > 0
+    ) {
+
+      heightInput.value =
+        Math.round(
+          newWidth *
+          originalImage.height /
+          originalImage.width
+        );
+
+    }
+
+  }
+);
+
+
+heightInput.addEventListener(
+  "input",
+  function() {
+
+    if (!keepRatio.checked) {
+      return;
+    }
+
+    if (
+      !originalImage.width ||
+      !originalImage.height
+    ) {
+      return;
+    }
+
+
+    const newHeight =
+      parseInt(
+        this.value,
+        10
+      );
+
+
+    if (
+      Number.isFinite(newHeight) &&
+      newHeight > 0
+    ) {
+
+      widthInput.value =
+        Math.round(
+          newHeight *
+          originalImage.width /
+          originalImage.height
+        );
+
+    }
+
+  }
+);
+
+
+/*
+  RESIZE
+*/
+
+resizeButton.addEventListener(
+  "click",
+  async function() {
+
+    if (
+      !originalFile ||
+      !originalImage.width
+    ) {
+
+      alert(
+        "Please choose an image first."
+      );
+
+      return;
+
+    }
+
+
+    const width =
+      parseInt(
+        widthInput.value,
+        10
+      );
+
+    const height =
+      parseInt(
+        heightInput.value,
+        10
+      );
+
 
     if (
       !Number.isSafeInteger(width) ||
@@ -334,66 +674,202 @@
       width > 12000 ||
       height > 12000
     ) {
-      alert("Enter valid dimensions between 1 and 12000 pixels.");
+
+      alert(
+        "Enter valid dimensions between 1 and 12000 pixels."
+      );
+
       return;
+
     }
 
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
 
-    const ctx = canvas.getContext("2d");
+    /*
+      The actual resize happens inside
+      runTool().
 
-    if (!ctx) {
-      alert("Your browser could not create the resized image.");
-      return;
+      The shared tools.js then gives
+      the reward ONLY if this operation
+      succeeds.
+    */
+
+    await runTool(
+      "image-resizer",
+      async () => {
+
+        const canvas =
+          document.createElement(
+            "canvas"
+          );
+
+        canvas.width =
+          width;
+
+        canvas.height =
+          height;
+
+
+        const ctx =
+          canvas.getContext(
+            "2d"
+          );
+
+
+        if (!ctx) {
+
+          throw new Error(
+            "Your browser could not create the resized image."
+          );
+
+        }
+
+
+        ctx.drawImage(
+          originalImage,
+          0,
+          0,
+          width,
+          height
+        );
+
+
+        const outputType =
+          [
+            "image/png",
+            "image/jpeg",
+            "image/webp"
+          ].includes(
+            originalFile.type
+          )
+            ? originalFile.type
+            : "image/png";
+
+
+        resizedData =
+          canvas.toDataURL(
+            outputType,
+            0.92
+          );
+
+
+        resultImage.src =
+          resizedData;
+
+
+        resultInfo.textContent =
+          `${width} × ${height} pixels`;
+
+
+        result.style.display =
+          "block";
+
+      }
+    );
+
+
+    const coins =
+      await refreshWallet();
+
+
+    if (coins !== null) {
+
+      wallet.textContent =
+        `Wallet: ${coins} coins`;
+
     }
 
-    ctx.drawImage(originalImage, 0, 0, width, height);
-
-    const outputType =
-      ["image/png", "image/jpeg", "image/webp"].includes(originalFile.type)
-        ? originalFile.type
-        : "image/png";
-
-    resizedData = canvas.toDataURL(outputType, 0.92);
-
-    document.getElementById("resultImage").src = resizedData;
-
-    document.getElementById("resultInfo").textContent =
-      width + " × " + height + " pixels";
-
-    document.getElementById("result").style.display = "block";
   }
+);
 
-  function downloadImage() {
-    if (!resizedData) return;
 
-    const link = document.createElement("a");
-    link.href = resizedData;
+/*
+  DOWNLOAD
+*/
+
+downloadButton.addEventListener(
+  "click",
+  function() {
+
+    if (!resizedData) {
+      return;
+    }
+
+
+    const link =
+      document.createElement(
+        "a"
+      );
+
+
+    link.href =
+      resizedData;
+
 
     const extension =
-      originalFile && originalFile.type === "image/jpeg" ? "jpg" :
-      originalFile && originalFile.type === "image/webp" ? "webp" : "png";
+      originalFile &&
+      originalFile.type ===
+      "image/jpeg"
+        ? "jpg"
+        : originalFile &&
+          originalFile.type ===
+          "image/webp"
+          ? "webp"
+          : "png";
 
-    link.download = "toolboxhub-resized-image." + extension;
 
-    document.body.appendChild(link);
+    link.download =
+      `toolboxhub-resized-image.${extension}`;
+
+
+    document.body.appendChild(
+      link
+    );
+
     link.click();
-    document.body.removeChild(link);
-  }
 
-  function resetTool() {
-    document.getElementById("imageInput").value = "";
-    document.getElementById("controls").style.display = "none";
-    document.getElementById("result").style.display = "none";
-    document.getElementById("previewImage").src = "";
-    document.getElementById("resultImage").src = "";
+    document.body.removeChild(
+      link
+    );
 
-    resizedData = null;
-    originalFile = null;
-    originalImage = new Image();
   }
+);
+
+
+/*
+  RESET
+*/
+
+resetButton.addEventListener(
+  "click",
+  function() {
+
+    imageInput.value =
+      "";
+
+    controls.style.display =
+      "none";
+
+    result.style.display =
+      "none";
+
+    previewImage.src =
+      "";
+
+    resultImage.src =
+      "";
+
+    resizedData =
+      null;
+
+    originalFile =
+      null;
+
+    originalImage =
+      new Image();
+
+  }
+);
+
 </script>
 
 </body>
