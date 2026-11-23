@@ -1,3 +1,4 @@
+
 import { supabase } from "./supabase.js";
 
 const FUNCTION_URL =
@@ -18,15 +19,51 @@ export const TOOLS = {
   "pfp-maker": "PFP Maker"
 };
 
+// Remove old wallet loading labels from tool pages.
+function removeWalletLoading() {
+  const walker = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_TEXT
+  );
+
+  const nodes = [];
+
+  while (walker.nextNode()) {
+    nodes.push(walker.currentNode);
+  }
+
+  nodes.forEach(node => {
+    if (/wallet\s*:\s*loading\.{0,3}/i.test(node.textContent)) {
+      node.textContent = node.textContent.replace(
+        /wallet\s*:\s*loading\.{0,3}/gi,
+        ""
+      );
+    }
+  });
+}
+
+if (document.body) {
+  removeWalletLoading();
+
+  const observer = new MutationObserver(
+    removeWalletLoading
+  );
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+}
+
+// Authentication
 async function getSession() {
   const {
     data: { session },
     error
   } = await supabase.auth.getSession();
 
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 
   if (!session?.access_token) {
     throw new Error("Please sign in first.");
@@ -41,51 +78,39 @@ export async function getUser() {
     error
   } = await supabase.auth.getUser();
 
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  if (!user) {
-    throw new Error("Please sign in first.");
-  }
+  if (error) throw new Error(error.message);
+  if (!user) throw new Error("Please sign in first.");
 
   return user;
 }
 
+// Backend request
 export async function request(body) {
   const session = await getSession();
 
   const response = await fetch(FUNCTION_URL, {
     method: "POST",
-
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${session.access_token}`,
       "apikey": ANON_KEY
     },
-
     body: JSON.stringify(body)
   });
 
-  const text = await response.text();
+  const raw = await response.text();
 
-  let data = {};
+  let data;
 
   try {
-    data = text ? JSON.parse(text) : {};
+    data = raw ? JSON.parse(raw) : {};
   } catch {
-    throw new Error(
-      "Invalid response from ToolBoxHub."
-    );
+    throw new Error("Invalid server response.");
   }
 
-  console.log(
-    "ToolBoxHub:",
-    response.status,
-    data
-  );
+  console.log("ToolBoxHub response:", response.status, data);
 
-  if (!response.ok) {
+  if (!response.ok || data?.error) {
     throw new Error(
       data?.error ||
       data?.details ||
@@ -93,32 +118,55 @@ export async function request(body) {
     );
   }
 
-  if (data?.error) {
-    throw new Error(data.error);
-  }
-
   return data;
 }
 
+// Wallet
 export async function getWallet() {
-  return request({
-    action: "balance"
-  });
+  return request({ action: "balance" });
 }
 
 export async function getCoins() {
   const wallet = await getWallet();
-
-  return Number(
-    wallet?.coins ?? 0
-  );
+  return Number(wallet?.coins ?? 0);
 }
 
+function updateWalletElements(coins) {
+  const ids = [
+    "coinBalance",
+    "coins",
+    "walletCoins",
+    "walletBalance"
+  ];
+
+  ids.forEach(id => {
+    const element = document.getElementById(id);
+
+    if (element) {
+      element.textContent = `${coins} coins`;
+    }
+  });
+}
+
+export async function refreshWallet() {
+  try {
+    const wallet = await getWallet();
+    const coins = Number(wallet?.coins ?? 0);
+
+    updateWalletElements(coins);
+    removeWalletLoading();
+
+    return coins;
+  } catch (error) {
+    console.error("Wallet refresh failed:", error);
+    return null;
+  }
+}
+
+// Rewards
 export async function claimReward(toolId) {
   if (!TOOLS[toolId]) {
-    throw new Error(
-      "Invalid ToolBoxHub tool."
-    );
+    throw new Error("Invalid ToolBoxHub tool.");
   }
 
   return request({
@@ -127,56 +175,12 @@ export async function claimReward(toolId) {
   });
 }
 
-export async function refreshWallet() {
-  try {
-    const wallet = await getWallet();
-
-    const coins = Number(
-      wallet?.coins ?? 0
-    );
-
-    // Update any wallet counters that exist.
-    const ids = [
-      "coinBalance",
-      "coins",
-      "walletCoins",
-      "walletBalance"
-    ];
-
-    ids.forEach(id => {
-      const element =
-        document.getElementById(id);
-
-      if (element) {
-        element.textContent =
-          `${coins} coins`;
-      }
-    });
-
-    return coins;
-
-  } catch (error) {
-    console.error(
-      "Wallet refresh failed:",
-      error
-    );
-
-    return null;
-  }
-}
-
-export function showToolMessage(
-  message,
-  type = "info"
-) {
-  let box =
-    document.getElementById(
-      "toolMessage"
-    );
+// Messages
+export function showToolMessage(message, type = "info") {
+  let box = document.getElementById("toolMessage");
 
   if (!box) {
     box = document.createElement("div");
-
     box.id = "toolMessage";
 
     box.style.cssText = `
@@ -192,154 +196,104 @@ export function showToolMessage(
     document.body.appendChild(box);
   }
 
-  if (type === "success") {
-    box.style.borderColor =
-      "#36d399";
-  } else if (type === "error") {
-    box.style.borderColor =
-      "#ff6b6b";
-  } else {
-    box.style.borderColor =
-      "#6c63ff";
-  }
+  box.style.borderColor =
+    type === "success" ? "#36d399" :
+    type === "error" ? "#ff6b6b" :
+    "#6c63ff";
 
   box.textContent = message;
 }
 
+// Complete a tool and claim its reward.
 export async function completeTool(toolId) {
   if (!TOOLS[toolId]) {
-    throw new Error(
-      "Invalid ToolBoxHub tool."
-    );
+    throw new Error("Invalid tool.");
   }
 
-  showToolMessage(
-    `${TOOLS[toolId]} completed. Checking reward...`
-  );
+  showToolMessage("Checking your reward...");
 
   try {
-    const result =
-      await claimReward(toolId);
+    const result = await claimReward(toolId);
 
-    // IMPORTANT:
-    // Use the total returned directly from
-    // the database instead of relying only
-    // on a separate wallet refresh.
     const reward = Number(
       result?.reward ??
       result?.coinsAwarded ??
       0
     );
 
-    const totalCoins = Number(
-      result?.totalCoins ??
-      0
-    );
+    const totalCoins = Number(result?.totalCoins);
 
-    // Update wallet UI immediately.
-    const ids = [
-      "coinBalance",
-      "coins",
-      "walletCoins",
-      "walletBalance"
-    ];
-
-    ids.forEach(id => {
-      const element =
-        document.getElementById(id);
-
-      if (element) {
-        element.textContent =
-          `${totalCoins} coins`;
-      }
-    });
-
-    // Also verify the wallet from the server.
-    await refreshWallet();
-
-    if (reward <= 0) {
-      showToolMessage(
-        "Tool completed, but no reward was returned.",
-        "error"
-      );
-
-      return {
-        success: false,
-        reward: 0,
-        data: result
-      };
+    if (!Number.isFinite(reward) || reward <= 0) {
+      throw new Error("No valid reward was returned.");
     }
 
+    if (Number.isFinite(totalCoins)) {
+      updateWalletElements(totalCoins);
+    }
+
+    // Verify the displayed balance with the server.
+    const refreshedCoins = await refreshWallet();
+
     showToolMessage(
-      `✓ You earned ${reward} coins!`,
+      `✓ You earned ${reward} coins!` +
+      (
+        refreshedCoins !== null
+          ? ` Wallet: ${refreshedCoins} coins.`
+          : ""
+      ),
       "success"
     );
 
     return {
       success: true,
       reward,
-      totalCoins,
+      totalCoins:
+        refreshedCoins ?? totalCoins,
       data: result
     };
 
   } catch (error) {
-    console.error(
-      "Reward error:",
-      error
-    );
-
-    const message =
-      error?.message ||
-      "Reward failed.";
+    console.error("Reward error:", error);
 
     showToolMessage(
-      `✓ Tool completed, but reward could not be added: ${message}`,
+      `Tool completed, but reward failed: ${error.message}`,
       "error"
     );
 
     return {
       success: false,
-      error: message
+      error: error.message
     };
   }
 }
 
-export async function runTool(
-  toolId,
-  operation
-) {
+// Run a tool operation.
+export async function runTool(toolId, operation) {
   try {
     await getUser();
 
-    showToolMessage(
-      `Using ${TOOLS[toolId]}...`
-    );
+    showToolMessage(`Using ${TOOLS[toolId]}...`);
 
     await operation();
 
-    return await completeTool(
-      toolId
-    );
+    return await completeTool(toolId);
 
   } catch (error) {
-    console.error(
-      `${toolId} failed:`,
-      error
-    );
+    console.error(`${toolId} failed:`, error);
 
     showToolMessage(
-      error?.message ||
-      "The tool could not complete.",
+      error?.message || "The tool could not complete.",
       "error"
     );
 
     return {
       success: false,
-      error: error?.message
+      error: error.message
     };
   }
 }
 
+// Login protection
 export async function requireLogin() {
   return getUser();
 }
@@ -347,47 +301,35 @@ export async function requireLogin() {
 export async function initializeToolPage() {
   try {
     await getUser();
-
-    // Don't display a "Wallet: Loading"
-    // message on individual tools.
-    // The homepage handles the wallet display.
-
+    removeWalletLoading();
+    await refreshWallet();
     return true;
-
   } catch {
     showToolMessage(
       "Please sign in to use this tool.",
       "error"
     );
-
     return false;
   }
 }
 
-export async function purchasePremium(
-  productId
-) {
+// Premium
+export async function purchasePremium(productId) {
   return request({
     action: "purchase",
     productId
   });
 }
 
-export async function hasPremium(
-  productId
-) {
-  const wallet =
-    await getWallet();
+export async function hasPremium(productId) {
+  const wallet = await getWallet();
 
-  const premium =
-    wallet?.premium || [];
-
-  return premium.some(
-    item =>
-      item.product_id === productId
+  return (wallet?.premium || []).some(
+    item => item.product_id === productId
   );
 }
 
+// Global access
 window.ToolBoxHub = {
   tools: TOOLS,
   getUser,
