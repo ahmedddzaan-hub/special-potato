@@ -19,8 +19,10 @@ export const TOOLS = {
   "pfp-maker": "PFP Maker"
 };
 
-// Remove old wallet loading labels from tool pages.
+// Remove old wallet loading labels.
 function removeWalletLoading() {
+  if (!document.body) return;
+
   const walker = document.createTreeWalker(
     document.body,
     NodeFilter.SHOW_TEXT
@@ -45,9 +47,7 @@ function removeWalletLoading() {
 if (document.body) {
   removeWalletLoading();
 
-  const observer = new MutationObserver(
-    removeWalletLoading
-  );
+  const observer = new MutationObserver(removeWalletLoading);
 
   observer.observe(document.body, {
     childList: true,
@@ -57,31 +57,29 @@ if (document.body) {
 }
 
 // Authentication
-async function getSession() {
+export async function getSession() {
   const {
     data: { session },
     error
   } = await supabase.auth.getSession();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error("Session error:", error);
+    throw new Error("Could not restore your login session. Please try signing in again.");
+  }
 
-  if (!session?.access_token) {
+  if (!session?.access_token || !session?.user) {
     throw new Error("Please sign in first.");
   }
 
   return session;
 }
 
+// FIX: Use the restored session instead of making
+// an additional getUser() network request.
 export async function getUser() {
-  const {
-    data: { user },
-    error
-  } = await supabase.auth.getUser();
-
-  if (error) throw new Error(error.message);
-  if (!user) throw new Error("Please sign in first.");
-
-  return user;
+  const session = await getSession();
+  return session.user;
 }
 
 // Backend request
@@ -231,7 +229,6 @@ export async function completeTool(toolId) {
       updateWalletElements(totalCoins);
     }
 
-    // Verify the displayed balance with the server.
     const refreshedCoins = await refreshWallet();
 
     showToolMessage(
@@ -247,8 +244,7 @@ export async function completeTool(toolId) {
     return {
       success: true,
       reward,
-      totalCoins:
-        refreshedCoins ?? totalCoins,
+      totalCoins: refreshedCoins ?? totalCoins,
       data: result
     };
 
@@ -270,6 +266,14 @@ export async function completeTool(toolId) {
 // Run a tool operation.
 export async function runTool(toolId, operation) {
   try {
+    if (!TOOLS[toolId]) {
+      throw new Error("Invalid ToolBoxHub tool.");
+    }
+
+    if (typeof operation !== "function") {
+      throw new Error("Invalid tool operation.");
+    }
+
     await getUser();
 
     showToolMessage(`Using ${TOOLS[toolId]}...`);
@@ -300,15 +304,27 @@ export async function requireLogin() {
 
 export async function initializeToolPage() {
   try {
-    await getUser();
+    const user = await getUser();
+
+    if (!user) {
+      throw new Error("Please sign in first.");
+    }
+
     removeWalletLoading();
+
+    // Wallet errors must not invalidate a login session.
     await refreshWallet();
+
     return true;
-  } catch {
+
+  } catch (error) {
+    console.error("Tool page authentication failed:", error);
+
     showToolMessage(
       "Please sign in to use this tool.",
       "error"
     );
+
     return false;
   }
 }
@@ -332,6 +348,7 @@ export async function hasPremium(productId) {
 // Global access
 window.ToolBoxHub = {
   tools: TOOLS,
+  getSession,
   getUser,
   request,
   getWallet,
