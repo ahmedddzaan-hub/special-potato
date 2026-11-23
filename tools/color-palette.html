@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -124,6 +123,11 @@ button {
   font-size: 14px;
 }
 
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .generate {
   background: #6c63ff;
   color: white;
@@ -205,16 +209,30 @@ footer {
   <div class="palette" id="palette"></div>
 
   <div class="buttons">
-    <button class="generate" onclick="generatePalette()">
+
+    <button
+      id="generateButton"
+      class="generate"
+      onclick="generatePalette()"
+    >
       Generate New Palette
     </button>
 
-    <button class="copy" onclick="copyPalette()">
+    <button
+      id="copyButton"
+      class="copy"
+      onclick="copyPalette()"
+    >
       Copy Palette
     </button>
+
   </div>
 
-  <div class="message" id="message" aria-live="polite"></div>
+  <div
+    class="message"
+    id="message"
+    aria-live="polite"
+  ></div>
 
   <div class="info">
     <strong>Tips:</strong><br>
@@ -228,103 +246,372 @@ footer {
   © 2026 ToolBoxHub
 </footer>
 
-<script>
+
+<script type="module">
+
+import {
+  initializeToolPage,
+  runTool
+} from "../tools.js";
+
+
 let colors = [];
-let locked = [false, false, false, false, false];
+
+let locked = [
+  false,
+  false,
+  false,
+  false,
+  false
+];
+
+let toolReady = false;
+
+
+/* ------------------------------
+   ELEMENTS
+------------------------------ */
+
+const palette =
+  document.getElementById("palette");
+
+const message =
+  document.getElementById("message");
+
+const generateButton =
+  document.getElementById("generateButton");
+
+const copyButton =
+  document.getElementById("copyButton");
+
+
+/* ------------------------------
+   RANDOM COLOR
+------------------------------ */
 
 function randomColor() {
-  const letters = "0123456789ABCDEF";
+
+  const letters =
+    "0123456789ABCDEF";
+
   let color = "#";
 
   for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
+
+    color +=
+      letters[
+        Math.floor(
+          Math.random() * 16
+        )
+      ];
+
   }
 
   return color;
 }
 
+
+/* ------------------------------
+   RENDER PALETTE
+------------------------------ */
+
 function renderPalette() {
-  const palette = document.getElementById("palette");
+
   palette.innerHTML = "";
 
   colors.forEach((color, index) => {
-    const box = document.createElement("div");
+
+    const box =
+      document.createElement("div");
+
     box.className = "color";
+
     box.style.background = color;
 
-    const code = document.createElement("div");
-    code.className = "color-code";
-    code.textContent = color;
 
-    const lockButton = document.createElement("button");
-    lockButton.className = "lock" + (locked[index] ? " locked" : "");
-    lockButton.textContent = locked[index] ? "🔒 Locked" : "🔓 Lock";
-    lockButton.setAttribute("aria-label", locked[index] ? "Unlock color" : "Lock color");
+    const code =
+      document.createElement("div");
 
-    lockButton.onclick = (event) => {
-      event.stopPropagation();
-      locked[index] = !locked[index];
-      renderPalette();
+    code.className =
+      "color-code";
+
+    code.textContent =
+      color;
+
+
+    const lockButton =
+      document.createElement("button");
+
+    lockButton.className =
+      "lock" +
+      (locked[index]
+        ? " locked"
+        : "");
+
+    lockButton.textContent =
+      locked[index]
+        ? "🔒 Locked"
+        : "🔓 Lock";
+
+    lockButton.setAttribute(
+      "aria-label",
+      locked[index]
+        ? "Unlock color"
+        : "Lock color"
+    );
+
+
+    lockButton.onclick =
+      (event) => {
+
+        event.stopPropagation();
+
+        locked[index] =
+          !locked[index];
+
+        renderPalette();
+
+      };
+
+
+    box.onclick = () => {
+
+      copyText(color);
+
     };
 
-    box.onclick = () => copyText(color);
 
     box.appendChild(code);
+
     box.appendChild(lockButton);
+
     palette.appendChild(box);
+
   });
+
 }
 
-function generatePalette() {
-  for (let i = 0; i < 5; i++) {
-    if (!locked[i] || !colors[i]) {
-      colors[i] = randomColor();
+
+/* ------------------------------
+   GENERATE PALETTE
+------------------------------ */
+
+async function generatePalette() {
+
+  if (!toolReady) {
+
+    message.textContent =
+      "Please sign in first.";
+
+    return;
+
+  }
+
+
+  await runTool(
+    "color-palette",
+    async () => {
+
+      for (let i = 0; i < 5; i++) {
+
+        if (
+          !locked[i] ||
+          !colors[i]
+        ) {
+
+          colors[i] =
+            randomColor();
+
+        }
+
+      }
+
+
+      if (colors.length !== 5) {
+
+        throw new Error(
+          "Palette generation failed."
+        );
+
+      }
+
+
+      renderPalette();
+
+      message.textContent =
+        "New palette generated.";
+
     }
+  );
+
+}
+
+
+/* ------------------------------
+   COPY TEXT
+------------------------------ */
+
+async function copyText(text) {
+
+  if (!toolReady) {
+
+    message.textContent =
+      "Please sign in first.";
+
+    return;
+
+  }
+
+
+  try {
+
+    await navigator.clipboard.writeText(text);
+
+    message.textContent =
+      text + " copied!";
+
+  } catch (error) {
+
+    const area =
+      document.createElement("textarea");
+
+    area.value = text;
+
+    area.style.position =
+      "fixed";
+
+    area.style.opacity = "0";
+
+    document.body.appendChild(area);
+
+    area.select();
+
+
+    try {
+
+      const copied =
+        document.execCommand("copy");
+
+      message.textContent =
+        copied
+          ? text + " copied!"
+          : "Copy failed. Please select and copy manually.";
+
+    } catch {
+
+      message.textContent =
+        "Copy failed. Please copy manually.";
+
+    }
+
+
+    area.remove();
+
+  }
+
+}
+
+
+/* ------------------------------
+   COPY PALETTE
+------------------------------ */
+
+async function copyPalette() {
+
+  if (!toolReady) {
+
+    message.textContent =
+      "Please sign in first.";
+
+    return;
+
+  }
+
+
+  if (colors.length === 0) {
+
+    await generatePalette();
+
+  }
+
+
+  if (colors.length === 0) {
+
+    return;
+
+  }
+
+
+  await copyText(
+    colors.join("\n")
+  );
+
+}
+
+
+/* ------------------------------
+   INITIALIZE
+------------------------------ */
+
+async function initialize() {
+
+  toolReady =
+    await initializeToolPage();
+
+
+  if (!toolReady) {
+
+    generateButton.disabled = true;
+
+    copyButton.disabled = true;
+
+    return;
+
+  }
+
+
+  generateButton.disabled = false;
+
+  copyButton.disabled = false;
+
+
+  /*
+    Generate the initial palette
+    WITHOUT claiming a reward.
+    The reward only happens when
+    the user actually clicks
+    "Generate New Palette".
+  */
+
+  for (let i = 0; i < 5; i++) {
+
+    colors[i] =
+      randomColor();
+
   }
 
   renderPalette();
 
-  document.getElementById("message").textContent =
-    "New palette generated.";
 }
 
-async function copyText(text) {
-  const message = document.getElementById("message");
 
-  try {
-    await navigator.clipboard.writeText(text);
-    message.textContent = text + " copied!";
-  } catch (error) {
-    const area = document.createElement("textarea");
-    area.value = text;
-    area.style.position = "fixed";
-    area.style.opacity = "0";
+/* ------------------------------
+   GLOBAL BUTTON FUNCTIONS
+------------------------------ */
 
-    document.body.appendChild(area);
-    area.select();
+window.generatePalette =
+  generatePalette;
 
-    try {
-      const copied = document.execCommand("copy");
-      message.textContent = copied
-        ? text + " copied!"
-        : "Copy failed. Please copy manually.";
-    } catch {
-      message.textContent = "Copy failed. Please copy manually.";
-    }
+window.copyPalette =
+  copyPalette;
 
-    area.remove();
-  }
-}
 
-function copyPalette() {
-  if (colors.length === 0) {
-    generatePalette();
-  }
+/* ------------------------------
+   START
+------------------------------ */
 
-  copyText(colors.join("\n"));
-}
+initialize();
 
-generatePalette();
 </script>
 
 </body>
