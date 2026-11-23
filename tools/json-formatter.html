@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -95,6 +94,11 @@ button {
   font-size: 14px;
 }
 
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .format {
   background: #6c63ff;
   color: white;
@@ -183,21 +187,36 @@ Example:
   ></textarea>
 
   <div class="buttons">
-    <button class="format" onclick="formatJSON()">
+
+    <button
+      id="formatButton"
+      class="format"
+      onclick="formatJSON()"
+    >
       Format JSON
     </button>
 
-    <button class="copy" onclick="copyJSON()">
+    <button
+      class="copy"
+      onclick="copyJSON()"
+    >
       Copy
     </button>
 
-    <button class="download" onclick="downloadJSON()">
+    <button
+      class="download"
+      onclick="downloadJSON()"
+    >
       Download
     </button>
 
-    <button class="clear" onclick="clearJSON()">
+    <button
+      class="clear"
+      onclick="clearJSON()"
+    >
       Clear
     </button>
+
   </div>
 
   <div id="status" class="status"></div>
@@ -208,88 +227,299 @@ Example:
   © 2026 ToolBoxHub
 </footer>
 
-<script>
+<script type="module">
+
+import {
+  initializeToolPage,
+  runTool
+} from "../tools.js";
+
 const input = document.getElementById("jsonInput");
 const statusBox = document.getElementById("status");
+const formatButton = document.getElementById("formatButton");
+
+let toolReady = false;
+
+
+/* ------------------------------
+   STATUS
+------------------------------ */
 
 function showStatus(message, type) {
   statusBox.textContent = message;
   statusBox.className = "status " + type;
 }
 
-function formatJSON() {
+
+/* ------------------------------
+   LOGIN / TOOL INITIALIZATION
+------------------------------ */
+
+async function initialize() {
+
+  toolReady = await initializeToolPage();
+
+  if (!toolReady) {
+
+    formatButton.disabled = true;
+
+    input.disabled = true;
+
+    showStatus(
+      "Please sign in to use JSON Formatter.",
+      "error"
+    );
+
+    return;
+  }
+
+  formatButton.disabled = false;
+  input.disabled = false;
+}
+
+
+/* ------------------------------
+   FORMAT JSON
+------------------------------ */
+
+async function formatJSON() {
+
+  if (!toolReady) {
+    showStatus(
+      "Please sign in first.",
+      "error"
+    );
+
+    return;
+  }
+
   const text = input.value.trim();
 
   if (!text) {
-    showStatus("Please enter some JSON first.", "error");
+
+    showStatus(
+      "Please enter some JSON first.",
+      "error"
+    );
+
     return;
   }
 
-  try {
-    const parsed = JSON.parse(text);
-    input.value = JSON.stringify(parsed, null, 2);
-    showStatus("✓ Valid JSON formatted successfully.", "success");
-  } catch (error) {
-    showStatus("✕ Invalid JSON: " + error.message, "error");
-  }
+  let formattedSuccessfully = false;
+
+  await runTool(
+    "json-formatter",
+    async () => {
+
+      try {
+
+        const parsed = JSON.parse(text);
+
+        input.value = JSON.stringify(
+          parsed,
+          null,
+          2
+        );
+
+        formattedSuccessfully = true;
+
+        showStatus(
+          "✓ Valid JSON formatted successfully.",
+          "success"
+        );
+
+      } catch (error) {
+
+        showStatus(
+          "✕ Invalid JSON: " + error.message,
+          "error"
+        );
+
+        throw error;
+      }
+
+    }
+  );
+
 }
 
+
+/* ------------------------------
+   COPY
+------------------------------ */
+
 async function copyJSON() {
+
+  if (!toolReady) {
+    showStatus(
+      "Please sign in first.",
+      "error"
+    );
+
+    return;
+  }
+
   const text = input.value;
 
   if (!text.trim()) {
-    showStatus("Nothing to copy.", "error");
+
+    showStatus(
+      "Nothing to copy.",
+      "error"
+    );
+
     return;
   }
 
   try {
+
     await navigator.clipboard.writeText(text);
-    showStatus("✓ JSON copied to clipboard.", "success");
+
+    showStatus(
+      "✓ JSON copied to clipboard.",
+      "success"
+    );
+
   } catch (error) {
+
     input.select();
 
     try {
-      const copied = document.execCommand("copy");
+
+      const copied =
+        document.execCommand("copy");
 
       if (copied) {
-        showStatus("✓ JSON copied.", "success");
+
+        showStatus(
+          "✓ JSON copied.",
+          "success"
+        );
+
       } else {
-        showStatus("Copy failed. Please select and copy manually.", "error");
+
+        showStatus(
+          "Copy failed. Please select and copy manually.",
+          "error"
+        );
+
       }
+
     } catch {
-      showStatus("Copy failed. Please copy manually.", "error");
+
+      showStatus(
+        "Copy failed. Please copy manually.",
+        "error"
+      );
+
     }
+
   }
 }
 
-function downloadJSON() {
-  const text = input.value;
 
-  if (!text.trim()) {
-    showStatus("Nothing to download.", "error");
+/* ------------------------------
+   DOWNLOAD
+------------------------------ */
+
+function downloadJSON() {
+
+  if (!toolReady) {
+
+    showStatus(
+      "Please sign in first.",
+      "error"
+    );
+
     return;
   }
 
-  const blob = new Blob([text], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
+  const text = input.value;
+
+  if (!text.trim()) {
+
+    showStatus(
+      "Nothing to download.",
+      "error"
+    );
+
+    return;
+  }
+
+  const blob = new Blob(
+    [text],
+    {
+      type: "application/json"
+    }
+  );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const link =
+    document.createElement("a");
 
   link.href = url;
-  link.download = "formatted.json";
+
+  link.download =
+    "formatted.json";
 
   document.body.appendChild(link);
+
   link.click();
+
   document.body.removeChild(link);
 
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 1000);
 
-  showStatus("✓ JSON download started.", "success");
+  showStatus(
+    "✓ JSON download started.",
+    "success"
+  );
 }
+
+
+/* ------------------------------
+   CLEAR
+------------------------------ */
 
 function clearJSON() {
+
+  if (!toolReady) {
+
+    showStatus(
+      "Please sign in first.",
+      "error"
+    );
+
+    return;
+  }
+
   input.value = "";
+
   statusBox.className = "status";
 }
+
+
+/* ------------------------------
+   MAKE FUNCTIONS AVAILABLE
+   TO INLINE BUTTONS
+------------------------------ */
+
+window.formatJSON = formatJSON;
+window.copyJSON = copyJSON;
+window.downloadJSON = downloadJSON;
+window.clearJSON = clearJSON;
+
+
+/* ------------------------------
+   START
+------------------------------ */
+
+initialize();
+
 </script>
 
 </body>
