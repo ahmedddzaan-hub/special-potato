@@ -1,1430 +1,286 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ToolBoxHub</title>
-
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0
-}
-
-:root{
-  --bg:#0b0d12;
-  --purple:#7867ff;
-  --border:#383052;
-  --muted:#a4a0b3
-}
-
-body{
-  font-family:Arial,sans-serif;
-  background:var(--bg);
-  color:white;
-  min-height:100vh
-}
-
-nav{
-  padding:14px 6%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  border-bottom:1px solid #29243d;
-  background:#101019;
-  position:sticky;
-  top:0;
-  z-index:5
-}
-
-.logo{
-  font-size:22px;
-  font-weight:bold
-}
-
-.logo span,
-.hero h1 span{
-  color:#8b7cff
-}
-
-.nav-right,
-.account{
-  display:flex;
-  align-items:center;
-  gap:10px
-}
-
-.account{
-  display:none
-}
-
-.coin-pill{
-  background:#211d35;
-  border:1px solid #514477;
-  padding:9px 12px;
-  border-radius:9px;
-  color:#f5d76e;
-  font-size:13px
-}
-
-.account-email{
-  font-size:12px;
-  color:#aaa;
-  max-width:120px;
-  overflow:hidden;
-  text-overflow:ellipsis
-}
-
-button{
-  cursor:pointer;
-  font-weight:600
-}
-
-button:disabled{
-  opacity:.5;
-  cursor:wait
-}
-
-.login,
-.primary{
-  background:linear-gradient(135deg,#7867ff,#5945d8);
-  color:white;
-  border:0;
-  padding:11px 17px;
-  border-radius:9px
-}
-
-.secondary{
-  background:#20202e;
-  color:white;
-  border:1px solid #45405d;
-  padding:10px 13px;
-  border-radius:9px
-}
-
-.hero{
-  text-align:center;
-  padding:60px 20px 35px
-}
-
-.hero h1{
-  font-size:clamp(38px,8vw,70px)
-}
-
-.hero p{
-  color:#9ca3af;
-  font-size:17px;
-  margin:17px 0 25px
-}
-
-.search{
-  width:min(650px,100%);
-  padding:16px 20px;
-  background:#151521;
-  color:white;
-  border:1px solid #34304c;
-  border-radius:12px;
-  font-size:16px
-}
-
-.main-tabs{
-  width:min(1100px,92%);
-  margin:0 auto 28px;
-  display:flex;
-  gap:10px;
-  border-bottom:1px solid #302b45;
-  padding-bottom:12px
-}
-
-.main-tab{
-  background:#171622;
-  color:#aaa;
-  border:1px solid #34304c;
-  padding:12px 22px;
-  border-radius:10px
-}
-
-.main-tab.active{
-  background:linear-gradient(135deg,#7867ff,#5945d8);
-  color:white
-}
-
-.section{
-  width:min(1100px,92%);
-  margin:auto;
-  padding-bottom:70px
-}
-
-.section h2{
-  margin-bottom:20px
-}
-
-.categories{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
-  padding-bottom:25px
-}
-
-.category{
-  flex:0 0 auto;
-  padding:10px 17px;
-  border-radius:999px;
-  background:#171622;
-  color:#ddd;
-  border:1px solid #34304c
-}
-
-.category.active{
-  background:#6c5ce7;
-  color:white
-}
-
-.tools{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:16px
-}
-
-.tool,
-.premium-card{
-  background:linear-gradient(145deg,#191629,#11121b);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:22px;
-  position:relative;
-  overflow:hidden
-}
-
-.tool{
-  cursor:pointer;
-  transition:.2s
-}
-
-.tool:hover,
-.premium-card:hover{
-  transform:translateY(-4px);
-  border-color:#8875ff
-}
-
-.tool:before,
-.premium-card:before{
-  content:"";
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:2px;
-  background:linear-gradient(90deg,#6c63ff,#bd75ff,transparent)
-}
-
-.icon{
-  width:49px;
-  height:49px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#292344;
-  border-radius:13px;
-  font-size:24px;
-  margin-bottom:16px
-}
-
-.tool h3,
-.premium-card h3{
-  margin-bottom:9px
-}
-
-.tool p,
-.premium-card p{
-  color:var(--muted);
-  line-height:1.5;
-  font-size:14px
-}
-
-.no-results{
-  display:none;
-  text-align:center;
-  color:#9ca3af;
-  padding:40px
-}
-
-.panel{
-  display:none
-}
-
-.panel.active{
-  display:block
-}
-
-.premium-intro{
-  background:linear-gradient(120deg,#211b3b,#151521);
-  border:1px solid #514477;
-  border-radius:16px;
-  padding:23px;
-  margin-bottom:22px
-}
-
-.premium-intro p{
-  color:#aaa;
-  line-height:1.5;
-  font-size:14px
-}
-
-.wallet-card{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-  flex-wrap:wrap;
-  margin-top:18px;
-  padding-top:17px;
-  border-top:1px solid #514477
-}
-
-.wallet-card h3{
-  margin-bottom:6px
-}
-
-.wallet-number{
-  font-size:28px;
-  color:#f5d76e;
-  font-weight:bold
-}
-
-.wallet-message{
-  font-size:13px;
-  color:#b9b3ca;
-  margin-top:8px;
-  min-height:18px;
-  overflow-wrap:anywhere
-}
-
-.store-heading{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin:25px 0 18px
-}
-
-.premium-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-  gap:15px
-}
-
-.premium-icon{
-  font-size:27px;
-  margin-bottom:12px
-}
-
-.premium-card p{
-  min-height:40px
-}
-
-.price{
-  color:#f5d76e;
-  font-weight:bold;
-  margin:15px 0
-}
-
-.premium-card button{
-  width:100%;
-  padding:11px;
-  border:0;
-  border-radius:8px;
-  background:linear-gradient(135deg,#7867ff,#5945d8);
-  color:white
-}
-
-.premium-card button.owned{
-  background:#193d2a;
-  border:1px solid #36d399;
-  color:#7ee2ad
-}
-
-.store-note{
-  font-size:12px;
-  color:#9ca3af;
-  margin-top:15px;
-  line-height:1.5
-}
-
-.modal-bg{
-  position:fixed;
-  inset:0;
-  background:#000b;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  z-index:10
-}
-
-.modal-bg.show{
-  display:flex
-}
-
-.modal{
-  width:min(420px,100%);
-  background:#171624;
-  border:1px solid #45405d;
-  border-radius:17px;
-  padding:25px;
-  position:relative
-}
-
-.modal h2{
-  margin-bottom:8px
-}
-
-.modal-sub{
-  color:#9ca3af;
-  font-size:14px;
-  margin-bottom:20px
-}
-
-.close{
-  position:absolute;
-  right:17px;
-  top:15px;
-  background:none;
-  border:0;
-  color:#aaa;
-  font-size:24px
-}
-
-.auth-tabs{
-  display:flex;
-  gap:8px;
-  margin-bottom:18px
-}
-
-.auth-tab{
-  flex:1;
-  background:#22202f;
-  color:#aaa;
-  border:0;
-  padding:11px;
-  border-radius:8px
-}
-
-.auth-tab.active{
-  background:#6c63ff;
-  color:white
-}
-
-.field{
-  margin-bottom:13px
-}
-
-.field label{
-  display:block;
-  color:#bbb;
-  font-size:13px;
-  margin-bottom:7px
-}
-
-.field input{
-  width:100%;
-  background:#0d1017;
-  color:white;
-  border:1px solid #45405d;
-  border-radius:8px;
-  padding:13px;
-  font-size:15px
-}
-
-.full{
-  width:100%;
-  padding:13px;
-  margin-top:5px
-}
-
-.google{
-  width:100%;
-  background:#242936;
-  color:white;
-  border:1px solid #45405d;
-  padding:13px;
-  border-radius:9px;
-  margin-top:12px
-}
-
-.or{
-  text-align:center;
-  color:#777;
-  font-size:12px;
-  margin:15px 0
-}
-
-.message{
-  font-size:13px;
-  line-height:1.5;
-  margin-top:13px;
-  color:#ff9999;
-  min-height:18px;
-  overflow-wrap:anywhere
-}
-
-.message.success{
-  color:#83d9a0
-}
-
-.hidden{
-  display:none!important
-}
-
-.toast{
-  position:fixed;
-  left:50%;
-  bottom:22px;
-  transform:translateX(-50%);
-  background:#211d35;
-  border:1px solid #62538f;
-  color:white;
-  padding:13px 18px;
-  border-radius:10px;
-  z-index:20;
-  display:none;
-  max-width:90%;
-  font-size:14px;
-  text-align:center
-}
-
-footer{
-  text-align:center;
-  color:#737985;
-  padding:30px;
-  border-top:1px solid #29243d
-}
-
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0b0d12;--purple:#7867ff;--border:#383052;--muted:#a4a0b3}
+body{font-family:Arial,sans-serif;background:var(--bg);color:white;min-height:100vh}
+nav{padding:14px 6%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #29243d;background:#101019;position:sticky;top:0;z-index:5}
+.logo{font-size:22px;font-weight:bold}
+.logo span,.hero h1 span{color:#8b7cff}
+.nav-right,.account{display:flex;align-items:center;gap:10px}
+.account{display:none}
+.coin-pill{background:#211d35;border:1px solid #514477;padding:9px 12px;border-radius:9px;color:#f5d76e;font-size:13px}
+.account-email{font-size:12px;color:#aaa;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+button{cursor:pointer;font-weight:600}
+button:disabled{opacity:.5;cursor:wait}
+.login,.primary{background:linear-gradient(135deg,#7867ff,#5945d8);color:white;border:0;padding:11px 17px;border-radius:9px}
+.secondary{background:#20202e;color:white;border:1px solid #45405d;padding:10px 13px;border-radius:9px}
+.hero{text-align:center;padding:60px 20px 35px}
+.hero h1{font-size:clamp(38px,8vw,70px)}
+.hero p{color:#9ca3af;font-size:17px;margin:17px 0 25px}
+.search{width:min(650px,100%);padding:16px 20px;background:#151521;color:white;border:1px solid #34304c;border-radius:12px;font-size:16px}
+.main-tabs{width:min(1100px,92%);margin:0 auto 28px;display:flex;gap:10px;border-bottom:1px solid #302b45;padding-bottom:12px}
+.main-tab{background:#171622;color:#aaa;border:1px solid #34304c;padding:12px 22px;border-radius:10px}
+.main-tab.active{background:linear-gradient(135deg,#7867ff,#5945d8);color:white}
+.section{width:min(1100px,92%);margin:auto;padding-bottom:70px}
+.section h2{margin-bottom:20px}
+.categories{display:flex;gap:10px;overflow-x:auto;padding-bottom:25px}
+.category{flex:0 0 auto;padding:10px 17px;border-radius:999px;background:#171622;color:#ddd;border:1px solid #34304c}
+.category.active{background:#6c5ce7;color:white}
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.tool,.premium-card{background:linear-gradient(145deg,#191629,#11121b);border:1px solid var(--border);border-radius:16px;padding:22px;position:relative;overflow:hidden}
+.tool{cursor:pointer;transition:.2s}
+.tool:hover,.premium-card:hover{transform:translateY(-4px);border-color:#8875ff}
+.tool:before,.premium-card:before{content:"";position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,#6c63ff,#bd75ff,transparent)}
+.icon{width:49px;height:49px;display:flex;align-items:center;justify-content:center;background:#292344;border-radius:13px;font-size:24px;margin-bottom:16px}
+.tool h3,.premium-card h3{margin-bottom:9px}
+.tool p,.premium-card p{color:var(--muted);line-height:1.5;font-size:14px}
+.no-results{display:none;text-align:center;color:#9ca3af;padding:40px}
+.panel{display:none}
+.panel.active{display:block}
+.premium-intro{background:linear-gradient(120deg,#211b3b,#151521);border:1px solid #514477;border-radius:16px;padding:23px;margin-bottom:22px}
+.premium-intro p{color:#aaa;line-height:1.5;font-size:14px}
+.wallet-card{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;margin-top:18px;padding-top:17px;border-top:1px solid #514477}
+.wallet-card h3{margin-bottom:6px}
+.wallet-number{font-size:28px;color:#f5d76e;font-weight:bold}
+.wallet-message{font-size:13px;color:#b9b3ca;margin-top:8px;min-height:18px;overflow-wrap:anywhere}
+.store-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:25px 0 18px}
+.premium-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px}
+.premium-icon{font-size:27px;margin-bottom:12px}
+.premium-card p{min-height:40px}
+.price{color:#f5d76e;font-weight:bold;margin:15px 0}
+.premium-card button{width:100%;padding:11px;border:0;border-radius:8px;background:linear-gradient(135deg,#7867ff,#5945d8);color:white}
+.premium-card button.owned{background:#193d2a;border:1px solid #36d399;color:#7ee2ad}
+.store-note{font-size:12px;color:#9ca3af;margin-top:15px;line-height:1.5}
+.modal-bg{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}
+.modal-bg.show{display:flex}
+.modal{width:min(420px,100%);background:#171624;border:1px solid #45405d;border-radius:17px;padding:25px;position:relative}
+.modal h2{margin-bottom:8px}
+.modal-sub{color:#9ca3af;font-size:14px;margin-bottom:20px}
+.close{position:absolute;right:17px;top:15px;background:none;border:0;color:#aaa;font-size:24px}
+.auth-tabs{display:flex;gap:8px;margin-bottom:18px}
+.auth-tab{flex:1;background:#22202f;color:#aaa;border:0;padding:11px;border-radius:8px}
+.auth-tab.active{background:#6c63ff;color:white}
+.field{margin-bottom:13px}
+.field label{display:block;color:#bbb;font-size:13px;margin-bottom:7px}
+.field input{width:100%;background:#0d1017;color:white;border:1px solid #45405d;border-radius:8px;padding:13px;font-size:15px}
+.full{width:100%;padding:13px;margin-top:5px}
+.google{width:100%;background:#242936;color:white;border:1px solid #45405d;padding:13px;border-radius:9px;margin-top:12px}
+.or{text-align:center;color:#777;font-size:12px;margin:15px 0}
+.message{font-size:13px;line-height:1.5;margin-top:13px;color:#ff9999;min-height:18px;overflow-wrap:anywhere}
+.message.success{color:#83d9a0}
+.hidden{display:none!important}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#211d35;border:1px solid #62538f;color:white;padding:13px 18px;border-radius:10px;z-index:20;display:none;max-width:90%;font-size:14px;text-align:center}
+footer{text-align:center;color:#737985;padding:30px;border-top:1px solid #29243d}
 @media(max-width:600px){
-  nav{
-    padding:12px
-  }
-
-  .hero{
-    padding-top:45px
-  }
-
-  .tools{
-    grid-template-columns:1fr
-  }
-
-  .account-email{
-    display:none
-  }
-
-  .main-tab{
-    flex:1;
-    padding:12px 8px
-  }
+nav{padding:12px}
+.hero{padding-top:45px}
+.tools{grid-template-columns:1fr}
+.account-email{display:none}
+.main-tab{flex:1;padding:12px 8px}
 }
 </style>
 </head>
-
 <body>
 
 <nav>
   <div class="logo">ToolBox<span>Hub</span></div>
-
   <div class="nav-right">
-
     <div class="account" id="accountArea">
-
-      <div class="coin-pill" id="navCoins">
-        🪙 0 coins
-      </div>
-
+      <div class="coin-pill" id="navCoins">🪙 0 coins</div>
       <span class="account-email" id="userEmail"></span>
-
-      <button class="secondary" onclick="logout()">
-        Logout
-      </button>
-
+      <button class="secondary" onclick="logout()">Logout</button>
     </div>
-
-    <button
-      class="login"
-      id="loginButton"
-      onclick="openAuth()">
-      Login / Sign up
-    </button>
-
+    <button class="login" id="loginButton" onclick="openAuth()">Login / Sign up</button>
   </div>
 </nav>
 
-
 <section class="hero">
-
-  <h1>
-    All your tools.<br>
-    <span>One toolbox.</span>
-  </h1>
-
-  <p>
-    Fast, simple and useful online tools for everyone.
-  </p>
-
-  <input
-    id="search"
-    class="search"
-    placeholder="Search tools..."
-    oninput="searchTools()">
-
+  <h1>All your tools.<br><span>One toolbox.</span></h1>
+  <p>Fast, simple and useful online tools for everyone.</p>
+  <input id="search" class="search" placeholder="Search tools..." oninput="searchTools()">
 </section>
-
 
 <div class="main-tabs">
-
-  <button
-    class="main-tab active"
-    id="toolsTab"
-    onclick="switchTab('tools')">
-    🧰 Tools
-  </button>
-
-  <button
-    class="main-tab"
-    id="premiumTab"
-    onclick="switchTab('premium')">
-    👑 Premium
-  </button>
-
+  <button class="main-tab active" id="toolsTab" onclick="switchTab('tools')">🧰 Tools</button>
+  <button class="main-tab" id="premiumTab" onclick="switchTab('premium')">👑 Premium</button>
 </div>
-
 
 <main>
-
-<section
-  class="section panel active"
-  id="toolsPanel">
-
+<section class="section panel active" id="toolsPanel">
   <div class="categories">
-
-    <button
-      class="category active"
-      onclick="filterCategory('All',this)">
-      All
-    </button>
-
-    <button
-      class="category"
-      onclick="filterCategory('Images',this)">
-      Images
-    </button>
-
-    <button
-      class="category"
-      onclick="filterCategory('Developer',this)">
-      Developer
-    </button>
-
-    <button
-      class="category"
-      onclick="filterCategory('Design',this)">
-      Design
-    </button>
-
-    <button
-      class="category"
-      onclick="filterCategory('Text',this)">
-      Text
-    </button>
-
-    <button
-      class="category"
-      onclick="filterCategory('Utilities',this)">
-      Utilities
-    </button>
-
+    <button class="category active" onclick="filterCategory('All',this)">All</button>
+    <button class="category" onclick="filterCategory('Images',this)">Images</button>
+    <button class="category" onclick="filterCategory('Developer',this)">Developer</button>
+    <button class="category" onclick="filterCategory('Design',this)">Design</button>
+    <button class="category" onclick="filterCategory('Text',this)">Text</button>
+    <button class="category" onclick="filterCategory('Utilities',this)">Utilities</button>
   </div>
 
-
-  <h2>
-    Popular Tools
-  </h2>
-
-
-  <div
-    class="tools"
-    id="toolsGrid">
-
-    <div
-      class="tool"
-      data-name="QR Code Generator"
-      data-category="Utilities"
-      onclick="openTool('tools/qr.html')">
-
-      <div class="icon">▣</div>
-
-      <h3>QR Code Generator</h3>
-
-      <p>
-        Create QR codes from links and text.
-      </p>
-
-    </div>
-
-
-    <div
-      class="tool"
-      data-name="Image Resizer"
-      data-category="Images"
-      onclick="openTool('tools/image-resizer.html')">
-
-      <div class="icon">▧</div>
-
-      <h3>Image Resizer</h3>
-
-      <p>
-        Resize images quickly in your browser.
-      </p>
-
-    </div>
-
-
-    <div
-      class="tool"
-      data-name="JSON Formatter"
-      data-category="Developer"
-      onclick="openTool('tools/json-formatter.html')">
-
-      <div class="icon">{ }</div>
-
-      <h3>JSON Formatter</h3>
-
-      <p>
-        Format and clean JSON instantly.
-      </p>
-
-    </div>
-
-
-    <div
-      class="tool"
-      data-name="Color Palette"
-      data-category="Design"
-      onclick="openTool('tools/color-palette.html')">
-
-      <div class="icon">◉</div>
-
-      <h3>Color Palette</h3>
-
-      <p>
-        Generate beautiful color combinations.
-      </p>
-
-    </div>
-
-
-    <div
-      class="tool"
-      data-name="Username Generator"
-      data-category="Utilities"
-      onclick="openTool('tools/username-generator.html')">
-
-      <div class="icon">@</div>
-
-      <h3>Username Generator</h3>
-
-      <p>
-        Create unique username ideas.
-      </p>
-
-    </div>
-
-
-    <div
-      class="tool"
-      data-name="Password Generator"
-      data-category="Utilities"
-      onclick="openTool('tools/password-generator.html')">
-
-      <div class="icon">◆</div>
-
-      <h3>Password Generator</h3>
-
-      <p>
-        Generate random passwords.
-      </p>
-
-    </div>
-
-
-    <div
-      class="tool"
-      data-name="Text Case Converter"
-      data-category="Text"
-      onclick="openTool('tools/text-case-converter.html')">
-
-      <div class="icon">Aa</div>
-
-      <h3>Text Case Converter</h3>
-
-      <p>
-        Convert text between different cases.
-      </p>
-
-    </div>
-
-
-    <div
-      class="tool"
-      data-name="Word Counter"
-      data-category="Text"
-      onclick="openTool('tools/word-counter.html')">
-
-      <div class="icon">≡</div>
-
-      <h3>Word Counter</h3>
-
-      <p>
-        Count words and characters.
-      </p>
-
-    </div>
-
-
-    <div
-      class="tool"
-      data-name="PFP Maker"
-      data-category="Images"
-      onclick="openTool('tools/pfp-maker.html')">
-
-      <div class="icon">✦</div>
-
-      <h3>PFP Maker</h3>
-
-      <p>
-        Create custom profile pictures.
-      </p>
-
-    </div>
-
+  <h2>Popular Tools</h2>
+  <div class="tools" id="toolsGrid">
+    <div class="tool" data-name="QR Code Generator" data-category="Utilities" onclick="openTool('tools/qr.html')"><div class="icon">▣</div><h3>QR Code Generator</h3><p>Create QR codes from links and text.</p></div>
+    <div class="tool" data-name="Image Resizer" data-category="Images" onclick="openTool('tools/image-resizer.html')"><div class="icon">▧</div><h3>Image Resizer</h3><p>Resize images quickly in your browser.</p></div>
+    <div class="tool" data-name="JSON Formatter" data-category="Developer" onclick="openTool('tools/json-formatter.html')"><div class="icon">{ }</div><h3>JSON Formatter</h3><p>Format and clean JSON instantly.</p></div>
+    <div class="tool" data-name="Color Palette" data-category="Design" onclick="openTool('tools/color-palette.html')"><div class="icon">◉</div><h3>Color Palette</h3><p>Generate beautiful color combinations.</p></div>
+    <div class="tool" data-name="Username Generator" data-category="Utilities" onclick="openTool('tools/username-generator.html')"><div class="icon">@</div><h3>Username Generator</h3><p>Create unique username ideas.</p></div>
+    <div class="tool" data-name="Password Generator" data-category="Utilities" onclick="openTool('tools/password-generator.html')"><div class="icon">◆</div><h3>Password Generator</h3><p>Generate random passwords.</p></div>
+    <div class="tool" data-name="Text Case Converter" data-category="Text" onclick="openTool('tools/text-case-converter.html')"><div class="icon">Aa</div><h3>Text Case Converter</h3><p>Convert text between different cases.</p></div>
+    <div class="tool" data-name="Word Counter" data-category="Text" onclick="openTool('tools/word-counter.html')"><div class="icon">≡</div><h3>Word Counter</h3><p>Count words and characters.</p></div>
+    <div class="tool" data-name="PFP Maker" data-category="Images" onclick="openTool('tools/pfp-maker.html')"><div class="icon">✦</div><h3>PFP Maker</h3><p>Create custom profile pictures.</p></div>
   </div>
-
-
-  <div
-    class="no-results"
-    id="noResults">
-    No tools found.
-  </div>
-
+  <div class="no-results" id="noResults">No tools found.</div>
 </section>
 
-
-<section
-  class="section panel"
-  id="premiumPanel">
-
+<section class="section panel" id="premiumPanel">
   <div class="premium-intro">
-
-    <h2>
-      👑 ToolBoxHub Premium
-    </h2>
-
-    <p>
-      Unlock premium features with coins earned by using eligible tools.
-      Each unlock lasts five days.
-    </p>
-
-
+    <h2>👑 ToolBoxHub Premium</h2>
+    <p>Unlock premium features with coins earned by using eligible tools. Each unlock lasts five days.</p>
     <div class="wallet-card">
-
       <div>
-
-        <h3>
-          Your Coin Wallet 🪙
-        </h3>
-
-        <p>
-          Earn 12 coins per eligible tool each day.
-          A 5% chance awards 15 coins.
-        </p>
-
-        <div
-          class="wallet-message"
-          id="walletMessage">
-          Sign in to connect your wallet.
-        </div>
-
+        <h3>Your Coin Wallet 🪙</h3>
+        <p>Earn 3 coins for every successful tool use. There's a 5% chance to earn 5 coins instead!</p>
+        <div class="wallet-message" id="walletMessage">Sign in to connect your wallet.</div>
       </div>
-
-
-      <div
-        class="wallet-number"
-        id="walletBalance">
-        — coins
-      </div>
-
+      <div class="wallet-number" id="walletBalance">— coins</div>
     </div>
-
   </div>
-
 
   <div class="store-heading">
-
-    <h2>
-      Premium Store
-    </h2>
-
-    <span
-      class="coin-pill"
-      id="storeCoins">
-      🪙 0 coins
-    </span>
-
+    <h2>Premium Store</h2>
+    <span class="coin-pill" id="storeCoins">🪙 0 coins</span>
   </div>
-
 
   <div class="premium-grid">
-
-    <div class="premium-card">
-
-      <div class="premium-icon">
-        ✨
-      </div>
-
-      <h3>
-        PFP Maker Pro
-      </h3>
-
-      <p>
-        Extra profile-picture customization features.
-      </p>
-
-      <div class="price">
-        150 coins · 5 days
-      </div>
-
-      <button
-        onclick="buyPremium('pfp-maker-pro',this)">
-        Unlock
-      </button>
-
-    </div>
-
-
-    <div class="premium-card">
-
-      <div class="premium-icon">
-        ▣
-      </div>
-
-      <h3>
-        QR Maker Pro
-      </h3>
-
-      <p>
-        Additional QR customization options.
-      </p>
-
-      <div class="price">
-        100 coins · 5 days
-      </div>
-
-      <button
-        onclick="buyPremium('qr-maker-pro',this)">
-        Unlock
-      </button>
-
-    </div>
-
-
-    <div class="premium-card">
-
-      <div class="premium-icon">
-        🖼️
-      </div>
-
-      <h3>
-        Background Remover
-      </h3>
-
-      <p>
-        Premium access to background removal.
-      </p>
-
-      <div class="price">
-        200 coins · 5 days
-      </div>
-
-      <button
-        onclick="buyPremium('background-remover',this)">
-        Unlock
-      </button>
-
-    </div>
-
-
-    <div class="premium-card">
-
-      <div class="premium-icon">
-        📄
-      </div>
-
-      <h3>
-        PDF Pro
-      </h3>
-
-      <p>
-        Premium PDF tools and document features.
-      </p>
-
-      <div class="price">
-        180 coins · 5 days
-      </div>
-
-      <button
-        onclick="buyPremium('pdf-pro',this)">
-        Unlock
-      </button>
-
-    </div>
-
-
-    <div class="premium-card">
-
-      <div class="premium-icon">
-        🎨
-      </div>
-
-      <h3>
-        AI Logo Maker
-      </h3>
-
-      <p>
-        Premium AI-assisted logo creation.
-      </p>
-
-      <div class="price">
-        250 coins · 5 days
-      </div>
-
-      <button
-        onclick="buyPremium('ai-logo-maker',this)">
-        Unlock
-      </button>
-
-    </div>
-
+    <div class="premium-card"><div class="premium-icon">✨</div><h3>PFP Maker Pro</h3><p>Extra profile-picture customization features.</p><div class="price">150 coins · 5 days</div><button onclick="buyPremium('pfp-maker-pro',this)">Unlock</button></div>
+    <div class="premium-card"><div class="premium-icon">▣</div><h3>QR Maker Pro</h3><p>Additional QR customization options.</p><div class="price">100 coins · 5 days</div><button onclick="buyPremium('qr-maker-pro',this)">Unlock</button></div>
+    <div class="premium-card"><div class="premium-icon">🖼️</div><h3>Background Remover</h3><p>Premium access to background removal.</p><div class="price">200 coins · 5 days</div><button onclick="buyPremium('background-remover',this)">Unlock</button></div>
+    <div class="premium-card"><div class="premium-icon">📄</div><h3>PDF Pro</h3><p>Premium PDF tools and document features.</p><div class="price">180 coins · 5 days</div><button onclick="buyPremium('pdf-pro',this)">Unlock</button></div>
+    <div class="premium-card"><div class="premium-icon">🎨</div><h3>AI Logo Maker</h3><p>Premium AI-assisted logo creation.</p><div class="price">250 coins · 5 days</div><button onclick="buyPremium('ai-logo-maker',this)">Unlock</button></div>
   </div>
-
-
-  <p class="store-note">
-    Coins are internal ToolBoxHub reward points.
-    Premium access lasts five days.
-  </p>
-
+  <p class="store-note">Coins are internal ToolBoxHub reward points. Premium access lasts five days.</p>
 </section>
-
 </main>
 
+<footer>© 2026 ToolBoxHub</footer>
 
-<footer>
-  © 2026 ToolBoxHub
-</footer>
-
-
-<div
-  class="modal-bg"
-  id="authModal">
-
+<div class="modal-bg" id="authModal">
   <div class="modal">
-
-    <button
-      class="close"
-      onclick="closeAuth()">
-      ×
-    </button>
-
-    <h2 id="modalTitle">
-      Welcome to ToolBoxHub
-    </h2>
-
-    <p
-      class="modal-sub"
-      id="modalSubtitle">
-      Sign in or create your free account.
-    </p>
-
-
+    <button class="close" onclick="closeAuth()">×</button>
+    <h2 id="modalTitle">Welcome to ToolBoxHub</h2>
+    <p class="modal-sub" id="modalSubtitle">Sign in or create your free account.</p>
     <div class="auth-tabs">
-
-      <button
-        class="auth-tab active"
-        id="loginTab"
-        onclick="setMode('login')">
-        Login
-      </button>
-
-      <button
-        class="auth-tab"
-        id="registerTab"
-        onclick="setMode('register')">
-        Register
-      </button>
-
+      <button class="auth-tab active" id="loginTab" onclick="setMode('login')">Login</button>
+      <button class="auth-tab" id="registerTab" onclick="setMode('register')">Register</button>
     </div>
-
-
-    <div
-      class="field hidden"
-      id="nameField">
-
-      <label for="displayName">
-        Your name
-      </label>
-
-      <input
-        id="displayName"
-        placeholder="Enter your name">
-
+    <div class="field hidden" id="nameField">
+      <label for="displayName">Your name</label>
+      <input id="displayName" placeholder="Enter your name">
     </div>
-
-
     <div class="field">
-
-      <label for="email">
-        Email address
-      </label>
-
-      <input
-        id="email"
-        type="email"
-        placeholder="you@example.com">
-
+      <label for="email">Email address</label>
+      <input id="email" type="email" placeholder="you@example.com">
     </div>
-
-
     <div class="field">
-
-      <label for="password">
-        Password
-      </label>
-
-      <input
-        id="password"
-        type="password"
-        placeholder="At least 6 characters">
-
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="At least 6 characters">
     </div>
-
-
-    <button
-      class="primary full"
-      id="emailButton"
-      onclick="emailAuth()">
-      Login
-    </button>
-
-
-    <div class="or">
-      OR
-    </div>
-
-
-    <button
-      class="google"
-      id="googleButton"
-      onclick="googleLogin()">
-      Continue with Google
-    </button>
-
-
-    <div
-      class="message"
-      id="authMessage">
-    </div>
-
+    <button class="primary full" id="emailButton" onclick="emailAuth()">Login</button>
+    <div class="or">OR</div>
+    <button class="google" id="googleButton" onclick="googleLogin()">Continue with Google</button>
+    <div class="message" id="authMessage"></div>
   </div>
-
 </div>
 
-
-<div
-  class="toast"
-  id="toast">
-</div>
-
+<div class="toast" id="toast"></div>
 
 <script>
-
 let currentCategory="All";
 window.authMode="login";
 let toastTimer;
 
-
 function switchTab(tab){
-
   const tools=tab==="tools";
-
-  document
-    .getElementById("toolsPanel")
-    .classList
-    .toggle("active",tools);
-
-  document
-    .getElementById("premiumPanel")
-    .classList
-    .toggle("active",!tools);
-
-  document
-    .getElementById("toolsTab")
-    .classList
-    .toggle("active",tools);
-
-  document
-    .getElementById("premiumTab")
-    .classList
-    .toggle("active",!tools);
-
-  document.getElementById("search").style.display=
-    tools ? "" : "none";
-
-  if(!tools && window.currentUser && window.loadWallet){
-    window.loadWallet(window.currentUser);
-  }
-
+  document.getElementById("toolsPanel").classList.toggle("active",tools);
+  document.getElementById("premiumPanel").classList.toggle("active",!tools);
+  document.getElementById("toolsTab").classList.toggle("active",tools);
+  document.getElementById("premiumTab").classList.toggle("active",!tools);
+  document.getElementById("search").style.display=tools?"":"none";
+  if(!tools && window.currentUser && window.loadWallet) window.loadWallet(window.currentUser);
 }
-
 
 function showToast(message){
-
   const el=document.getElementById("toast");
-
   el.textContent=message;
-
   el.style.display="block";
-
   clearTimeout(toastTimer);
-
-  toastTimer=setTimeout(()=>{
-    el.style.display="none";
-  },4200);
-
+  toastTimer=setTimeout(()=>el.style.display="none",4200);
 }
-
 
 function searchTools(){
-
-  const search=
-    document
-      .getElementById("search")
-      .value
-      .toLowerCase();
-
+  const search=document.getElementById("search").value.toLowerCase();
   let count=0;
-
-  document
-    .querySelectorAll(".tool")
-    .forEach(tool=>{
-
-      const matches=
-        tool.dataset.name
-          .toLowerCase()
-          .includes(search)
-        &&
-        (
-          currentCategory==="All"
-          ||
-          tool.dataset.category===currentCategory
-        );
-
-      tool.style.display=
-        matches ? "" : "none";
-
-      if(matches){
-        count++;
-      }
-
-    });
-
-  document.getElementById("noResults").style.display=
-    count===0 ? "block" : "none";
-
+  document.querySelectorAll(".tool").forEach(tool=>{
+    const matches=tool.dataset.name.toLowerCase().includes(search)&&(currentCategory==="All"||tool.dataset.category===currentCategory);
+    tool.style.display=matches?"":"none";
+    if(matches) count++;
+  });
+  document.getElementById("noResults").style.display=count===0?"block":"none";
 }
-
 
 function filterCategory(category,button){
-
   currentCategory=category;
-
-  document
-    .querySelectorAll(".category")
-    .forEach(item=>{
-      item.classList.remove("active");
-    });
-
+  document.querySelectorAll(".category").forEach(item=>item.classList.remove("active"));
   button.classList.add("active");
-
   searchTools();
-
 }
-
 
 function openAuth(){
-
-  document
-    .getElementById("authModal")
-    .classList
-    .add("show");
-
+  document.getElementById("authModal").classList.add("show");
   clearMessage();
-
 }
-
-
-function closeAuth(){
-
-  document
-    .getElementById("authModal")
-    .classList
-    .remove("show");
-
-}
-
+function closeAuth(){document.getElementById("authModal").classList.remove("show");}
 
 function setMode(mode){
-
   window.authMode=mode;
-
   const register=mode==="register";
-
-  document
-    .getElementById("loginTab")
-    .classList
-    .toggle("active",!register);
-
-  document
-    .getElementById("registerTab")
-    .classList
-    .toggle("active",register);
-
-  document
-    .getElementById("nameField")
-    .classList
-    .toggle("hidden",!register);
-
-  document.getElementById("modalTitle").textContent=
-    register
-      ? "Create your account"
-      : "Welcome back";
-
-  document.getElementById("modalSubtitle").textContent=
-    register
-      ? "Create your free ToolBoxHub account."
-      : "Sign in to your account.";
-
-  document.getElementById("emailButton").textContent=
-    register
-      ? "Create account"
-      : "Login";
-
+  document.getElementById("loginTab").classList.toggle("active",!register);
+  document.getElementById("registerTab").classList.toggle("active",register);
+  document.getElementById("nameField").classList.toggle("hidden",!register);
+  document.getElementById("modalTitle").textContent=register?"Create your account":"Welcome back";
+  document.getElementById("modalSubtitle").textContent=register?"Create your free ToolBoxHub account.":"Sign in to your account.";
+  document.getElementById("emailButton").textContent=register?"Create account":"Login";
   clearMessage();
-
 }
-
 
 function showMessage(message,success=false){
-
   const el=document.getElementById("authMessage");
-
   el.textContent=message;
-
-  el.className=
-    success
-      ? "message success"
-      : "message";
-
+  el.className=success?"message success":"message";
 }
-
-
-function clearMessage(){
-  showMessage("");
-}
-
+function clearMessage(){showMessage("");}
 
 function friendlyError(error){
-
-  let message=
-    error?.message ||
-    String(error || "Something went wrong.");
-
-  if(
-    message.includes("Invalid login credentials")
-  ){
-    return "Incorrect email or password.";
-  }
-
-  if(
-    message.includes("User already registered")
-  ){
-    return "This email already has an account. Try logging in.";
-  }
-
-  if(
-    message.toLowerCase().includes("email not confirmed")
-  ){
-    return "Please confirm your email first.";
-  }
-
-  if(
-    message.toLowerCase().includes("provider is not enabled")
-  ){
-    return "Google login is not enabled in Supabase.";
-  }
-
-  if(
-    message.toLowerCase().includes("failed to fetch")
-  ){
-    return "Could not reach Supabase. Check your connection.";
-  }
-
-  if(
-    message.toLowerCase().includes("not enough coins")
-  ){
-    return "Not enough coins.";
-  }
-
-  if(
-    message.toLowerCase().includes("already claimed")
-  ){
-    return "You already claimed today's reward for this tool.";
-  }
-
+  let message=error?.message||String(error||"Something went wrong.");
+  if(message.includes("Invalid login credentials")) return "Incorrect email or password.";
+  if(message.includes("User already registered")) return "This email already has an account. Try logging in.";
+  if(message.toLowerCase().includes("email not confirmed")) return "Please confirm your email first.";
+  if(message.toLowerCase().includes("provider is not enabled")) return "Google login is not enabled in Supabase.";
+  if(message.toLowerCase().includes("failed to fetch")) return "Could not reach Supabase. Check your connection.";
+  if(message.toLowerCase().includes("not enough coins")) return "Not enough coins.";
+  if(message.toLowerCase().includes("already claimed")) return "You already claimed today's reward for this tool.";
   return message;
-
 }
-
-
 function setBusy(busy){
-
-  document
-    .getElementById("emailButton")
-    .disabled=busy;
-
-  document
-    .getElementById("googleButton")
-    .disabled=busy;
-
-  document
-    .getElementById("emailButton")
-    .textContent=
-      busy
-        ? "Please wait..."
-        : (
-            window.authMode==="register"
-              ? "Create account"
-              : "Login"
-          );
-
+  document.getElementById("emailButton").disabled=busy;
+  document.getElementById("googleButton").disabled=busy;
+  document.getElementById("emailButton").textContent=busy?"Please wait...":(window.authMode==="register"?"Create account":"Login");
 }
-
 
 window.openAuth=openAuth;
 window.closeAuth=closeAuth;
@@ -1432,750 +288,102 @@ window.setMode=setMode;
 window.searchTools=searchTools;
 window.filterCategory=filterCategory;
 window.switchTab=switchTab;
-
 </script>
 
-
 <script type="module">
+import {supabase} from "./supabase.js";
+import {toolboxRequest} from "./toolbox-api.js";
 
-import {supabase}
-  from "./supabase.js";
-
-import {toolboxRequest}
-  from "./toolbox-api.js";
-
-
-const $=id=>
-  document.getElementById(id);
-
-
+const $=id=>document.getElementById(id);
 let walletRequestId=0;
 
+function updateCoins(coins){
+  coins=Number(coins);
+  if(!Number.isFinite(coins)) throw new Error("Invalid wallet balance.");
+  $("walletBalance").textContent=coins+" coins";
+  $("navCoins").textContent="🪙 "+coins+" coins";
+  $("storeCoins").textContent="🪙 "+coins+" coins";
+}
 
-/* --------------------------------------------------
-   DIRECT WALLET FALLBACK
--------------------------------------------------- */
-
+/* Read the real wallet table first.
+   Do not let a stale Edge Function balance overwrite it. */
 async function directWalletRead(user){
-
-  if(!user){
-    throw new Error("Please sign in first.");
-  }
-
+  if(!user) throw new Error("Please sign in first.");
   const {data,error}=await supabase
     .from("wallets")
     .select("coins")
     .eq("user_id",user.id)
     .maybeSingle();
 
-  if(error){
-    throw error;
-  }
-
+  if(error) throw error;
   return Number(data?.coins ?? 0);
-
 }
-
-
-/* --------------------------------------------------
-   UPDATE ALL COIN DISPLAYS
--------------------------------------------------- */
-
-function updateCoins(coins){
-
-  coins=Number(coins);
-
-  if(!Number.isFinite(coins)){
-    coins=0;
-  }
-
-  $("walletBalance").textContent=
-    coins+" coins";
-
-  $("navCoins").textContent=
-    "🪙 "+coins+" coins";
-
-  $("storeCoins").textContent=
-    "🪙 "+coins+" coins";
-
-}
-
-
-/* --------------------------------------------------
-   LOAD WALLET
--------------------------------------------------- */
 
 async function loadWallet(user){
-
-  if(!user){
-    return;
-  }
+  if(!user) return;
 
   const requestId=++walletRequestId;
-
-  $("walletMessage").textContent=
-    "Connecting to your wallet...";
-
-  $("walletBalance").textContent=
-    "Loading...";
-
+  $("walletMessage").textContent="Connecting to your wallet...";
+  $("walletBalance").textContent="Loading...";
 
   try{
-
-    /*
-      First try the secure Edge Function.
-    */
-
-    try{
-
-      const data=
-        await toolboxRequest(
-          user,
-          {action:"balance"}
-        );
-
-      if(requestId!==walletRequestId){
-        return;
-      }
-
-      const coins=
-        Number(data?.coins ?? 0);
-
-      if(!Number.isFinite(coins)){
-        throw new Error(
-          "Invalid wallet balance."
-        );
-      }
-
-      updateCoins(coins);
-
-      $("walletMessage").textContent=
-        "Wallet connected successfully.";
-
-      await updatePremiumButtons(
-        data?.premium || []
-      );
-
-      return;
-
-    }catch(edgeError){
-
-      console.warn(
-        "Edge wallet request failed. Trying direct wallet read.",
-        edgeError
-      );
-
-    }
-
-
-    /*
-      Fallback:
-      read the user's wallet directly.
-    */
-
-    const coins=
-      await directWalletRead(user);
-
-    if(requestId!==walletRequestId){
-      return;
-    }
+    // Primary source: the user's actual Supabase wallet row.
+    const coins=await directWalletRead(user);
+    if(requestId!==walletRequestId) return;
 
     updateCoins(coins);
+    $("walletMessage").textContent="Wallet connected successfully.";
 
-    $("walletMessage").textContent=
-      "Wallet connected.";
-
-  }catch(error){
-
-    if(requestId!==walletRequestId){
-      return;
+    // Fetch premium ownership separately; never replace the direct balance.
+    try{
+      const data=await toolboxRequest(user,{action:"balance"});
+      if(requestId!==walletRequestId) return;
+      await updatePremiumButtons(data?.premium||[]);
+    }catch(error){
+      console.warn("Premium status could not be refreshed:",error);
     }
 
-    console.error(
-      "Wallet error:",
-      error
-    );
-
-    /*
-      Do NOT show "Unavailable".
-      A new account simply has 0 coins.
-    */
-
-    updateCoins(0);
-
-    $("walletMessage").textContent=
-      "Wallet is ready. Use an eligible tool to earn coins.";
-
+  }catch(error){
+    if(requestId!==walletRequestId) return;
+    console.error("Wallet read failed:",error);
+    $("walletBalance").textContent="Unavailable";
+    $("walletMessage").textContent="Could not load wallet: "+(error.message||"Unknown error");
   }
-
 }
-
 
 window.loadWallet=loadWallet;
 
-
-/* --------------------------------------------------
-   PREMIUM BUTTON STATUS
--------------------------------------------------- */
-
 async function updatePremiumButtons(premium=[]){
+  const activeProducts=new Set(
+    premium.filter(item=>item&&item.product_id&&item.expires_at&&new Date(item.expires_at)>new Date())
+      .map(item=>item.product_id)
+  );
 
-  const activeProducts=
-    new Set(
-      premium
-        .filter(item=>{
-          return item &&
-            item.product_id &&
-            item.expires_at &&
-            new Date(item.expires_at)>new Date();
-        })
-        .map(item=>item.product_id)
-    );
-
-
-  document
-    .querySelectorAll(".premium-card button")
-    .forEach(button=>{
-
-      const card=
-        button.closest(".premium-card");
-
-      if(!card){
-        return;
-      }
-
-      const onclick=
-        button.getAttribute("onclick") || "";
-
-      const match=
-        onclick.match(
-          /buyPremium\('([^']+)'/
-        );
-
-      if(!match){
-        return;
-      }
-
-      const productId=match[1];
-
-      if(activeProducts.has(productId)){
-
-        button.textContent="✓ Owned";
-
-        button.classList.add("owned");
-
-        button.disabled=true;
-
-      }
-
-    });
-
+  document.querySelectorAll(".premium-card button").forEach(button=>{
+    const match=(button.getAttribute("onclick")||"").match(/buyPremium\('([^']+)'/);
+    if(!match) return;
+    if(activeProducts.has(match[1])){
+      button.textContent="✓ Owned";
+      button.classList.add("owned");
+      button.disabled=true;
+    }
+  });
 }
 
-
-/* --------------------------------------------------
-   OPEN TOOL
--------------------------------------------------- */
-
 window.openTool=function(path){
-
   const allowed=[
-    "tools/qr.html",
-    "tools/image-resizer.html",
-    "tools/json-formatter.html",
-    "tools/color-palette.html",
-    "tools/username-generator.html",
-    "tools/password-generator.html",
-    "tools/text-case-converter.html",
-    "tools/word-counter.html",
-    "tools/pfp-maker.html"
+    "tools/qr.html","tools/image-resizer.html","tools/json-formatter.html",
+    "tools/color-palette.html","tools/username-generator.html",
+    "tools/password-generator.html","tools/text-case-converter.html",
+    "tools/word-counter.html","tools/pfp-maker.html"
   ];
 
-
-  if(!allowed.includes(path)){
-    return;
-  }
-
+  if(!allowed.includes(path)) return;
 
   if(!window.currentUser){
-
-    sessionStorage.setItem(
-      "toolboxhub_return_to",
-      path
-    );
-
+    sessionStorage.setItem("toolboxhub_return_to",path);
     openAuth();
-
-    showMessage(
-      "Please log in to use this tool."
-    );
-
+    showMessage("Please log in to use this tool.");
     return;
-
   }
-
-
-  location.href=path;
-
-};
-
-
-/* --------------------------------------------------
-   EMAIL AUTH
--------------------------------------------------- */
-
-window.emailAuth=async function(){
-
-  const email=
-    $("email").value.trim();
-
-  const password=
-    $("password").value;
-
-  const name=
-    $("displayName").value.trim();
-
-
-  if(!email || !password){
-
-    return showMessage(
-      "Enter your email and password."
-    );
-
-  }
-
-
-  if(password.length<6){
-
-    return showMessage(
-      "Password must be at least 6 characters."
-    );
-
-  }
-
-
-  if(
-    window.authMode==="register"
-    &&
-    !name
-  ){
-
-    return showMessage(
-      "Please enter your name."
-    );
-
-  }
-
-
-  setBusy(true);
-
-  showMessage("");
-
-
-  try{
-
-    if(window.authMode==="register"){
-
-      const {
-        data,
-        error
-      }=
-        await supabase.auth.signUp({
-
-          email,
-          password,
-
-          options:{
-            data:{
-              display_name:name
-            }
-          }
-
-        });
-
-
-      if(error){
-        throw error;
-      }
-
-
-      if(!data.session){
-
-        showMessage(
-          "Account created! Check your email to confirm your account.",
-          true
-        );
-
-      }else{
-
-        closeAuth();
-
-        showToast(
-          "Account created successfully!"
-        );
-
-      }
-
-    }else{
-
-      const {error}=
-        await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-
-
-      if(error){
-        throw error;
-      }
-
-
-      closeAuth();
-
-      showToast(
-        "Logged in successfully!"
-      );
-
-    }
-
-  }catch(error){
-
-    showMessage(
-      friendlyError(error)
-    );
-
-  }finally{
-
-    setBusy(false);
-
-  }
-
-};
-
-
-/* --------------------------------------------------
-   GOOGLE LOGIN
--------------------------------------------------- */
-
-window.googleLogin=async function(){
-
-  setBusy(true);
-
-  showMessage("");
-
-
-  try{
-
-    const {error}=
-      await supabase.auth.signInWithOAuth({
-
-        provider:"google",
-
-        options:{
-          redirectTo:
-            window.location.origin+
-            window.location.pathname
-        }
-
-      });
-
-
-    if(error){
-      throw error;
-    }
-
-  }catch(error){
-
-    showMessage(
-      friendlyError(error)
-    );
-
-    setBusy(false);
-
-  }
-
-};
-
-
-/* --------------------------------------------------
-   LOGOUT
--------------------------------------------------- */
-
-window.logout=async function(){
-
-  const {error}=
-    await supabase.auth.signOut();
-
-  if(error){
-
-    alert(
-      friendlyError(error)
-    );
-
-  }
-
-};
-
-
-/* --------------------------------------------------
-   PREMIUM PURCHASE
--------------------------------------------------- */
-
-window.buyPremium=async function(
-  productId,
-  button
-){
-
-  const user=
-    window.currentUser;
-
-
-  if(!user){
-
-    openAuth();
-
-    showMessage(
-      "Please log in before purchasing premium."
-    );
-
-    return;
-
-  }
-
-
-  button.disabled=true;
-
-  const oldText=
-    button.textContent;
-
-  button.textContent=
-    "Purchasing...";
-
-
-  try{
-
-    /*
-      Try the existing secure Edge Function.
-    */
-
-    let result;
-
-
-    try{
-
-      result=
-        await toolboxRequest(
-          user,
-          {
-            action:"purchase",
-            productId
-          }
-        );
-
-    }catch(edgeError){
-
-      console.warn(
-        "Edge purchase failed. Trying direct RPC.",
-        edgeError
-      );
-
-
-      /*
-        Fallback to the existing Supabase RPC.
-      */
-
-      const {data,error}=
-        await supabase.rpc(
-          "purchase_toolbox_premium",
-          {
-            p_user_id:user.id,
-            p_product_id:productId
-          }
-        );
-
-
-      if(error){
-        throw error;
-      }
-
-
-      result=data;
-
-    }
-
-
-    if(!result?.success){
-
-      throw new Error(
-        "Purchase was not completed."
-      );
-
-    }
-
-
-    const remaining=
-      Number(
-        result.remainingCoins
-      );
-
-
-    if(Number.isFinite(remaining)){
-
-      updateCoins(
-        remaining
-      );
-
-    }else{
-
-      await loadWallet(
-        user
-      );
-
-    }
-
-
-    button.textContent=
-      "✓ Owned";
-
-    button.classList.add(
-      "owned"
-    );
-
-    showToast(
-      "Premium unlocked! It lasts five days."
-    );
-
-
-  }catch(error){
-
-    console.error(
-      "Premium purchase error:",
-      error
-    );
-
-
-    showToast(
-      friendlyError(error)
-    );
-
-
-    await loadWallet(
-      user
-    );
-
-
-    button.disabled=false;
-
-    button.textContent=
-      oldText;
-
-    return;
-
-  }
-
-
-  button.disabled=true;
-
-};
-
-
-/* --------------------------------------------------
-   AUTH STATE
--------------------------------------------------- */
-
-supabase.auth.onAuthStateChange(
-  (_event,session)=>{
-
-    const user=
-      session?.user || null;
-
-    window.currentUser=user;
-
-
-    $("accountArea").style.display=
-      user ? "flex" : "none";
-
-    $("loginButton").style.display=
-      user ? "none" : "block";
-
-
-    if(user){
-
-      $("userEmail").textContent=
-        user.user_metadata?.display_name
-        ||
-        user.email
-        ||
-        "Account";
-
-
-      Promise.resolve()
-        .then(()=>{
-          return loadWallet(user);
-        });
-
-
-      const returnTo=
-        sessionStorage.getItem(
-          "toolboxhub_return_to"
-        );
-
-
-      if(returnTo){
-
-        sessionStorage.removeItem(
-          "toolboxhub_return_to"
-        );
-
-
-        const allowed=[
-          "tools/qr.html",
-          "tools/image-resizer.html",
-          "tools/json-formatter.html",
-          "tools/color-palette.html",
-          "tools/username-generator.html",
-          "tools/password-generator.html",
-          "tools/text-case-converter.html",
-          "tools/word-counter.html",
-          "tools/pfp-maker.html"
-        ];
-
-
-        if(allowed.includes(returnTo)){
-
-          location.href=
-            returnTo;
-
-        }
-
-      }
-
-    }else{
-
-      walletRequestId++;
-
-
-      $("walletBalance").textContent=
-        "— coins";
-
-
-      $("walletMessage").textContent=
-        "Sign in to connect your wallet.";
-
-
-      $("navCoins").textContent=
-        "🪙 0 coins";
-
-
-      $("storeCoins").textContent=
-        "🪙 0 coins";
-
-    }
-
-  }
-);
-
-</script>
-
-</body>
-</html>
+  location.h
