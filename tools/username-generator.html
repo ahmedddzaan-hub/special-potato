@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -100,6 +99,11 @@ button {
   font-size: 14px;
 }
 
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .generate {
   background: #6c63ff;
   color: white;
@@ -191,7 +195,9 @@ footer {
 
   <div class="box">
 
-    <label for="keyword">Optional keyword</label>
+    <label for="keyword">
+      Optional keyword
+    </label>
 
     <input
       id="keyword"
@@ -200,23 +206,52 @@ footer {
       maxlength="20"
     >
 
-    <label for="style">Username style</label>
+    <label for="style">
+      Username style
+    </label>
 
     <select id="style">
-      <option value="random">Random</option>
-      <option value="gaming">Gaming</option>
-      <option value="simple">Simple</option>
-      <option value="cool">Cool</option>
-      <option value="short">Short</option>
+
+      <option value="random">
+        Random
+      </option>
+
+      <option value="gaming">
+        Gaming
+      </option>
+
+      <option value="simple">
+        Simple
+      </option>
+
+      <option value="cool">
+        Cool
+      </option>
+
+      <option value="short">
+        Short
+      </option>
+
     </select>
 
-    <button class="generate" onclick="generateUsernames()">
+    <button
+      id="generateButton"
+      class="generate"
+      onclick="generateUsernames()"
+    >
       Generate Usernames
     </button>
 
-    <div class="results" id="results"></div>
+    <div
+      class="results"
+      id="results"
+    ></div>
 
-    <div class="message" id="message" aria-live="polite"></div>
+    <div
+      class="message"
+      id="message"
+      aria-live="polite"
+    ></div>
 
   </div>
 
@@ -231,147 +266,495 @@ footer {
   © 2026 ToolBoxHub
 </footer>
 
-<script>
+
+<script type="module">
+
+import {
+  initializeToolPage,
+  runTool
+} from "../tools.js";
+
+
+/* ------------------------------
+   USERNAME DATA
+------------------------------ */
+
 const adjectives = [
-  "Swift", "Shadow", "Nova", "Pixel", "Mystic",
-  "Cyber", "Frost", "Neon", "Silent", "Epic",
-  "Dark", "Lucky", "Rapid", "Cosmic", "Blaze",
-  "Storm", "Hyper", "Ghost", "Solar", "Vortex",
-  "Ultra", "Royal", "Arctic", "Turbo", "Savage",
-  "Crystal", "Phantom", "Golden", "Electric", "Lunar"
+  "Swift",
+  "Shadow",
+  "Nova",
+  "Pixel",
+  "Mystic",
+  "Cyber",
+  "Frost",
+  "Neon",
+  "Silent",
+  "Epic",
+  "Dark",
+  "Lucky",
+  "Rapid",
+  "Cosmic",
+  "Blaze",
+  "Storm",
+  "Hyper",
+  "Ghost",
+  "Solar",
+  "Vortex",
+  "Ultra",
+  "Royal",
+  "Arctic",
+  "Turbo",
+  "Savage",
+  "Crystal",
+  "Phantom",
+  "Golden",
+  "Electric",
+  "Lunar"
 ];
+
 
 const nouns = [
-  "Wolf", "Fox", "Dragon", "Tiger", "Knight",
-  "Raven", "Ninja", "Phoenix", "Hunter", "Legend",
-  "Rider", "Master", "Hero", "Titan", "Spark",
-  "Shadow", "Byte", "Core", "Wave", "Star",
-  "Blade", "Comet", "Eagle", "Ghost", "Storm",
-  "Viper", "Falcon", "Pixel", "Rocket", "Galaxy"
+  "Wolf",
+  "Fox",
+  "Dragon",
+  "Tiger",
+  "Knight",
+  "Raven",
+  "Ninja",
+  "Phoenix",
+  "Hunter",
+  "Legend",
+  "Rider",
+  "Master",
+  "Hero",
+  "Titan",
+  "Spark",
+  "Shadow",
+  "Byte",
+  "Core",
+  "Wave",
+  "Star",
+  "Blade",
+  "Comet",
+  "Eagle",
+  "Ghost",
+  "Storm",
+  "Viper",
+  "Falcon",
+  "Pixel",
+  "Rocket",
+  "Galaxy"
 ];
+
 
 const endings = [
-  "X", "Pro", "YT", "GG", "HD",
-  "FX", "TV", "Dev", "One", "Zone",
-  "OP", "Max", "Live", "Play", "HQ"
+  "X",
+  "Pro",
+  "YT",
+  "GG",
+  "HD",
+  "FX",
+  "TV",
+  "Dev",
+  "One",
+  "Zone",
+  "OP",
+  "Max",
+  "Live",
+  "Play",
+  "HQ"
 ];
 
-const input = document.getElementById("keyword");
-const styleInput = document.getElementById("style");
-const results = document.getElementById("results");
-const message = document.getElementById("message");
+
+/* ------------------------------
+   ELEMENTS
+------------------------------ */
+
+const input =
+  document.getElementById("keyword");
+
+const styleInput =
+  document.getElementById("style");
+
+const results =
+  document.getElementById("results");
+
+const message =
+  document.getElementById("message");
+
+const generateButton =
+  document.getElementById("generateButton");
+
+
+let toolReady = false;
+
+
+/* ------------------------------
+   RANDOM HELPERS
+------------------------------ */
 
 function randomItem(array) {
-  return array[Math.floor(Math.random() * array.length)];
+
+  return array[
+    Math.floor(
+      Math.random() * array.length
+    )
+  ];
+
 }
+
 
 function randomNumber() {
-  return Math.floor(Math.random() * 9999) + 1;
+
+  return Math.floor(
+    Math.random() * 9999
+  ) + 1;
+
 }
+
 
 function cleanKeyword(text) {
-  return text.replace(/[^a-zA-Z0-9]/g, "").slice(0, 20);
+
+  return text
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .slice(0, 20);
+
 }
 
-function createUsername(keyword, style) {
+
+/* ------------------------------
+   CREATE USERNAME
+------------------------------ */
+
+function createUsername(
+  keyword,
+  style
+) {
+
   let username = "";
 
+
   if (style === "simple") {
-    username = keyword
-      ? keyword + randomNumber()
-      : randomItem(adjectives) + randomNumber();
+
+    username =
+      keyword
+        ? keyword + randomNumber()
+        : randomItem(adjectives) +
+          randomNumber();
+
   }
+
 
   else if (style === "gaming") {
-    username = keyword
-      ? keyword + randomItem(endings) + randomNumber()
-      : randomItem(adjectives) + randomItem(nouns) + randomNumber();
+
+    username =
+      keyword
+        ? keyword +
+          randomItem(endings) +
+          randomNumber()
+        : randomItem(adjectives) +
+          randomItem(nouns) +
+          randomNumber();
+
   }
+
 
   else if (style === "cool") {
-    username = keyword
-      ? randomItem(adjectives) + keyword + randomItem(endings)
-      : randomItem(adjectives) + randomItem(nouns);
+
+    username =
+      keyword
+        ? randomItem(adjectives) +
+          keyword +
+          randomItem(endings)
+        : randomItem(adjectives) +
+          randomItem(nouns);
+
   }
+
 
   else if (style === "short") {
-    username = keyword
-      ? keyword.slice(0, 5) + randomNumber()
-      : randomItem(adjectives).slice(0, 5) + randomNumber();
+
+    username =
+      keyword
+        ? keyword.slice(0, 5) +
+          randomNumber()
+        : randomItem(adjectives)
+            .slice(0, 5) +
+          randomNumber();
+
   }
+
 
   else {
-    username = keyword
-      ? keyword + randomItem(endings) + randomNumber()
-      : randomItem(adjectives) + randomItem(nouns) + randomNumber();
+
+    username =
+      keyword
+        ? keyword +
+          randomItem(endings) +
+          randomNumber()
+        : randomItem(adjectives) +
+          randomItem(nouns) +
+          randomNumber();
+
   }
+
 
   return username;
+
 }
 
-function generateUsernames() {
-  const keyword = cleanKeyword(input.value);
-  const style = styleInput.value;
 
-  results.innerHTML = "";
+/* ------------------------------
+   GENERATE USERNAMES
+------------------------------ */
 
-  const used = new Set();
-  let attempts = 0;
+async function generateUsernames() {
 
-  while (used.size < 10 && attempts < 500) {
-    used.add(createUsername(keyword, style));
-    attempts++;
+  if (!toolReady) {
+
+    message.textContent =
+      "Please sign in first.";
+
+    return;
+
   }
 
-  [...used].forEach(username => {
-    const row = document.createElement("div");
-    row.className = "username";
 
-    const name = document.createElement("span");
-    name.className = "name";
-    name.textContent = username;
+  await runTool(
+    "username-generator",
+    async () => {
 
-    const copy = document.createElement("button");
-    copy.className = "copy";
-    copy.textContent = "Copy";
+      const keyword =
+        cleanKeyword(
+          input.value
+        );
 
-    copy.onclick = () => copyUsername(username);
+      const style =
+        styleInput.value;
 
-    row.appendChild(name);
-    row.appendChild(copy);
-    results.appendChild(row);
-  });
 
-  message.textContent = used.size + " usernames generated.";
+      results.innerHTML = "";
+
+
+      const used =
+        new Set();
+
+      let attempts = 0;
+
+
+      while (
+        used.size < 10 &&
+        attempts < 500
+      ) {
+
+        used.add(
+          createUsername(
+            keyword,
+            style
+          )
+        );
+
+        attempts++;
+
+      }
+
+
+      if (used.size < 10) {
+
+        throw new Error(
+          "Could not generate enough unique usernames."
+        );
+
+      }
+
+
+      [...used].forEach(
+        username => {
+
+          const row =
+            document.createElement("div");
+
+          row.className =
+            "username";
+
+
+          const name =
+            document.createElement("span");
+
+          name.className =
+            "name";
+
+          name.textContent =
+            username;
+
+
+          const copy =
+            document.createElement("button");
+
+          copy.className =
+            "copy";
+
+          copy.textContent =
+            "Copy";
+
+
+          copy.onclick =
+            () => copyUsername(
+              username
+            );
+
+
+          row.appendChild(name);
+
+          row.appendChild(copy);
+
+          results.appendChild(row);
+
+        }
+      );
+
+
+      message.textContent =
+        used.size +
+        " usernames generated.";
+
+    }
+  );
+
 }
 
-async function copyUsername(username) {
-  try {
-    await navigator.clipboard.writeText(username);
-    message.textContent = username + " copied!";
-  } catch (error) {
-    const textarea = document.createElement("textarea");
-    textarea.value = username;
-    textarea.style.position = "fixed";
-    textarea.style.opacity = "0";
 
-    document.body.appendChild(textarea);
+/* ------------------------------
+   COPY USERNAME
+------------------------------ */
+
+async function copyUsername(
+  username
+) {
+
+  if (!toolReady) {
+
+    message.textContent =
+      "Please sign in first.";
+
+    return;
+
+  }
+
+
+  try {
+
+    await navigator.clipboard.writeText(
+      username
+    );
+
+    message.textContent =
+      username +
+      " copied!";
+
+  }
+
+
+  catch (error) {
+
+    const textarea =
+      document.createElement(
+        "textarea"
+      );
+
+    textarea.value =
+      username;
+
+    textarea.style.position =
+      "fixed";
+
+    textarea.style.opacity =
+      "0";
+
+    document.body.appendChild(
+      textarea
+    );
+
     textarea.select();
 
+
     try {
-      const copied = document.execCommand("copy");
-      message.textContent = copied
-        ? username + " copied!"
-        : "Copy failed. Please copy manually.";
-    } catch {
-      message.textContent = "Copy failed. Please copy manually.";
+
+      const copied =
+        document.execCommand(
+          "copy"
+        );
+
+      message.textContent =
+        copied
+          ? username + " copied!"
+          : "Copy failed. Please copy manually.";
+
     }
 
+    catch {
+
+      message.textContent =
+        "Copy failed. Please copy manually.";
+
+    }
+
+
     textarea.remove();
+
   }
+
 }
 
-generateUsernames();
+
+/* ------------------------------
+   INITIALIZE
+------------------------------ */
+
+async function initialize() {
+
+  toolReady =
+    await initializeToolPage();
+
+
+  if (!toolReady) {
+
+    generateButton.disabled =
+      true;
+
+    return;
+
+  }
+
+
+  generateButton.disabled =
+    false;
+
+
+  /*
+    Do NOT generate automatically.
+    The first reward should only happen
+    when the user actually presses
+    "Generate Usernames".
+  */
+
+}
+
+
+/* ------------------------------
+   GLOBAL FUNCTION
+------------------------------ */
+
+window.generateUsernames =
+  generateUsernames;
+
+
+/* ------------------------------
+   START
+------------------------------ */
+
+initialize();
+
 </script>
 
 </body>
