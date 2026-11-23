@@ -1,4 +1,3 @@
-
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -12,13 +11,16 @@ const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-// Privileged client: database operations only.
-const admin = createClient(supabaseUrl, serviceRoleKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-  },
-});
+const admin = createClient(
+  supabaseUrl,
+  serviceRoleKey,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  }
+);
 
 function respond(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -51,34 +53,59 @@ const validProducts = [
 ];
 
 Deno.serve(async (req) => {
+  // CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", {
+      headers: corsHeaders,
+    });
   }
 
+  // Only POST requests
   if (req.method !== "POST") {
-    return respond({ error: "POST required." }, 405);
+    return respond(
+      {
+        error: "POST required.",
+      },
+      405
+    );
   }
 
   try {
-    const authorization = req.headers.get("Authorization") ?? "";
-    const token = authorization.match(/^Bearer\s+(.+)$/i)?.[1];
+    // ----------------------------------------
+    // AUTHENTICATION
+    // ----------------------------------------
+
+    const authorization =
+      req.headers.get("Authorization") ?? "";
+
+    const token =
+      authorization.match(/^Bearer\s+(.+)$/i)?.[1];
 
     if (!token) {
-      return respond({ error: "Please sign in first." }, 401);
+      return respond(
+        {
+          error: "Please sign in first.",
+        },
+        401
+      );
     }
 
-    // Verify the user's token using the public Supabase key.
-    const userClient = createClient(supabaseUrl, anonKey, {
-      global: {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    const userClient = createClient(
+      supabaseUrl,
+      anonKey,
+      {
+        global: {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      },
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-      },
-    });
+
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      }
+    );
 
     const {
       data: { user },
@@ -86,16 +113,31 @@ Deno.serve(async (req) => {
     } = await userClient.auth.getUser();
 
     if (authError || !user) {
-      console.error("Authentication error:", authError);
-      return respond({
-        error: "Your session is invalid. Please sign in again.",
-      }, 401);
+      console.error(
+        "Authentication error:",
+        authError
+      );
+
+      return respond(
+        {
+          error:
+            "Your session is invalid. Please sign in again.",
+        },
+        401
+      );
     }
+
+    // ----------------------------------------
+    // READ REQUEST
+    // ----------------------------------------
 
     const body = await req.json();
     const action = body?.action;
 
-    // LOAD WALLET
+    // ----------------------------------------
+    // BALANCE
+    // ----------------------------------------
+
     if (action === "balance") {
       const [
         { data: wallet, error: walletError },
@@ -109,46 +151,114 @@ Deno.serve(async (req) => {
 
         admin
           .from("premium_purchases")
-          .select("product_id, expires_at")
+          .select(
+            "product_id, expires_at"
+          )
           .eq("user_id", user.id)
-          .gt("expires_at", new Date().toISOString())
-          .order("expires_at", { ascending: false }),
+          .gt(
+            "expires_at",
+            new Date().toISOString()
+          )
+          .order("expires_at", {
+            ascending: false,
+          }),
       ]);
 
-      if (walletError) throw walletError;
-      if (premiumError) throw premiumError;
+      if (walletError) {
+        throw walletError;
+      }
+
+      if (premiumError) {
+        throw premiumError;
+      }
 
       return respond({
-        coins: wallet?.coins ?? 0,
+        coins: Number(wallet?.coins ?? 0),
         premium: premium ?? [],
       });
     }
 
-    // CLAIM DAILY REWARD
+    // ----------------------------------------
+    // TOOL REWARD
+    // ----------------------------------------
+    //
+    // IMPORTANT:
+    // The SQL function now controls the reward:
+    //
+    // 96% = 12 coins
+    // 4%  = 15 coins
+    //
+    // There is NO daily limit.
+    //
+    // We intentionally do NOT calculate the
+    // reward here.
+    // ----------------------------------------
+
     if (
-      ["claim", "claim_reward", "claim_tool_reward"].includes(action)
+      [
+        "claim",
+        "claim_reward",
+        "claim_tool_reward",
+      ].includes(action)
     ) {
-      const toolId = body?.toolId ?? body?.tool_id;
+      const toolId =
+        body?.toolId ??
+        body?.tool_id;
 
       if (!validTools.includes(toolId)) {
-        return respond({ error: "Invalid tool." }, 400);
+        return respond(
+          {
+            error: "Invalid tool.",
+          },
+          400
+        );
       }
 
-      const reward = Math.random() < 0.05 ? 15 : 12;
+      const {
+        data,
+        error,
+      } = await admin.rpc(
+        "claim_tool_reward",
+        {
+          p_user_id: user.id,
+          p_tool_id: toolId,
 
-      const { data, error } = await admin.rpc("claim_tool_reward", {
-        p_user_id: user.id,
-        p_tool_id: toolId,
-        p_reward: reward,
-      });
+          // The SQL function decides the
+          // actual reward now.
+          p_reward: 0,
+        }
+      );
 
       if (error) {
-        if (error.code === "23505") {
-          return respond({ error: "Already claimed today." }, 409);
+        console.error(
+          "Reward RPC error:",
+          error
+        );
+
+        if (
+          error.message?.includes(
+            "Unauthorized"
+          )
+        ) {
+          return respond(
+            {
+              error: "Unauthorized.",
+            },
+            401
+          );
         }
 
-        if (error.message?.includes("Invalid tool")) {
-          return respond({ error: "Invalid tool." }, 400);
+        if (
+          error.message?.includes(
+            "Invalid tool"
+          )
+        ) {
+          return respond(
+            {
+              error: "Invalid tool.",
+            },
+            400
+          );
         }
 
         throw error;
@@ -157,17 +267,36 @@ Deno.serve(async (req) => {
       return respond(data);
     }
 
-    // PURCHASE PREMIUM
-    if (
-      ["purchase", "purchase_premium", "purchase_toolbox_premium"].includes(action)
-    ) {
-      const productId = body?.productId ?? body?.product_id;
+    // ----------------------------------------
+    // PREMIUM PURCHASE
+    // ----------------------------------------
 
-      if (!validProducts.includes(productId)) {
-        return respond({ error: "Invalid product." }, 400);
+    if (
+      [
+        "purchase",
+        "purchase_premium",
+        "purchase_toolbox_premium",
+      ].includes(action)
+    ) {
+      const productId =
+        body?.productId ??
+        body?.product_id;
+
+      if (
+        !validProducts.includes(productId)
+      ) {
+        return respond(
+          {
+            error: "Invalid product.",
+          },
+          400
+        );
       }
 
-      const { data, error } = await admin.rpc(
+      const {
+        data,
+        error,
+      } = await admin.rpc(
         "purchase_toolbox_premium",
         {
           p_user_id: user.id,
@@ -176,12 +305,37 @@ Deno.serve(async (req) => {
       );
 
       if (error) {
-        if (error.message?.includes("Not enough coins")) {
-          return respond({ error: "Not enough coins." }, 400);
+        console.error(
+          "Premium purchase error:",
+          error
+        );
+
+        if (
+          error.message?.includes(
+            "Not enough coins"
+          )
+        ) {
+          return respond(
+            {
+              error:
+                "Not enough coins.",
+            },
+            400
+          );
         }
 
-        if (error.message?.includes("Invalid product")) {
-          return respond({ error: "Invalid product." }, 400);
+        if (
+          error.message?.includes(
+            "Invalid product"
+          )
+        ) {
+          return respond(
+            {
+              error:
+                "Invalid product.",
+            },
+            400
+          );
         }
 
         throw error;
@@ -190,14 +344,34 @@ Deno.serve(async (req) => {
       return respond(data);
     }
 
-    return respond({ error: "Unknown action." }, 400);
+    // ----------------------------------------
+    // UNKNOWN ACTION
+    // ----------------------------------------
+
+    return respond(
+      {
+        error: "Unknown action.",
+      },
+      400
+    );
 
   } catch (error) {
-    console.error("ToolBoxHub backend error:", error);
+    console.error(
+      "ToolBoxHub backend error:",
+      error
+    );
 
-    return respond({
-      error: "Server error. Please try again.",
-      details: error instanceof Error ? error.message : String(error),
-    }, 500);
+    return respond(
+      {
+        error:
+          "Server error. Please try again.",
+
+        details:
+          error instanceof Error
+            ? error.message
+            : String(error),
+      },
+      500
+    );
   }
 });
