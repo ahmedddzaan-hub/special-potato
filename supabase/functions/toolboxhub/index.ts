@@ -4,23 +4,13 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-api-version",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods":
+    "POST, OPTIONS",
 };
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-const admin = createClient(
-  supabaseUrl,
-  serviceRoleKey,
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-  }
-);
 
 function respond(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -53,14 +43,12 @@ const validProducts = [
 ];
 
 Deno.serve(async (req) => {
-  // CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: corsHeaders,
     });
   }
 
-  // Only POST requests
   if (req.method !== "POST") {
     return respond(
       {
@@ -72,7 +60,7 @@ Deno.serve(async (req) => {
 
   try {
     // ----------------------------------------
-    // AUTHENTICATION
+    // GET USER JWT
     // ----------------------------------------
 
     const authorization =
@@ -90,6 +78,10 @@ Deno.serve(async (req) => {
       );
     }
 
+    // ----------------------------------------
+    // VERIFY USER
+    // ----------------------------------------
+
     const userClient = createClient(
       supabaseUrl,
       anonKey,
@@ -99,7 +91,6 @@ Deno.serve(async (req) => {
             Authorization: `Bearer ${token}`,
           },
         },
-
         auth: {
           persistSession: false,
           autoRefreshToken: false,
@@ -128,8 +119,28 @@ Deno.serve(async (req) => {
     }
 
     // ----------------------------------------
-    // READ REQUEST
+    // ADMIN CLIENT
     // ----------------------------------------
+
+    const admin = createClient(
+      supabaseUrl,
+      serviceRoleKey,
+      {
+        global: {
+          headers: {
+            // IMPORTANT:
+            // Keep the user's JWT as Authorization
+            // so auth.uid() inside the SQL function
+            // identifies the signed-in user.
+            Authorization: `Bearer ${token}`,
+          },
+        },
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      }
+    );
 
     const body = await req.json();
     const action = body?.action;
@@ -181,18 +192,6 @@ Deno.serve(async (req) => {
     // ----------------------------------------
     // TOOL REWARD
     // ----------------------------------------
-    //
-    // IMPORTANT:
-    // The SQL function now controls the reward:
-    //
-    // 96% = 12 coins
-    // 4%  = 15 coins
-    //
-    // There is NO daily limit.
-    //
-    // We intentionally do NOT calculate the
-    // reward here.
-    // ----------------------------------------
 
     if (
       [
@@ -214,6 +213,18 @@ Deno.serve(async (req) => {
         );
       }
 
+      /*
+       * DO NOT calculate the reward here.
+       *
+       * The SQL function handles:
+       *
+       * 96% = 12 coins
+       * 4%  = 15 coins
+       *
+       * The SQL function also updates the
+       * user's wallet.
+       */
+
       const {
         data,
         error,
@@ -222,9 +233,6 @@ Deno.serve(async (req) => {
         {
           p_user_id: user.id,
           p_tool_id: toolId,
-
-          // The SQL function decides the
-          // actual reward now.
           p_reward: 0,
         }
       );
